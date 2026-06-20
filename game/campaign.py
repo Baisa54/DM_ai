@@ -19,7 +19,8 @@ SALAS = {
         ],
 
         "personajes": [
-            "aelar"
+            "companero", 
+            "heroe"
         ],
 
         "salidas": [
@@ -38,8 +39,9 @@ SALAS = {
         "objetos": [],
 
         "personajes": [
-            "aelar",
-            "goblin"
+            "companero",
+            "goblin", 
+            "heroe"
         ],
 
         "salidas": [
@@ -61,8 +63,9 @@ SALAS = {
         ],
 
         "personajes": [
-            "aelar",
-            "goblin"
+            "companero",
+            "goblin", 
+            "heroe"
         ],
 
         "salidas": [
@@ -82,33 +85,14 @@ SALAS = {
         "objetos": [],
 
         "personajes": [
-            "aelar",
+            "companero",
             "osgo",
-            "princesa"
+            "princesa", 
+            "heroe"
         ],
 
-        "salidas": []
+        "salidas": [
+            "gran_salon"
+        ]
     }
 }
-
-def obtener_sala(id_sala):
-    return SALAS.get(id_sala)
-
-EVENTOS_IMPORTANTES = [
-
-    "obtuvo_antorcha",
-
-    "obtuvo_comida",
-
-    "engano_goblins",
-
-    "dio_comida_goblins",
-
-    "robo_llave",
-
-    "abrieron_puerta",
-
-    "enfrento_osgo",
-
-    "rescato_princesa"
-]

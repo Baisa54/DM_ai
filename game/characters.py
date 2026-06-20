@@ -11,13 +11,15 @@ PERSONAJES = {
 
             "raza": "Humano",
 
+            "Estado": "vivo",
+
             "descripcion":
                 "Guerrero humano aventurero equipado con una espada común. "
                 "Ha aceptado la misión de rescatar a la princesa secuestrada "
                 "por los goblins para obtener una gran recompensa.",
 
             "imagen_base":
-                "assets/personajes/heroe.png"
+                "game/assets/personajes/heroe.png"
         },
 
     "companero": {
@@ -26,12 +28,14 @@ PERSONAJES = {
 
         "raza": "Elfo",
 
+        "Estado": "vivo",
+
         "descripcion":
             "Arquero elfo de gran puntería y amigo leal del héroe."
             "Leal, valiente y dispuesto a sacrificarse por sus amigos.",
 
         "imagen_base":
-            "assets/personajes/aelar.png"
+            "game/assets/personajes/aelar.png"
     },
 
     "Goblin": {
@@ -40,13 +44,15 @@ PERSONAJES = {
 
         "raza": "Goblin",
 
+        "Estado": "vivo",
+
         "descripcion":
             "Pequeña criatura verde de inteligencia limitada."
             "Ingenuo, fácil de manipular y con hambre constante."
             "malvado, no le agradan los humanos ni los elfos",
 
         "imagen_base":
-            "assets/personajes/goblin.png"
+            "game/assets/personajes/goblin.png"
     },
 
     "Princesa": {
@@ -55,12 +61,14 @@ PERSONAJES = {
 
         "raza": "Humana",
 
+        "Estado": "viva",
+
         "descripcion":
             "Princesa del reino secuestrada por Osgo."
             "Inteligente, ambiciosa y decidida a sobrevivir.",
 
         "imagen_base":
-            "assets/personajes/princesa.png"
+            "game/assets/personajes/princesa.png"
     },
 
     "Osgo": {
@@ -69,16 +77,14 @@ PERSONAJES = {
 
         "raza": "Orco",
 
+        "Estado": "vivo",
+
         "descripcion":
             "Líder de los goblins y guerrero temible."
             "Orgulloso, agresivo y convencido de su destino."
             "posee un martillo de guerra y una jabalina",
 
         "imagen_base":
-            "assets/personajes/osgo.png"
+            "game/assets/personajes/osgo.png"
     },
-
 }
-
-def obtener_personaje(nombre):
-    return PERSONAJES.get(nombre)
