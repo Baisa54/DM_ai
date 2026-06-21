@@ -22,7 +22,7 @@ PERSONAJES = {
                 "game/assets/personajes/heroe.png"
         },
 
-    "companero": {
+    "Companero": {
 
         "nombre": "Aelar",
 

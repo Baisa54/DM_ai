@@ -3,24 +3,25 @@ class EstadoJuego:
     def __init__(self):
 
         self.ubicacion = None
-        self.jugador = None
         self.eventos = []
         self.decisiones = []
         self.personajes_presentes = []
         self.final = None
-
         self.estados_personajes = {
 
-            "heroe": "normal",
+            "Heroe": "",
 
-            "companero": "normal",
+            "Companero": "",
 
-            "goblin": "normal",
+            "Goblin": "",
 
-            "princesa": "normal",
+            "Princesa": "",
 
-            "osgo": "normal"
+            "Osgo": ""
         }
+        self.objetos_heroe = [
+            ""
+        ]
 
     def set_ubicacion(self, ubicacion):
 
@@ -74,8 +75,6 @@ class EstadoJuego:
 
             "ubicacion": self.ubicacion,
 
-            "jugador": self.jugador,
-
             "eventos": self.eventos,
 
             "decisiones": self.decisiones,
@@ -86,3 +85,21 @@ class EstadoJuego:
 
             "final": self.final
         }
+    
+    def agregar_objeto_heroe(
+        self,
+        objeto
+    ):
+        if objeto not in self.objetos_heroe:
+
+            self.objetos_heroe.append(objeto)
+
+
+    def quitar_objeto_heroe(
+        self,
+        objeto
+    ):
+
+        if objeto in self.objetos_heroe:
+
+            self.objetos_heroe.remove(objeto)

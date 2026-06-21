@@ -1,4 +1,3 @@
-from copy import deepcopy
 from Estadojuego import EstadoJuego
 
 #------------------------------------------------------------------------------------------------------
@@ -14,17 +13,39 @@ def gen_state():
 
     estado.set_ubicacion("entrada_cueva")
 
-    estado.jugador = {
-        "nombre": "Heroe",
-        "estado": "normal",
-        "inventario": ["Espada"]
-    }
-
     estado.personajes_presentes = [
-        "companero"
+        "Companero"
+    ]
+
+    estado.set_estado_personaje(
+        "Heroe",
+        "normal"
+    )
+
+    estado.set_estado_personaje(
+        "Companero",
+        "normal"
+    )
+
+    estado.set_estado_personaje(
+        "Goblin",
+        "normal"
+    )
+
+    estado.set_estado_personaje(
+        "Princesa",
+        "cautiva"
+    )
+
+    estado.set_estado_personaje(
+        "Osgo",
+        "normal"
+    )
+
+    estado.objetos_heroe = [
+        "espada"
     ]
 
     estado.set_final(None)
 
     return estado
-
