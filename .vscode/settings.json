@@ -1,6 +1,7 @@
 {
     "python.analysis.extraPaths": [
         "./clases",
-        "./tools"
+        "./tools",
+        "./ai"
     ]
 }

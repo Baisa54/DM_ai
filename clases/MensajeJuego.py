@@ -55,6 +55,21 @@ class MensajeJuego:
 
         self.imagen_npc = imagen_npc
 
+    # ==========================
+    # GETTERS
+    # ==========================
+
+    def get_narracion(self):
+        return self.narracion
+
+    def get_imagen_resumen(self):
+        return self.imagen_resumen
+
+    def get_narracion_npc(self):
+        return self.narracion_npc
+
+    def get_imagen_npc(self):
+        return self.imagen_npc
 
     def set_dialogo_npc(
         self,

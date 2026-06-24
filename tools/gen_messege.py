@@ -13,7 +13,7 @@ def genMessage():
     )
 
     mensaje.set_imagen_resumen(
-        "imagen_inicio.png"
+        "game/assets/personajes/imagen_inicio.png"
     )
 
     return mensaje

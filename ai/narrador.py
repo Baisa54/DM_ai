@@ -1,3 +1,7 @@
+import json
+
+from ai import GeminiClient
+
 PROMPT_NARRADOR = """
 Eres el Dungeon Master de una campaña RPG.
 
@@ -13,11 +17,13 @@ Reglas:
 
 Interpretación de resultados:
 
-automatico:
-La acción ocurre sin dificultad.
+fracaso:
+Produce un resultado negativo razonablemente posible.
+No rompe las reglas del mundo.
 
-normal:
-La acción se resuelve según éxito o fracaso.
+exito:
+Produce un resultado positivo razonablemente posible.
+No rompe las reglas del mundo.
 
 critico:
 Produce el mejor resultado razonablemente posible.
@@ -39,15 +45,36 @@ def construir_contexto_narrador(
 ):
 
     return f"""
-ESTADO ACTUAL:
+    ESTADO ACTUAL:
 
-{estado}
+    {json.dumps(estado.to_dict(), indent=4, ensure_ascii=False)}
 
-ACCION DEL JUGADOR:
+    ACCION DEL JUGADOR:
 
-{accion}
+    {accion}
 
-RESULTADO:
+    RESULTADO:
 
-{resultado_accion}
-"""
+    {resultado_accion}
+    """
+
+
+def narrar_accion(
+    accion,
+    estado,
+    resultado_d20
+    ):
+
+        gemini = GeminiClient()
+
+        prompt = f"""
+    {PROMPT_NARRADOR}
+
+    {construir_contexto_narrador(
+            estado,
+            accion,
+            resultado_d20
+        )}
+    """
+
+        return gemini.generar_texto(prompt)

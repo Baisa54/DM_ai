@@ -1,3 +1,6 @@
+from game.characters import PERSONAJES
+
+
 class EstadoJuego:
 
     def __init__(self):
@@ -72,17 +75,12 @@ class EstadoJuego:
     def to_dict(self):
 
         return {
-
             "ubicacion": self.ubicacion,
-
             "eventos": self.eventos,
-
             "decisiones": self.decisiones,
-
             "personajes_presentes": self.personajes_presentes,
-
             "estados_personajes": self.estados_personajes,
-
+            "objetos_heroe": self.objetos_heroe,
             "final": self.final
         }
     
@@ -103,3 +101,19 @@ class EstadoJuego:
         if objeto in self.objetos_heroe:
 
             self.objetos_heroe.remove(objeto)
+
+    def obtener_imagenes_escena(self):
+
+        imagenes = []
+
+        imagenes.append(
+            PERSONAJES["Heroe"]["imagen_base"]
+        )
+
+        for personaje in self.personajes_presentes:
+
+            imagenes.append(
+                PERSONAJES[personaje]["imagen_base"]
+            )
+
+        return imagenes

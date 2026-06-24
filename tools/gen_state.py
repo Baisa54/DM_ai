@@ -34,7 +34,7 @@ def gen_state():
 
     estado.set_estado_personaje(
         "Princesa",
-        "cautiva"
+        "normal"
     )
 
     estado.set_estado_personaje(
