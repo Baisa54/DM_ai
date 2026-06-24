@@ -19,7 +19,7 @@ PERSONAJES = {
                 "por los goblins para obtener una gran recompensa.",
 
             "imagen_base":
-                "game/assets/personajes/heroe.png"
+                "game/assets/heroe.png"
         },
 
     "Companero": {
@@ -35,7 +35,7 @@ PERSONAJES = {
             "Leal, valiente y dispuesto a sacrificarse por sus amigos.",
 
         "imagen_base":
-            "game/assets/personajes/aelar.png"
+            "game/assets/aelar.png"
     },
 
     "Goblin": {
@@ -52,7 +52,7 @@ PERSONAJES = {
             "malvado, no le agradan los humanos ni los elfos",
 
         "imagen_base":
-            "game/assets/personajes/goblin.png"
+            "game/assets/goblin.png"
     },
 
     "Princesa": {
@@ -68,7 +68,7 @@ PERSONAJES = {
             "Inteligente, ambiciosa y decidida a sobrevivir.",
 
         "imagen_base":
-            "game/assets/personajes/princesa.png"
+            "game/assets/princesa.png"
     },
 
     "Osgo": {
@@ -85,6 +85,6 @@ PERSONAJES = {
             "posee un martillo de guerra y una jabalina",
 
         "imagen_base":
-            "game/assets/personajes/osgo.png"
+            "game/assets/osgo.png"
     },
 }

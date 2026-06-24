@@ -1,20 +1,19 @@
 # Campania.py
 
-from ContextoJuego import ContextoJuego
-from Estadojuego import EstadoJuego
-from MensajeJuego import MensajeJuego
+from clases.ContextoJuego import ContextoJuego
+from clases.Estadojuego import EstadoJuego
+from clases.MensajeJuego import MensajeJuego
 from ai.arbitro_accion import arbitrar_accion
 from ai.generador_imagen_escena import generar_imagen_escena
-from dice import tirar_d20, verificar_tirada
+from tools.dice import tirar_d20, verificar_tirada
 from game.characters import PERSONAJES
-from gen_state import gen_state
-from gen_messege import genMessage
-from ai.narrador import narrar_accion
+from tools.gen_state import gen_state
+from tools.gen_messege import genMessage
+from ai.narrador import narrar_accion, narrar_final
 from ai.Orquestador_estado import orquestar_narracion
 from ai.Verificador_finales import verificar_final
 from ai.imagen_NPC import generar_imagen_dialogo
 from ai.dialogador import dialogador
-import os
 
 class Campania:
 
@@ -31,11 +30,8 @@ class Campania:
     def reiniciar(self):
 
         self.estado_ui = "MENU"
-
         self.contexto = ContextoJuego()
-
         self.estado = gen_state()
-
         self.mensaje = genMessage()
 
     def get_contexto(self):
@@ -156,10 +152,6 @@ class Campania:
 
         self.mensaje.set_narracion(texto)
 
-    def habla_npc(self):
-        return 1 
-    #ToDo juas juas
-
     def orquestador(self):
 
         resultado = orquestar_narracion(
@@ -226,8 +218,7 @@ class Campania:
 
         if npc_habla:
 
-            self.habla_npc()
-        return resultado
+            self.habla_personaje()
 
     def verificar_finales(self):
 
@@ -247,25 +238,25 @@ class Campania:
         resultado = dialogador(
             self.mensaje.get_narracion()
         )
-        
+
+        narracion_actual = self.mensaje.get_narracion()
+
         self.mensaje.set_narracion(
-            resultado["Narracion"]
+            resultado["Narracion"] or narracion_actual
         )
 
         self.mensaje.set_dialogo_npc(
             resultado["dialogo"]
         )
 
-        personaje = resultado["Personaje"]
+        personaje = resultado.get("Personaje")
 
-        if personaje is None:
+        if not personaje:
             return
 
         emocion = resultado["Emocion"]
 
-        imagen_personaje = PERSONAJES[
-            personaje
-            ]["imagen_base"]
+        imagen_personaje = PERSONAJES[personaje]["imagen_base"]
 
         imagen_generada = generar_imagen_dialogo(
             imagen_personaje,
@@ -292,3 +283,19 @@ class Campania:
     def obtener_mensaje_vista(self):
 
         return self.mensaje.obtener_mensaje_completo()
+
+    def limpiar_mensaje(self):
+        
+        self.mensaje.limpiar_dialogo_npc()
+
+    def narracion_final(self):
+
+        texto = narrar_final(
+            self.contexto.get_prompt_jugador(),
+            self.estado,
+            self.contexto.get_resultado_d20()
+        )
+
+        self.mensaje.set_narracion(texto)
+
+    

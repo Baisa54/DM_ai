@@ -1,5 +1,5 @@
 import json
-from GeminiClient import GeminiClient
+from ai.GeminiClient import GeminiClient
 
 PROMPT_DIALOGADOR = """
 Eres un analizador de diálogos para un RPG narrativo.

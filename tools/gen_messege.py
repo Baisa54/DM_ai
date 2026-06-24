@@ -1,4 +1,4 @@
-from MensajeJuego import MensajeJuego
+from clases.MensajeJuego import MensajeJuego
 
 def genMessage():
 
@@ -13,7 +13,7 @@ def genMessage():
     )
 
     mensaje.set_imagen_resumen(
-        "game/assets/personajes/imagen_inicio.png"
+        "game/assets/imagen_inicio.png"
     )
 
     return mensaje

@@ -1,29 +1,67 @@
 import os
-from google import genai
+import time
+import random
 import json
+from google import genai
 from PIL import Image
+
 
 class GeminiClient:
 
     def __init__(self):
 
         self.client = genai.Client(
-            api_key=""
+            api_key="AQ.Ab8RN6I9A53cjPbfjdeK_GmlkYbCpxKK6Iu19HwIetx98RQg0w"
         )
 
+    # --------------------------------------------------
+    # CORE CALL (interno)
+    # --------------------------------------------------
+    def _call(self, model, contents):
+
+        return self.client.models.generate_content(
+            model=model,
+            contents=contents
+        )
+
+    # --------------------------------------------------
+    # RETRY WRAPPER
+    # --------------------------------------------------
+    def _retry(self, func, max_reintentos=5):
+
+        for intento in range(max_reintentos):
+
+            try:
+                return func()
+
+            except Exception as e:
+
+                espera = (2 ** intento) + random.uniform(0, 1)
+
+                print(f"[Gemini Error] {e}")
+                print(f"[Retry] intento {intento+1}/{max_reintentos} en {espera:.2f}s")
+
+                time.sleep(espera)
+
+        raise Exception("Gemini falló después de múltiples intentos")
+
+    # --------------------------------------------------
+    # TEXTO
+    # --------------------------------------------------
     def generar_texto(
         self,
         prompt,
-        modelo="gemini-2.5-flash"
+        modelo="gemini-2.0-flash"
     ):
 
-        respuesta = self.client.models.generate_content(
-            model=modelo,
-            contents=prompt
-        )
+        def request():
+            return self._call(modelo, prompt).text
 
-        return respuesta.text
+        return self._retry(request)
 
+    # --------------------------------------------------
+    # IMAGEN
+    # --------------------------------------------------
     def generar_imagen(
         self,
         prompt,
@@ -31,36 +69,30 @@ class GeminiClient:
         modelo="gemini-2.0-flash-preview-image-generation"
     ):
 
-        contenidos = [
-            prompt
-        ]
+        def request():
 
-        if imagenes_referencia is not None:
+            contenidos = [prompt]
 
-            for ruta in imagenes_referencia:
+            if imagenes_referencia:
 
-                contenidos.append(
-                    Image.open(ruta)
-                )
+                for ruta in imagenes_referencia:
+                    contenidos.append(Image.open(ruta))
 
-        respuesta = self.client.models.generate_content(
-            model=modelo,
-            contents=contenidos
-        )
+            return self._call(modelo, contenidos)
 
-        return respuesta
-    
+        return self._retry(request)
+
+    # --------------------------------------------------
+    # JSON
+    # --------------------------------------------------
     def generar_json(
         self,
         prompt,
         modelo="gemini-2.5-flash"
     ):
 
-        respuesta = self.client.models.generate_content(
-            model=modelo,
-            contents=prompt
-        )
+        def request():
+            respuesta = self._call(modelo, prompt)
+            return json.loads(respuesta.text)
 
-        return json.loads(
-            respuesta.text
-        )
+        return self._retry(request)

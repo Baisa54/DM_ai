@@ -1,4 +1,4 @@
-from GeminiClient import GeminiClient
+from ai.GeminiClient import GeminiClient
 
 PROMPT_IMAGEN_DIALOGO = """
 Eres un generador de retratos para un RPG narrativo.

@@ -1,26 +1,5 @@
-- Vista grafica
-- Desde vista grafica hacer:
---- Al mostrar un mesnaje se debe borrar seccion opcional en mensaje para futuros mensajes
---- Para la opcion "false" se vuelve a empezar desde prompt
---- para la opcion "true" Se debe narrar el final y reiniciar todo
 - Probarlo y ver que funciona
 - Testear y encontarr errores
-
-vista:
-
-1. El jugador aprieta el boton comenzar
-
-2. Se le narra todo el comienzo mas una imagen (el mensaje inicial)
-
-3. el jugador escribe en la parte de abajo en un recuadro, su accion y luego aprieta enviar
-
-4. campania decide si debe tirar el d20
-
-4. 1. En caso de no no necesitarse la tirada, se le pone una pantalla al jugador para que espere la respuesta de gemini
-
-4. 2. en caso de si necesitarse la tirada, se le pide al usuario mediante un recuadro nuevo que aparece, que lance un d20 y muestre al usuario el resultado del d20, y si fue pifia, fracaso, exito o critico. Luego se le pone una pantalla al jugador para que espere la respuesta de gemini
-
-5. Una vez teniendo todo el mensaje generado, con o sin sus secciones especiales, se le muestra al jugador los textos y las imagenes generadas
 
 6. La vista pregunta sin que el usuario sepa, si el hay un final o no
 

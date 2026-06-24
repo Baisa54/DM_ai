@@ -1,4 +1,4 @@
-from Estadojuego import EstadoJuego
+from clases.Estadojuego import EstadoJuego
 
 #------------------------------------------------------------------------------------------------------
 # State

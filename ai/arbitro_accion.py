@@ -1,7 +1,7 @@
 # ai/arbitro_accion.py
 
 import json
-from ai import GeminiClient
+from ai.GeminiClient import GeminiClient
 
 PROMPT_ARBITRO_ACCION = """
 Eres el árbitro de un RPG narrativo.
@@ -11,13 +11,17 @@ considerando el estado actual de la partida.
 
 Debes responder EXCLUSIVAMENTE un JSON válido.
 
-Formato:
+DEVUELVE SIEMPRE UN JSON COMPLETO CON LAS 3 CLAVES:
 
 {
     "accion_valida": true,
-    "requiere_tirada": true,
-    "dificultad": 5
+    "requiere_tirada": false,
+    "dificultad": 10
 }
+
+NO OMITAS NINGUNA CLAVE.
+NO AGREGUES TEXTO.
+NO EXPLIQUES NADA.
 
 Reglas:
 
@@ -48,8 +52,6 @@ Reglas:
 20 = extremadamente difícil
 
 - Nunca inventes otros valores.
-
-- Devuelve únicamente JSON.
 """
 
 def arbitrar_accion(
@@ -79,6 +81,12 @@ DATOS DE ENTRADA:
     resultado = gemini.generar_json(
         prompt
     )
+
+    required_keys = ["accion_valida", "requiere_tirada", "dificultad"]
+
+    for key in required_keys:
+        if key not in resultado:
+            raise ValueError(f"Gemini no devolvió la clave obligatoria: {key}")
 
     dificultades_validas = [
         0,
