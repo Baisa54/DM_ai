@@ -163,21 +163,56 @@ class Campania:
         # -------------------------
         vida = resultado.get("vida", {})
 
-        for personaje, estado in vida.items():
+        for personaje, cambio in vida.items():
 
-            if estado != "Sin cambios":
+            if cambio == "Sin cambios":
+                continue
 
-                if estado == "daño":
-                    self.estado.set_estado_personaje(
-                        personaje,
-                        "daño"
-                    )
+            estado_actual = self.estado.get_estado_personaje(personaje)
 
-                elif estado == "se cura":
-                    self.estado.set_estado_personaje(
-                        personaje,
-                        "se cura"
-                    )
+            # -------------------------
+            # APLICAR DAÑO
+            # -------------------------
+            if cambio == "daño":
+
+                if estado_actual == "normal":
+                    nuevo_estado = "herido"
+
+                elif estado_actual == "herido":
+                    nuevo_estado = "gravemente_herido"
+
+                elif estado_actual == "gravemente_herido":
+                    nuevo_estado = "muerto"
+
+                elif estado_actual == "muerto":
+                    nuevo_estado = "muerto"
+
+                else:
+                    nuevo_estado = estado_actual
+
+                self.estado.set_estado_personaje(personaje, nuevo_estado)
+
+            # -------------------------
+            # APLICAR CURA
+            # -------------------------
+            elif cambio == "se cura":
+
+                if estado_actual == "gravemente_herido":
+                    nuevo_estado = "herido"
+
+                elif estado_actual == "herido":
+                    nuevo_estado = "normal"
+
+                elif estado_actual == "normal":
+                    nuevo_estado = "normal"
+
+                elif estado_actual == "muerto":
+                    nuevo_estado = "muerto"
+
+                else:
+                    nuevo_estado = estado_actual
+
+                self.estado.set_estado_personaje(personaje, nuevo_estado)
 
         # -------------------------
         # OBJETOS
@@ -246,7 +281,8 @@ class Campania:
         )
 
         self.mensaje.set_dialogo_npc(
-            resultado["dialogo"]
+            resultado["dialogo"],
+            self.mensaje.get_imagen_npc() 
         )
 
         personaje = resultado.get("Personaje")
@@ -255,11 +291,10 @@ class Campania:
             return
 
         emocion = resultado["Emocion"]
-
-        imagen_personaje = PERSONAJES[personaje]["imagen_base"]
+        personaje_data = PERSONAJES[personaje]
 
         imagen_generada = generar_imagen_dialogo(
-            imagen_personaje,
+            personaje_data,
             emocion
         )
 
@@ -269,16 +304,18 @@ class Campania:
         
     def generar_imagen_resumen(self):
 
-        imagenes = self.estado.obtener_imagenes_escena()
-
         imagen = generar_imagen_escena(
             self.mensaje.get_narracion(),
-            imagenes
+            self.estado.obtener_imagenes_escena()
         )
 
-        self.mensaje.set_imagen_resumen(
-            imagen
-        )
+        if imagen is not None:
+
+            self.mensaje.set_imagen_resumen(imagen)
+
+        else:
+
+            print("[DEBUG] imagen no generada")
         
     def obtener_mensaje_vista(self):
 
@@ -291,11 +328,12 @@ class Campania:
     def narracion_final(self):
 
         texto = narrar_final(
-            self.contexto.get_prompt_jugador(),
             self.estado,
+            self.contexto.get_prompt_jugador(),
             self.contexto.get_resultado_d20()
         )
 
         self.mensaje.set_narracion(texto)
 
-    
+    def get_estado_(self):
+        return self.estado.to_dict()

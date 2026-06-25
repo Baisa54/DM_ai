@@ -12,15 +12,15 @@ class EstadoJuego:
         self.final = None
         self.estados_personajes = {
 
-            "Heroe": "",
+            "heroe": "",
 
-            "Companero": "",
+            "companero": "",
 
-            "Goblin": "",
+            "goblin": "",
 
-            "Princesa": "",
+            "princesa": "",
 
-            "Osgo": ""
+            "osgo": ""
         }
         self.objetos_heroe = [
             ""
@@ -107,13 +107,13 @@ class EstadoJuego:
         imagenes = []
 
         imagenes.append(
-            PERSONAJES["Heroe"]["imagen_base"]
+            PERSONAJES["heroe"]["prompt_visual"]
         )
 
         for personaje in self.personajes_presentes:
 
             imagenes.append(
-                PERSONAJES[personaje]["imagen_base"]
+                PERSONAJES[personaje]["prompt_visual"]
             )
 
         return imagenes

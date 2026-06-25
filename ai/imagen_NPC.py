@@ -1,74 +1,57 @@
-from ai.GeminiClient import GeminiClient
+from ai.LocalAICLient import LocalAIClient as GeminiClient
+
+# --------------------------------------------------
+# PROMPT BASE
+# --------------------------------------------------
 
 PROMPT_IMAGEN_DIALOGO = """
 Eres un generador de retratos para un RPG narrativo.
 
 Tu tarea es generar únicamente un retrato de personaje
-para ser utilizado en una interfaz de videojuego.
+para interfaz de videojuego.
 
 REGLAS OBLIGATORIAS:
 
-- Debes respetar completamente la apariencia del personaje
-  mostrada en la imagen de referencia.
+- Mantener identidad visual del personaje
+- NO cambiar:
+    raza, edad, ojos, cabello, vestimenta, equipamiento
 
-- NO cambies:
-    - raza
-    - sexo
-    - edad aparente
-    - color de ojos
-    - color de cabello
-    - vestimenta
-    - equipamiento
-    - estilo visual general
+- SOLO cambiar la expresión facial según la emoción
 
-- Únicamente modifica la expresión facial para reflejar
-  la emoción recibida.
+- Encuadre:
+    rostro + hombros + parte superior del torso
 
-- El personaje debe aparecer dentro de un recuadro
-  típico de diálogo de videojuego RPG.
+- Fondo simple y neutral
 
-- Mostrar únicamente:
-    - rostro
-    - hombros
-    - parte superior del torso
+- Estilo:
+    comic fantasy RPG, D&D cinematic art
 
-- Fondo simple y discreto.
+- Prohibido:
+    texto, UI, logos, marcas de agua, globos de diálogo
 
-- Estilo visual:
-    Comic de fantasía heroica estilo D&D.
-
-- Calidad alta.
-
-- No agregar:
-    - texto
-    - subtítulos
-    - globos de diálogo
-    - carteles
-    - interfaces
-    - marcas de agua
-
-- La imagen debe centrarse en la expresión facial.
-
-La emoción a representar es:
+Emoción a representar:
 {emocion}
+
+Descripción del personaje:
+{descripcion}
 """
 
 
-def generar_imagen_dialogo(
-    imagen_personaje,
-    emocion
-):
+# --------------------------------------------------
+# FUNCIÓN CORREGIDA
+# --------------------------------------------------
+
+def generar_imagen_dialogo(personaje, emocion):
 
     gemini = GeminiClient()
 
-    prompt = PROMPT_IMAGEN_DIALOGO.format(
-        emocion=emocion
+    # usamos SOLO prompt_visual del personaje
+    prompt_final = PROMPT_IMAGEN_DIALOGO.format(
+        emocion=emocion,
+        descripcion=personaje["prompt_visual"]
     )
 
-    imagen_generada = gemini.generar_imagen(
-        prompt=prompt,
-        imagen_referencia=imagen_personaje
-    )
+    imagen_generada = gemini.generar_imagen(prompt_final)
 
     return {
         "imagen": imagen_generada

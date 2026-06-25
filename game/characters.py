@@ -1,90 +1,72 @@
-#------------------------------------------------------------------------------------------------------
-# Personajes
-#
-# La idea es describir como son los personajes
-#------------------------------------------------------------------------------------------------------
-
 PERSONAJES = {
 
-    "Heroe": {
-            "nombre": "Heroe",
+    "heroe": {
+        "nombre": "Heroe",
+        "raza": "Humano",
+        "Estado": "vivo",
 
-            "raza": "Humano",
+        "descripcion":
+            "Guerrero humano aventurero equipado con una espada común. "
+            "Ha aceptado la misión de rescatar a la princesa secuestrada por los goblins.",
 
-            "Estado": "vivo",
+        "prompt_visual":
+            "young human male warrior, fantasy RPG hero, medieval armor, steel sword, "
+            "determined expression, cinematic lighting, dark fantasy style, highly detailed concept art"
+    },
 
-            "descripcion":
-                "Guerrero humano aventurero equipado con una espada común. "
-                "Ha aceptado la misión de rescatar a la princesa secuestrada "
-                "por los goblins para obtener una gran recompensa.",
-
-            "imagen_base":
-                "game/assets/heroe.png"
-        },
-
-    "Companero": {
-
+    "companero": {
         "nombre": "Aelar",
-
         "raza": "Elfo",
-
         "Estado": "vivo",
 
         "descripcion":
-            "Arquero elfo de gran puntería y amigo leal del héroe."
-            "Leal, valiente y dispuesto a sacrificarse por sus amigos.",
+            "Arquero elfo de gran puntería y amigo leal del héroe. "
+            "Valiente y protector de sus aliados.",
 
-        "imagen_base":
-            "game/assets/aelar.png"
+        "prompt_visual":
+            "male elf archer, fantasy RPG character, long silver hair, bow and arrows, "
+            "forest ranger armor, elegant and agile, cinematic fantasy art, highly detailed"
     },
 
-    "Goblin": {
-
+    "goblin": {
         "nombre": "Goblin",
-
         "raza": "Goblin",
-
         "Estado": "vivo",
 
         "descripcion":
-            "Pequeña criatura verde de inteligencia limitada."
-            "Ingenuo, fácil de manipular y con hambre constante."
-            "malvado, no le agradan los humanos ni los elfos",
+            "Pequeña criatura verde de inteligencia limitada. "
+            "Hambre constante y comportamiento caótico.",
 
-        "imagen_base":
-            "game/assets/goblin.png"
+        "prompt_visual":
+            "small green goblin creature, dirty and mischievous, fantasy dungeon creature, "
+            "ragged clothes, ugly face, dark cave lighting, RPG monster concept art"
     },
 
-    "Princesa": {
-
+    "princesa": {
         "nombre": "Princesa",
-
         "raza": "Humana",
-
         "Estado": "viva",
 
         "descripcion":
-            "Princesa del reino secuestrada por Osgo."
-            "Inteligente, ambiciosa y decidida a sobrevivir.",
+            "Princesa del reino secuestrada por Osgo. "
+            "Inteligente y decidida a sobrevivir.",
 
-        "imagen_base":
-            "game/assets/princesa.png"
+        "prompt_visual":
+            "beautiful fantasy princess, long elegant dress slightly dirty, chained in dungeon, "
+            "soft light, emotional expression, cinematic RPG style, highly detailed"
     },
 
-    "Osgo": {
-
+    "osgo": {
         "nombre": "Osgo",
-
         "raza": "Orco",
-
         "Estado": "vivo",
 
         "descripcion":
-            "Líder de los goblins y guerrero temible."
-            "Orgulloso, agresivo y convencido de su destino."
-            "posee un martillo de guerra y una jabalina",
+            "Líder de los goblins y guerrero temible. "
+            "Posee un martillo de guerra y domina la cueva.",
 
-        "imagen_base":
-            "game/assets/osgo.png"
+        "prompt_visual":
+            "massive orc warlord boss, muscular, armored, war hammer, intimidating presence, "
+            "dark throne room, skull decorations, cinematic dark fantasy RPG art"
     },
 }

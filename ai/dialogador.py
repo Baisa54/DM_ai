@@ -1,5 +1,6 @@
 import json
-from ai.GeminiClient import GeminiClient
+from ai.LocalAICLient import LocalAIClient as GeminiClient
+# from ai.GeminiClient import GeminiClient
 
 PROMPT_DIALOGADOR = """
 Eres un analizador de diálogos para un RPG narrativo.
@@ -23,11 +24,10 @@ IMPORTANTE:
 
 Personajes válidos:
 
-- Companero
-- Aelar
-- Goblin
-- Princesa
-- Osgo
+- companero
+- goblin
+- princesa
+- osgo
 
 Si el Heroe habla:
 
@@ -42,11 +42,10 @@ Si hablan varios personajes:
 
 Prioridad:
 
-Osgo
-Princesa
-Aelar
-Companero
-Goblin
+osgo
+princesa
+companero
+goblin
 
 Emociones permitidas:
 
@@ -91,39 +90,47 @@ NARRACION:
 {narracion}
 """
 
-    resultado = gemini.generar_json(
-        prompt
-    )
+    resultado = gemini.generar_json(prompt)
 
-    personajes_validos = [
-        None,
-        "Companero",
-        "Aelar",
-        "Goblin",
-        "Princesa",
-        "Osgo"
-    ]
+    personaje = resultado.get("Personaje")
+    emocion = resultado.get("Emocion")
 
-    emociones_validas = [
-        None,
-        "feliz",
-        "triste",
-        "enojado",
-        "asustado",
-        "sorprendido",
-        "neutral"
-    ]
+    if personaje:
+        personaje = personaje.strip().lower()
 
-    if resultado["Personaje"] not in personajes_validos:
+    if emocion:
+        emocion = emocion.strip().lower()
 
-        raise ValueError(
-            "Personaje inválido devuelto por Gemini"
-        )
+    # MAPEAR
+    MAP_PERSONAJES = {
+        "companero": "companero",
+        "compañero": "companero",
+        "aelar": "companero",
+        "goblin": "goblin",
+        "princesa": "princesa",
+        "osgo": "osgo"
+    }
 
-    if resultado["Emocion"] not in emociones_validas:
+    MAP_EMOCIONES = {
+        "feliz": "feliz",
+        "triste": "triste",
+        "enojado": "enojado",
+        "asustado": "asustado",
+        "sorprendido": "sorprendido",
+        "neutral": "neutral"
+    }
 
-        raise ValueError(
-            "Emoción inválida devuelta por Gemini"
-        )
+    personaje = MAP_PERSONAJES.get(personaje)
+    emocion = MAP_EMOCIONES.get(emocion)
 
-    return resultado
+    if personaje is None and resultado.get("Personaje") is not None:
+        raise ValueError("Personaje inválido devuelto por Gemini")
+
+    if emocion is None and resultado.get("Emocion") is not None:
+        raise ValueError("Emoción inválida devuelta por Gemini")
+
+    return {
+        **resultado,
+        "Personaje": personaje,
+        "Emocion": emocion
+    }

@@ -1,8 +1,0 @@
-- Probarlo y ver que funciona
-- Testear y encontarr errores
-
-6. La vista pregunta sin que el usuario sepa, si el hay un final o no
-
-6. 1. en caso de haber un final, se le quita la opcion de enviar su accion para solo mostrarle el boton continuar, que desencadena el evento final y deba reiniciar
-
-6. 2. en caso de no haber final, simplemente se le vuelve a mostrar el recuadro para insertar su accion y el boton enviar, convirtiendolo en un ciclo

@@ -85,3 +85,5 @@ class MensajeJuego:
 
         self.narracion_npc = None
         self.imagen_npc = None
+
+    

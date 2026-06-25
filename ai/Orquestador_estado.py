@@ -1,4 +1,5 @@
-from ai.GeminiClient import GeminiClient
+from ai.LocalAICLient import LocalAIClient as GeminiClient
+# from ai.GeminiClient import GeminiClient
 
 from game.campaign import SALAS
 from game.characters import PERSONAJES

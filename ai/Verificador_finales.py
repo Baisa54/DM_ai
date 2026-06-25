@@ -1,7 +1,8 @@
 # ai/verificador_finales.py
 
 import json
-from ai.GeminiClient import GeminiClient
+from ai.LocalAICLient import LocalAIClient as GeminiClient
+# from ai.GeminiClient import GeminiClient
 
 
 PROMPT_VERIFICADOR_FINALES = """

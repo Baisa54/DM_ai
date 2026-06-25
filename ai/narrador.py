@@ -1,6 +1,7 @@
 import json
 
-from ai.GeminiClient import GeminiClient
+from ai.LocalAICLient import LocalAIClient as GeminiClient
+# from ai.GeminiClient import GeminiClient
 
 PROMPT_NARRADOR = """
 Eres el Dungeon Master de una campaña RPG.

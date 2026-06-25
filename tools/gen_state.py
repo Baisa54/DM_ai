@@ -14,31 +14,31 @@ def gen_state():
     estado.set_ubicacion("entrada_cueva")
 
     estado.personajes_presentes = [
-        "Companero"
+        "companero"
     ]
 
     estado.set_estado_personaje(
-        "Heroe",
+        "heroe",
         "normal"
     )
 
     estado.set_estado_personaje(
-        "Companero",
+        "companero",
         "normal"
     )
 
     estado.set_estado_personaje(
-        "Goblin",
+        "goblin",
         "normal"
     )
 
     estado.set_estado_personaje(
-        "Princesa",
+        "princesa",
         "normal"
     )
 
     estado.set_estado_personaje(
-        "Osgo",
+        "osgo",
         "normal"
     )
 

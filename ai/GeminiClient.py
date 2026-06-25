@@ -11,7 +11,7 @@ class GeminiClient:
     def __init__(self):
 
         self.client = genai.Client(
-            api_key="AQ.Ab8RN6I9A53cjPbfjdeK_GmlkYbCpxKK6Iu19HwIetx98RQg0w"
+            api_key=""
         )
 
     # --------------------------------------------------
@@ -36,10 +36,28 @@ class GeminiClient:
 
             except Exception as e:
 
+                print(f"[Gemini Error] {e}")
+
+                error_texto = str(e)
+
+                errores_sin_retry = [
+                    "429",
+                    "400",
+                    "401",
+                    "403"
+                ]
+
+                if any(
+                    codigo in error_texto
+                    for codigo in errores_sin_retry
+                ):
+                    raise e
+
                 espera = (2 ** intento) + random.uniform(0, 1)
 
-                print(f"[Gemini Error] {e}")
-                print(f"[Retry] intento {intento+1}/{max_reintentos} en {espera:.2f}s")
+                print(
+                    f"[Retry] intento {intento+1}/{max_reintentos} en {espera:.2f}s"
+                )
 
                 time.sleep(espera)
 
@@ -51,7 +69,7 @@ class GeminiClient:
     def generar_texto(
         self,
         prompt,
-        modelo="gemini-2.0-flash"
+        modelo="gemini-2.5-flash"
     ):
 
         def request():
@@ -88,11 +106,15 @@ class GeminiClient:
     def generar_json(
         self,
         prompt,
-        modelo="gemini-2.5-flash"
+        modelo="gemini-2.0-flash-lite"
     ):
 
         def request():
             respuesta = self._call(modelo, prompt)
+            print("================================")
+            print("RESPUESTA GEMINI:")
+            print(respuesta.text)
+            print("================================")
             return json.loads(respuesta.text)
 
         return self._retry(request)
