@@ -10,8 +10,6 @@ import traceback
 import socket
 import requests
 
-
-
 class LocalAIClient:
 
     def __init__(self):
