@@ -1,6 +1,6 @@
 import streamlit as st
 
-from clases.Campania import Campania
+from modelo.clases.Campania import Campania
 
 # --------------------------------------------------
 # Inicialización

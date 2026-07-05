@@ -42,3 +42,31 @@
 #   --> Posee un boton de 'Cancelar' que cierra la ventana 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
+import pygame
+import sys
+from .core.ventana import Ventana
+from .core.recursos import GestorRecursos
+
+class VistaGrafica:
+    """
+    Orquestador principal de la vista gráfica.
+    Única responsabilidad: inicializar dependencias, instanciar recursos,
+    crear la ventana y mantener vivo el proceso gráfico hasta que finalice.
+    """
+    def __init__(self):
+        # 1. Inicializar pygame
+        pygame.init()
+        
+        # 2. Crear el GestorRecursos
+        self.gestor_recursos = GestorRecursos()
+        
+        # 3. Crear la Ventana
+        self.ventana = Ventana(self.gestor_recursos)
+
+    def iniciar(self):
+        # 4. Ejecutar el loop principal
+        self.ventana.iniciar()
+        
+        # 5. Finalizar pygame correctamente al cerrar
+        pygame.quit()
+        sys.exit()
