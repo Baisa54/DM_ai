@@ -1,6 +1,5 @@
 import pygame
-import sys
-from .recursos import GestorRecursos
+from core.recursos import GestorRecursos
 
 class Ventana:
     """

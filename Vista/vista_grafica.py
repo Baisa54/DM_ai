@@ -44,8 +44,8 @@
 
 import pygame
 import sys
-from .core.ventana import Ventana
-from .core.recursos import GestorRecursos
+from core.ventana import Ventana
+from core.recursos import GestorRecursos
 
 class VistaGrafica:
     """
@@ -70,3 +70,7 @@ class VistaGrafica:
         # 5. Finalizar pygame correctamente al cerrar
         pygame.quit()
         sys.exit()
+
+if __name__ == "__main__":
+    app = VistaGrafica()
+    app.iniciar()
