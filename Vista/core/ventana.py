@@ -8,47 +8,55 @@ class Ventana:
     exponiendo la superficie principal para que otras clases puedan dibujar.
     """
 
-    def __init__(self, gestor_recursos):
+    def __init__(self):
         """
-        Configura la ventana principal a 1920x1080.
-        Dependencias como pygame.init() y GestorRecursos son inyectadas/orquestadas por vista_grafica.
+        Configura la ventana principal usando una superficie virtual de 1920x1080.
+        Si la pantalla es más pequeña, redimensiona y adapta automáticamente.
         """
-        # Resolución fija
-        self._ancho = 1920
-        self._alto = 1080
+        pygame.init()
         
-        # Configurar la ventana
-        self._pantalla = pygame.display.set_mode((self._ancho, self._alto))
+        # Resolución nativa/virtual en la que programamos la UI
+        self._ancho_virtual = 1920
+        self._alto_virtual = 1080
+        
+        # Obtener resolución real del monitor del usuario
+        info = pygame.display.Info()
+        self._ancho_real = info.current_w
+        self._alto_real = info.current_h
+        
+        # Si la pantalla del usuario es menor a 1920x1080, usamos pantalla completa 
+        # a la máxima resolución de su monitor para que encaje perfecto sin desbordar.
+        if self._ancho_real < 1920 or self._alto_real < 1080:
+            self._pantalla = pygame.display.set_mode((self._ancho_real, self._alto_real), pygame.FULLSCREEN)
+        else:
+            # Si el monitor es grande, podemos dejarlo en ventana
+            self._pantalla = pygame.display.set_mode((self._ancho_virtual, self._alto_virtual))
+            
         pygame.display.set_caption("DM AI")
+        
+        # Superficie virtual donde realmente se dibuja todo el juego
+        self._superficie_virtual = pygame.Surface((self._ancho_virtual, self._alto_virtual))
+        
+        # Ratios para traducir el mouse
+        self._ratio_x = self._ancho_virtual / self._pantalla.get_width()
+        self._ratio_y = self._alto_virtual / self._pantalla.get_height()
         
         # Reloj para controlar los FPS
         self._reloj = pygame.time.Clock()
         self._fps = 60
         
         self._corriendo = False
-        
-        self._gestor_recursos = gestor_recursos
-        self._fondo = None
+        self._escena_actual = None
 
     @property
     def pantalla(self):
-        """
-        Expone la superficie principal de la ventana.
-        
-        Returns:
-            pygame.Surface: La superficie principal donde se puede dibujar.
-        """
-        return self._pantalla
+        # Ahora el exterior (Escenas, widgets) dibuja en la superficie virtual
+        return self._superficie_virtual
+
+    def cambiar_escena(self, escena):
+        self._escena_actual = escena
 
     def iniciar(self):
-        """
-        Inicia el bucle principal de la ventana.
-        Maneja los eventos básicos como el cierre de la ventana y mantiene los 60 FPS.
-        """
-        imagen_cruda = self._gestor_recursos.obtener_imagen("Vista/resources/images/fondo.png", alpha=False)
-        if imagen_cruda:
-            self._fondo = pygame.transform.scale(imagen_cruda, (self._ancho, self._alto))
-            
         self._corriendo = True
         
         while self._corriendo:
@@ -57,20 +65,38 @@ class Ventana:
             self._reloj.tick(self._fps)
 
     def _manejar_eventos(self):
-        """
-        Procesa los eventos de Pygame.
-        """
+        """Procesa los eventos y escala las coordenadas del mouse si es necesario."""
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 self._corriendo = False
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
+                # Permitimos cerrar con ESC por comodidad si estamos en Fullscreen
+                self._corriendo = False
+                
+            # Traducir coordenadas físicas del mouse a coordenadas virtuales (1920x1080)
+            if hasattr(evento, 'pos'):
+                # Tupla inmutable en Pygame a veces, pero para propagar a los widgets creamos un nuevo atributo
+                evento.pos = (int(evento.pos[0] * self._ratio_x), int(evento.pos[1] * self._ratio_y))
+                
+            if self._escena_actual:
+                self._escena_actual.manejar_evento(evento)
 
     def _actualizar_pantalla(self):
         """
-        Actualiza el contenido de la ventana.
+        Dibuja la UI en la superficie virtual y luego la escala al tamaño real de la pantalla.
         """
-        if self._fondo:
-            self._pantalla.blit(self._fondo, (0, 0))
+        self._superficie_virtual.fill((0, 0, 0))
+        
+        if self._escena_actual:
+            self._escena_actual.actualizar()
+            self._escena_actual.dibujar(self._superficie_virtual)
+            
+        # Si la ventana física es distinta de 1920x1080, escalamos el renderizado final
+        if self._pantalla.get_size() != self._superficie_virtual.get_size():
+            # Usamos smoothscale para que no se deforme/pixele la UI al reducirla
+            sup_escalada = pygame.transform.smoothscale(self._superficie_virtual, self._pantalla.get_size())
+            self._pantalla.blit(sup_escalada, (0, 0))
         else:
-            self._pantalla.fill((0, 0, 0))
+            self._pantalla.blit(self._superficie_virtual, (0, 0))
             
         pygame.display.flip()

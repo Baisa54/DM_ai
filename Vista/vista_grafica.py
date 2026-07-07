@@ -61,7 +61,13 @@ class VistaGrafica:
         self.gestor_recursos = GestorRecursos()
         
         # 3. Crear la Ventana
-        self.ventana = Ventana(self.gestor_recursos)
+        self.ventana = Ventana()
+
+        # 4. Configurar Escena Inicial
+        from escenas.escena_juego import EscenaJuego
+
+        self.escena_principal = EscenaJuego(self.gestor_recursos)
+        self.ventana.cambiar_escena(self.escena_principal)
 
     def iniciar(self):
         # 4. Ejecutar el loop principal
