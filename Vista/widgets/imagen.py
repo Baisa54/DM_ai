@@ -1,5 +1,27 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# imagen
+#
+# imagen implementa la clase Imagen, un control gráfico simple para pintar imágenes
+# y texturas en pantalla con soporte de escalado suavizado (smoothscale) de assets.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Imagen, clase de renderizado estático de imágenes.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ cambiar_imagen, recibe la ruta (str) y actualiza la textura
+# @ dibujar, pinta la textura activa en la pantalla
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
-from widgets.widget import Widget
+# pygame provee las funciones de escalado smoothscale y dibujo blit
+from Vista.widgets.widget import Widget
+# Widget es la clase base para propiedades geométricas de la imagen
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Imagen(Widget):
     """

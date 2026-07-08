@@ -1,8 +1,20 @@
-#------------------------------------------------------------------------------------------------------
-# Campaign
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# campaign
 #
-# La idea aqui es describir como son las salas
-#------------------------------------------------------------------------------------------------------
+# campaign define la estructura de las salas y el flujo de navegación de la
+# campaña, detallando qué objetos y personajes se encuentran en cada una de ellas,
+# así como las salidas válidas hacia otras salas.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ SALAS, diccionario que define las distintas salas del mapa de la campaña
+#   (nombre, descripción, objetos iniciales, personajes presentes y salidas).
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+# (No contiene imports externos ni locales)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 SALAS = {
 
     "entrada_cueva": {

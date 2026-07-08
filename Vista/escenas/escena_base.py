@@ -1,3 +1,29 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# escena_base
+#
+# escena_base implementa la clase base EscenaBase que representa una pantalla
+# abstracta del juego, gestionando un conjunto de widgets secundarios y canalizando
+# hacia ellos los flujos de dibujo y procesamiento de eventos.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ EscenaBase, clase base de control de layouts y colecciones de widgets.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ agregar_widget, recibe la instancia del widget a añadir
+# @ quitar_widget, recibe la instancia del widget a remover
+# @ manejar_evento, recibe un evento de Pygame y lo despacha a los widgets
+# @ actualizar, delega la actualización periódica a los componentes internos
+# @ dibujar, recibe la superficie de dibujo (pygame.Surface) y pinta los widgets
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+# (No contiene imports al inicio del archivo)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 class EscenaBase:
     """
     Clase base para todas las escenas (pantallas) de la aplicación.

@@ -18,14 +18,14 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
-from ai.LocalAICLient import LocalAIClient as GeminiClient
+from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
 # LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from ai.GeminiClient import GeminiClient
+#-@ from modelo.ai.GeminiClient import GeminiClient
 # GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
 # Actualmente comentada porque no se esta usando gemini, sino una IA local
-from game.campaign import SALAS
+from modelo.game.campaign import SALAS
 # SALAS es el diccionario que se utiliza para manejar las salas
-from game.characters import PERSONAJES
+from modelo.game.characters import PERSONAJES
 # PERSONAJES es el diccionario que se utiliza para manejar los personajes
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 

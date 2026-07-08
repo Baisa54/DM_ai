@@ -1,6 +1,30 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# popup_confirmacion
+#
+# popup_confirmacion implementa PopupConfirmacion, un modal especializado para
+# requerir confirmación por parte del jugador ante decisiones críticas (ej. reiniciar, salir).
+# Dibuja un overlay oscuro semitransparente sobre toda la pantalla virtual.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ PopupConfirmacion, clase del cuadro de diálogo de confirmación modal.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ manejar_evento, intercepta eventos bloqueando cualquier interacción de fondo
+# @ dibujar, dibuja la capa de oscurecimiento trasera y el diálogo central
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
-from widgets.popup import Popup
-from widgets.boton import Boton
+# pygame se usa para renderizar texto y el fondo oscurecido translúcido
+from Vista.widgets.popup import Popup
+# Popup es la clase base para el comportamiento modal contenedor
+from Vista.widgets.boton import Boton
+# Boton es el componente usado para las opciones de Confirmar y Cancelar
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class PopupConfirmacion(Popup):
     """
@@ -29,7 +53,7 @@ class PopupConfirmacion(Popup):
         
         # Icono opcional centrado arriba del texto
         if ruta_icono:
-            from widgets.imagen import Imagen
+            from Vista.widgets.imagen import Imagen
             ancho_ico = 150
             alto_ico = 150
             icono = Imagen(

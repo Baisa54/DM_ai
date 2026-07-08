@@ -1,5 +1,33 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# popup
+#
+# popup implementa la clase base Popup, un widget contenedor secundario que actúa
+# como modal. Mantiene un grupo de widgets hijos que se ocultan o muestran juntos
+# y captura eventos del mouse para bloquear clics en widgets de fondo.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Popup, clase modal contenedora de controles.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ abrir, activa la visibilidad y recepción de eventos
+# @ cerrar, desactiva visibilidad y eventos
+# @ agregar_widget, recibe el widget secundario a asociar
+# @ quitar_widget, remueve el widget secundario
+# @ actualizar, actualiza a todos los widgets hijos
+# @ manejar_evento, procesa eventos para los hijos y los consume de forma modal
+# @ dibujar, dibuja el fondo y los widgets secundarios asociados
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
-from widgets.widget import Widget
+# pygame maneja blit y colisión de clicks de mouse
+from Vista.widgets.widget import Widget
+# Widget es la superclase que define dimensiones geométricas
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Popup(Widget):
     """

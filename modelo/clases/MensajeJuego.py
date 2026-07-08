@@ -1,3 +1,48 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# MensajeJuego
+#
+# MensajeJuego es la clase encargada de construir y estructurar el mensaje final
+# de la partida que se enviará a la vista para ser mostrado al jugador, combinando
+# la narración del DM, la imagen de la escena, el diálogo del NPC y su imagen.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ MensajeJuego, clase que contiene la estructura del mensaje para la vista.
+# @ narracion, cadena que almacena la narración principal de la escena.
+# @ imagen_resumen, ruta o recurso de la imagen resumen de la escena.
+# @ narracion_npc, cadena que almacena las líneas de diálogo habladas por un NPC.
+# @ imagen_npc, ruta o recurso del retrato del NPC que está hablando.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ hay_dialogo_npc
+#   --> Devuelve un booleano indicando si hay un diálogo de NPC cargado
+# @ obtener_seccion_obligatoria
+#   --> Devuelve un diccionario con la narración y la imagen resumen
+# @ obtener_mensaje_completo
+#   --> Devuelve un diccionario con toda la información cargada para el mensaje
+# @ set_narracion, recibe la narración principal de la escena
+# @ set_imagen_resumen, recibe el recurso de la imagen resumen
+# @ set_narracion_npc, recibe el diálogo del NPC
+# @ set_imagen_npc, recibe la imagen/retrato del NPC
+# @ get_narracion
+#   --> Devuelve la narración principal
+# @ get_imagen_resumen
+#   --> Devuelve la imagen resumen
+# @ get_narracion_npc
+#   --> Devuelve la narración/diálogo del NPC
+# @ get_imagen_npc
+#   --> Devuelve la imagen del NPC
+# @ set_dialogo_npc, recibe la narración y la imagen del NPC para cargarlas en conjunto
+# @ limpiar_dialogo_npc, vacía la narración y la imagen del NPC (estableciéndolos en None)
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+# (No contiene imports externos)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 class MensajeJuego:
 
     def __init__(self):

@@ -27,9 +27,9 @@
 # Imports
 import json
 # json para el manejo de datos
-from ai.LocalAICLient import LocalAIClient as GeminiClient
+from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
 # LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from ai.GeminiClient import GeminiClient 
+#-@ from modelo.ai.GeminiClient import GeminiClient 
 # GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
 # Actualmente comentada porque no se esta usando gemini, sino una IA local
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

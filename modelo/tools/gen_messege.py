@@ -1,4 +1,26 @@
-from clases.MensajeJuego import MensajeJuego
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# gen_messege
+#
+# gen_messege se encarga de crear e inicializar la instancia inicial del mensaje
+# de juego que se presentará al jugador al comenzar una partida (narración inicial
+# e imagen resumen inicial).
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# (No define elementos o constantes a nivel de módulo)
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ genMessage
+#   --> Devuelve un objeto MensajeJuego inicializado con los datos de inicio de partida.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+from modelo.clases.MensajeJuego import MensajeJuego
+# MensajeJuego es la clase que encapsula la estructura del mensaje del juego
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 def genMessage():
 

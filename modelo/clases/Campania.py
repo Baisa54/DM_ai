@@ -1,19 +1,81 @@
-# Campania.py
-
-from clases.ContextoJuego import ContextoJuego
-from clases.Estadojuego import EstadoJuego
-from clases.MensajeJuego import MensajeJuego
-from ai.arbitro_accion import arbitrar_accion
-from ai.generador_imagen_escena import generar_imagen_escena
-from tools.dice import tirar_d20, verificar_tirada
-from game.characters import PERSONAJES
-from tools.gen_state import gen_state
-from tools.gen_messege import genMessage
-from ai.narrador import narrar_accion, narrar_final
-from ai.Orquestador_estado import orquestar_narracion
-from ai.Verificador_finales import verificar_final
-from ai.imagen_NPC import generar_imagen_dialogo
-from ai.dialogador import dialogador
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Campania
+#
+# Campania es el encargado de manejar la partida
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ ContextoJuego, clase que se encarga de manejar el contexto de la partida
+# @ EstadoJuego, clase que se encarga de manejar el estado de la partida
+# @ MensajeJuego, clase que se encarga de manejar el mensaje de la partida
+# @ arbitrar_accion, funcion que se encarga de arbitrar la accion del jugador
+# @ generar_imagen_escena, funcion que se encarga de generar la imagen de la escena
+# @ tirar_d20, funcion que se encarga de tirar el dado d20
+# @ verificar_tirada, funcion que se encarga de verificar la tirada
+# @ PERSONAJES, diccionario que se encarga de manejar los personajes
+# @ gen_state, funcion que se encarga de generar el estado
+# @ genMessage, funcion que se encarga de generar el mensaje
+# @ narrar_accion, funcion que se encarga de generar la narracion de la accion
+# @ narrar_final, funcion que se encarga de generar el final de la historia
+# @ orquestar_narracion, funcion que se encarga de orquestar la narracion
+# @ verificar_finales, funcion que se encarga de verificar los finales
+# @ generar_imagen_dialogo, funcion que se encarga de generar la imagen del dialogo
+# @ dialogador, funcion que se encarga de dialogar
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ arbitrar_accion_jugador, recibe como parametro el estado de la partida
+#   --> Devuelve el estado de la partida
+#
+# @ resolver_tirada, recibe como parametro el estado de la partida
+#   --> Devuelve el estado de la partida
+#
+# @ narracion, recibe como parametro el estado de la partida
+#   --> Devuelve el estado de la partida
+#
+# @ orquestador, recibe como parametro el estado de la partida
+#   --> Devuelve el estado de la partida
+#
+# @ verificar_finales, recibe como parametro el estado de la partida
+#   --> Devuelve el estado de la partida
+#
+# @ dialogador, recibe como parametro el estado de la partida
+#   --> Devuelve el estado de la partida
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+from modelo.clases.ContextoJuego import ContextoJuego
+# ContextoJuego es el encargado de manejar el contexto de la partida
+from modelo.clases.Estadojuego import EstadoJuego
+# EstadoJuego es el encargado de manejar el estado de la partida
+from modelo.clases.MensajeJuego import MensajeJuego
+# MensajeJuego es el encargado de manejar el mensaje de la partida
+from modelo.ai.arbitro_accion import arbitrar_accion
+# arbitrar_accion es el encargado de arbitrar la accion del jugador
+from modelo.ai.generador_imagen_escena import generar_imagen_escena
+# generar_imagen_escena es el encargado de generar la imagen de la escena
+from modelo.tools.dice import tirar_d20, verificar_tirada
+# tirar_d20 es el encargado de tirar el dado d20
+# verificar_tirada es el encargado de verificar la tirada
+from modelo.game.characters import PERSONAJES
+# PERSONAJES es el encargado de manejar los personajes
+from modelo.tools.gen_state import gen_state
+# gen_state es el encargado de generar el estado inicial
+from modelo.tools.gen_messege import genMessage
+# genMessage es el encargado de generar el mensaje inicial
+from modelo.ai.narrador import narrar_accion, narrar_final
+# narrar_accion es el encargado de generar la narracion de la accion
+# narrar_final es el encargado de generar el final de la historia
+from modelo.ai.Orquestador_estado import orquestar_narracion
+# orquestar_narracion es el encargado de orquestar la narracion
+from modelo.ai.Verificador_finales import verificar_final
+# verificar_final es el encargado de verificar los finales
+from modelo.ai.imagen_NPC import generar_imagen_dialogo
+# generar_imagen_dialogo es el encargado de generar la imagen del dialogo
+from modelo.ai.dialogador import dialogador
+# dialogador es el encargado de dialogar
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Campania:
 

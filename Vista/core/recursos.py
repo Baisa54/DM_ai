@@ -1,4 +1,30 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# recursos
+#
+# recursos implementa la clase GestorRecursos, encargada de la carga diferida
+# y almacenamiento en memoria (caché) de recursos visuales, tipográficos y auditivos.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ GestorRecursos, clase para la gestión centralizada de recursos Pygame.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ obtener_imagen, recibe la ruta (str) y si tiene alpha (bool)
+#   --> Devuelve la superficie de la imagen cargada (pygame.Surface).
+# @ obtener_fuente, recibe la ruta de la fuente (str) y tamaño (int)
+#   --> Devuelve el objeto de fuente (pygame.font.Font).
+# @ obtener_sonido, recibe la ruta del sonido (str)
+#   --> Devuelve el objeto de sonido (pygame.mixer.Sound).
+# @ limpiar_cache, limpia la caché de recursos en memoria
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
+# pygame provee las bibliotecas gráficas básicas y manejo de archivos multimedia
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class GestorRecursos:
     """

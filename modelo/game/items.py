@@ -1,9 +1,20 @@
-#------------------------------------------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 # items
 #
-# La idea de items es mantener los items posibles que tiene el jugador, para no alucinar en objetos y 
-# no crear o poseer objetos nuevos
-#------------------------------------------------------------------------------------------------------
+# items define el catálogo de objetos posibles que existen y pueden ser encontrados
+# u obtenidos por el héroe a lo largo de la campaña. Su propósito es limitar los
+# objetos válidos y evitar la generación de ítems inexistentes por parte de la IA.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ ITEMS, diccionario que contiene las definiciones de los objetos disponibles
+#   (nombre y descripción detallada).
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+# (No contiene imports externos ni locales)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 ITEMS = {
 

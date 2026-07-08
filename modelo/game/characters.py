@@ -1,3 +1,21 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# characters
+#
+# characters define el catálogo de personajes que participan en la campaña,
+# incluyendo al héroe, su compañero y los enemigos. Contiene sus descripciones,
+# estados y los prompts visuales utilizados para la generación de retratos e imágenes.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ PERSONAJES, diccionario que contiene los datos de configuración de cada personaje
+#   (nombre, raza, estado inicial, descripción y prompt_visual).
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+# (No contiene imports externos ni locales)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 PERSONAJES = {
 
     "heroe": {

@@ -1,5 +1,34 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# controlador_vista
+#
+# controlador_vista define el contrato o interfaz (IControladorVista) que la Vista
+# gráfica requiere para comunicarse con el presentador o controlador del juego.
+# Garantiza el desacoplamiento al no depender directamente de la lógica del modelo.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ IControladorVista, clase abstracta que define la interfaz de comunicación.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ obtener_narracion
+#   --> Devuelve el bloque de texto principal de la escena (str).
+# @ obtener_imagenes
+#   --> Devuelve las rutas de imágenes en un diccionario (Dict).
+# @ obtener_estado
+#   --> Devuelve un diccionario con el estado actual de los personajes (dict).
+# @ enviar_accion, recibe la acción en formato texto (str)
+# @ reiniciar_aventura, notifica la orden de restablecer la partida
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 from abc import ABC, abstractmethod
+# abc define la infraestructura para clases abstractas
 from typing import Dict, Optional
+# typing define los tipos de datos estáticos para retornos y argumentos
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class IControladorVista(ABC):
     """

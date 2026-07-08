@@ -1,4 +1,33 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# widget
+#
+# widget define la superclase abstracta Widget, de la cual heredan todos los
+# controles visuales interactivos. Provee lógica genérica de rectángulos de colisión,
+# dimensiones y estados de visibilidad y habilitación.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Widget, clase base para componentes de interfaz de usuario.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ x, y, ancho, alto (properties)
+#   --> Devuelven o establecen las coordenadas y dimensiones de la caja
+# @ rect (property)
+#   --> Devuelve el rectángulo de Pygame asociado al widget (pygame.Rect)
+# @ visible, habilitado (properties)
+#   --> Devuelven o cambian los booleanos de visibilidad y foco
+# @ actualizar, método abstracto para actualizar el estado del widget
+# @ manejar_evento, recibe un evento de Pygame y devuelve si fue procesado (bool)
+# @ dibujar, recibe una superficie y dibuja el widget
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
+# pygame provee la clase pygame.Rect y otras herramientas gráficas
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Widget:
     """

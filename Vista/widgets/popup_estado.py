@@ -1,7 +1,31 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# popup_estado
+#
+# popup_estado implementa la clase PopupEstado que muestra la salud, ubicación
+# e inventario actual del personaje mediante íconos temáticos de RPG y textos informativos.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ PopupEstado, clase que despliega la pantalla modal de ficha de personaje.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ manejar_evento, procesa clics del botón de cerrar y bloquea clics exteriores
+# @ dibujar, dibuja la capa oscura y la ficha del personaje con sus datos
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
-from widgets.popup import Popup
-from widgets.boton import Boton
-from widgets.imagen import Imagen
+# pygame maneja render de fuentes de texto y la composición de imágenes
+from Vista.widgets.popup import Popup
+# Popup es la clase modal que encapsula la estructura del popup
+from Vista.widgets.boton import Boton
+# Boton es el control utilizado para disparar la acción de cerrar
+from Vista.widgets.imagen import Imagen
+# Imagen es el control utilizado para colocar los íconos del inventario y salud
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class PopupEstado(Popup):
     """

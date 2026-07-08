@@ -1,5 +1,29 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# boton
+#
+# boton implementa la clase Boton, un widget interactivo táctil que detecta eventos
+# de mouse y reacciona visualmente según tres estados predeterminados:
+# normal, hover y presionado, ejecutando un callback configurado al hacer clic.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Boton, clase del botón gráfico.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ manejar_evento, recibe el evento de Pygame
+#   --> Devuelve si consumió el evento (bool)
+# @ dibujar, dibuja la textura del botón correspondiente al estado activo
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
-from widgets.widget import Widget
+# pygame se utiliza para transformaciones de imágenes y detección de eventos de mouse
+from Vista.widgets.widget import Widget
+# Widget es la clase base de la cual hereda Boton
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Boton(Widget):
     """

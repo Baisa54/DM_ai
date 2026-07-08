@@ -1,4 +1,21 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# app
+#
+# app implementa la interfaz de usuario alternativa basada en Streamlit.
+# Permite jugar la campaña del RPG Narrativo en un entorno web interactivo,
+# mostrando de forma secuencial la narrativa de juego, la tirada del dado d20,
+# y la visualización de NPC y resúmenes gráficos generados por IA.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ campania, instancia de Campania almacenada en el session_state de Streamlit.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import streamlit as st
+# streamlit provee el framework web para construir la interfaz
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 from modelo.clases.Campania import Campania
 

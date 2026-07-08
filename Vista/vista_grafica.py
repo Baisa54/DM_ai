@@ -46,9 +46,9 @@ import pygame
 # Pygame es el motor grafico que se utiliza para crear la interfaz grafica
 import sys 
 # Sys es el modulo que se utiliza para cerrar el programa
-from core.ventana import Ventana 
+from Vista.core.ventana import Ventana 
 # Ventana es la clase que se utiliza para crear la ventana
-from core.recursos import GestorRecursos 
+from Vista.core.recursos import GestorRecursos 
 # GestorRecursos es la clase que se utiliza para cargar los recursos
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
@@ -69,7 +69,7 @@ class VistaGrafica:
         self.ventana = Ventana()
 
         # 4. Configurar Escena Inicial
-        from escenas.escena_juego import EscenaJuego
+        from Vista.escenas.escena_juego import EscenaJuego
 
         self.escena_principal = EscenaJuego(self.gestor_recursos)
         self.ventana.cambiar_escena(self.escena_principal)

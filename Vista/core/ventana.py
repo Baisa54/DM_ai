@@ -1,5 +1,30 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# ventana
+#
+# ventana implementa la clase Ventana, que administra la ventana física de la
+# aplicación Pygame, gestionando la inicialización del motor, el bucle de renderizado,
+# la tasa de fotogramas (FPS) y la delegación de eventos a la escena activa.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Ventana, clase administradora de la ventana de renderizado.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ pantalla (property)
+#   --> Devuelve la superficie de renderizado virtual (pygame.Surface).
+# @ cambiar_escena, recibe la instancia de la escena a cargar
+# @ iniciar, inicia el bucle principal de la aplicación Pygame
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
-from core.recursos import GestorRecursos
+# pygame provee la capa de hardware y dibujo gráfico
+from Vista.core.recursos import GestorRecursos
+# GestorRecursos es el encargado de la carga óptima de assets en caché
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Ventana:
     """

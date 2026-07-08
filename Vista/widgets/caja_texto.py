@@ -1,6 +1,34 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# caja_texto
+#
+# caja_texto implementa CajaTexto, un widget interactivo de entrada de texto gráfico.
+# Admite foco, escritura, borrado, navegación con cursor y scrolling horizontal
+# automático cuando el texto excede el espacio visual de la caja.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ CajaTexto, clase que define el control de caja de entrada de texto.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ texto (property)
+#   --> Devuelve el string actual de la caja
+# @ limpiar, vacía el contenido de texto de la caja
+# @ actualizar, actualiza la lógica interna de parpadeo del cursor
+# @ manejar_evento, recibe el evento y devuelve si fue procesado (bool)
+# @ dibujar, dibuja el fondo, el texto visible recortado y el cursor
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import pygame
+# pygame se usa para renderizar texto sobre superficies y trazar la línea del cursor
 import time
-from widgets.widget import Widget
+# time permite calcular los intervalos del parpadeo del cursor
+from Vista.widgets.widget import Widget
+# Widget es la superclase que le da las propiedades y dimensiones básicas
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class CajaTexto(Widget):
     """

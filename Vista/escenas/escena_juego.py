@@ -1,5 +1,22 @@
-from escenas.escena_base import EscenaBase
-from widgets.imagen import Imagen
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# escena_juego
+#
+# escena_juego implementa EscenaJuego, la pantalla de juego principal que orquesta
+# la distribución visual de los widgets del RPG (pergaminios, marcos de imágenes,
+# cajas de texto y botones de acción y modales de confirmación).
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ EscenaJuego, clase que gestiona la escena interactiva de la aventura.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+from Vista.escenas.escena_base import EscenaBase
+# EscenaBase es la clase base para la manipulación de escenas gráficas
+from Vista.widgets.imagen import Imagen
+# Imagen es el widget básico de renderizado de texturas
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class EscenaJuego(EscenaBase):
     """
@@ -49,7 +66,7 @@ class EscenaJuego(EscenaBase):
 
         # 4. Botón Cerrar superior derecho (Close_Button_normal.png)
         # Original: ~178x179. Lo escalamos a 140x140
-        from widgets.boton import Boton
+        from Vista.widgets.boton import Boton
             
         btn_cerrar = Boton(
             x=1920 - 140 - 40, y=20,
@@ -90,7 +107,7 @@ class EscenaJuego(EscenaBase):
         y_inferior = 1080 - alto_inferior - 20 # 20px de margen inferior
 
         # a. Barra de texto (Caja de entrada) (5088x832 -> 856x140)
-        from widgets.caja_texto import CajaTexto
+        from Vista.widgets.caja_texto import CajaTexto
         caja_entrada = CajaTexto(
             x=296, y=y_inferior,
             gestor_recursos=gestor_recursos,
@@ -148,7 +165,7 @@ class EscenaJuego(EscenaBase):
             import pygame
             pygame.event.post(pygame.event.Event(pygame.QUIT))
             
-        from widgets.popup_confirmacion import PopupConfirmacion
+        from Vista.widgets.popup_confirmacion import PopupConfirmacion
         self.popup_salir = PopupConfirmacion(
             gestor_recursos=gestor_recursos,
             texto_pregunta="¿Quieres salir del juego?",
@@ -171,7 +188,7 @@ class EscenaJuego(EscenaBase):
         self.agregar_widget(self.popup_reiniciar)
 
         # 10. Modal de Estado del Personaje
-        from widgets.popup_estado import PopupEstado
+        from Vista.widgets.popup_estado import PopupEstado
         self.popup_estado = PopupEstado(
             gestor_recursos=gestor_recursos,
             on_cerrar=lambda: None

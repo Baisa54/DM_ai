@@ -1,5 +1,47 @@
-from game.characters import PERSONAJES
-
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# EstadoJuego
+#
+# EstadoJuego representa el estado global de la partida, incluyendo la ubicación
+# actual, los eventos sucedidos, las decisiones del jugador, personajes presentes,
+# el estado de salud de cada personaje, los objetos del héroe y si se ha alcanzado
+# un final.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ EstadoJuego, clase que almacena la información del estado de la partida.
+# @ ubicacion, cadena que representa la ubicación actual en el mapa.
+# @ eventos, lista que almacena los eventos ocurridos.
+# @ decisiones, lista que almacena las decisiones tomadas por el jugador.
+# @ personajes_presentes, lista de los personajes que se encuentran en la escena actual.
+# @ final, cadena que indica si se llegó a algún final de la partida.
+# @ estados_personajes, diccionario con el estado de salud/vida de cada personaje.
+# @ objetos_heroe, lista de los objetos en posesión del héroe.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ set_ubicacion, recibe la nueva ubicación
+# @ agregar_evento, recibe un nuevo evento para añadir a la lista
+# @ agregar_decision, recibe una nueva decisión para añadir a la lista
+# @ agregar_personaje, recibe un personaje para añadir a personajes presentes
+# @ quitar_personaje, recibe un personaje para remover de personajes presentes
+# @ set_final, recibe el final alcanzado
+# @ set_estado_personaje, recibe el personaje y su nuevo estado de vida
+# @ get_estado_personaje, recibe el personaje
+#   --> Devuelve el estado de vida del personaje solicitado
+# @ to_dict
+#   --> Devuelve la representación del estado en formato diccionario
+# @ agregar_objeto_heroe, recibe el objeto a añadir al inventario
+# @ quitar_objeto_heroe, recibe el objeto a quitar del inventario
+# @ obtener_imagenes_escena
+#   --> Devuelve una lista de los prompts visuales de los personajes presentes
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+from modelo.game.characters import PERSONAJES
+# PERSONAJES es el diccionario que contiene la configuración de los personajes
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class EstadoJuego:
 

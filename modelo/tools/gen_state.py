@@ -1,11 +1,26 @@
-from clases.Estadojuego import EstadoJuego
-
-#------------------------------------------------------------------------------------------------------
-# State
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# gen_state
 #
-# La idea de state es que posea el estado de la partida, es la memoria del arbitro para la narración
-# Ademas, sea capaz de realizar cambios en las distintas variables de todo lo que esta presente
-#------------------------------------------------------------------------------------------------------
+# gen_state se encarga de crear e inicializar el estado inicial de la partida,
+# definiendo la ubicación inicial del héroe, sus objetos iniciales y el estado
+# de salud de todos los personajes presentes.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# (No define elementos o constantes a nivel de módulo)
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ gen_state
+#   --> Devuelve un objeto EstadoJuego con los valores iniciales configurados.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+from modelo.clases.Estadojuego import EstadoJuego
+# EstadoJuego es la clase que almacena los datos y estado global de la partida
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 def gen_state():
 
