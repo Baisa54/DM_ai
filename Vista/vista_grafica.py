@@ -68,11 +68,23 @@ class VistaGrafica:
         # 3. Crear la Ventana
         self.ventana = Ventana()
 
-        # 4. Configurar Escena Inicial
+        # 4. Configurar Estado del Juego (Campania)
+        from modelo.clases.Campania import Campania
+        self.campania = Campania()
+
+        # 5. Configurar Escena Inicial
         from Vista.escenas.escena_juego import EscenaJuego
 
-        self.escena_principal = EscenaJuego(self.gestor_recursos)
+        self.escena_principal = EscenaJuego(self.gestor_recursos, self.campania)
         self.ventana.cambiar_escena(self.escena_principal)
+
+        # 5. Iniciar música de fondo (mística/medieval)
+        try:
+            pygame.mixer.music.load("Vista/resources/sounds/music.mp3")
+            pygame.mixer.music.set_volume(0.20)
+            pygame.mixer.music.play(-1) # -1 reproduce en bucle infinito
+        except Exception as e:
+            print(f"No se pudo cargar la música de fondo: {e}")
 
     def iniciar(self):
         # 4. Ejecutar el loop principal

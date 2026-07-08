@@ -155,14 +155,19 @@ class LocalAIClient:
     # --------------------------------------------------
     # TEXTO (OLLAMA)
     # --------------------------------------------------
-    def generar_texto(self, prompt, model="qwen2.5:7b-instruct"):
+    def generar_texto(self, prompt, model="qwen3:30b"):
 
         def request():
 
             payload = {
                 "model": model,
                 "prompt": prompt,
-                "stream": False
+                "stream": False,
+                "options": {
+                    "num_ctx": 8192,       # Contexto amplio para no olvidar reglas ni historial
+                    "num_predict": 2048,   # Tokens suficientes para explayarse en la narración
+                    "temperature": 0.7     # Temperatura balanceada para narrativa
+                }
             }
 
             r = requests.post(
@@ -178,7 +183,7 @@ class LocalAIClient:
     # --------------------------------------------------
     # JSON (OLLAMA + PARSEO ROBUSTO)
     # --------------------------------------------------
-    def generar_json(self, prompt, model="qwen2.5:7b-instruct"):
+    def generar_json(self, prompt, model="qwen3:30b"):
 
         def extract_json(text):
 
@@ -253,8 +258,12 @@ class LocalAIClient:
                 "model": model,
                 "prompt": prompt,
                 "stream": False,
-
-                "format": "json"
+                "format": "json",
+                "options": {
+                    "num_ctx": 8192,       # Contexto súper amplio para leer todo el JSON y prompt
+                    "num_predict": 1024,   # Output JSON suele ser corto, 1024 es sobradísimo
+                    "temperature": 0.1     # Temperatura ultra-baja para evitar alucinaciones lógicas
+                }
             }
 
             r = requests.post(

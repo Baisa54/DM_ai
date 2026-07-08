@@ -111,6 +111,10 @@ class Boton(Widget):
             # Detecta si el mouse pasa por encima (Hover)
             if self.rect.collidepoint(evento.pos):
                 if not self._mouse_presionado:
+                    if self._estado != "hover":
+                        snd_hover = self._gestor_recursos.obtener_sonido("Vista/resources/sounds/hover.wav")
+                        if snd_hover:
+                            snd_hover.play()
                     self._estado = "hover"
             else:
                 self._estado = "normal"

@@ -25,121 +25,50 @@ import json
 # json para el manejo de datos
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-PROMPT_VERIFICADOR_FINALES = """
-Eres un verificador de finales para un RPG narrativo.
+PROMPT_VERIFICADOR_FINALES = """<system>
+Eres el "Verificador de Finales" de un RPG narrativo. Eres un autómata de procesamiento lógico, NO un asistente conversacional. Tu tarea es cruzar el estado actual y la última narración para determinar si el juego ha terminado.
+</system>
 
-Tu tarea es analizar:
+<rules>
+Evalúa las condiciones y decide el final correspondiente. 
+SOLO puedes elegir UNO de los siguientes finales válidos:
 
-- El estado actual de la partida.
-- La narración más reciente.
+1. "muerte heroe": Se cumple ÚNICAMENTE si estado_personajes["heroe"] == "muerto".
+2. "Escape": Se cumple ÚNICAMENTE si el héroe está en "entrada_cueva" Y la narración indica explícitamente que abandona la misión o huye.
+3. "Alianza goblin": Se cumple ÚNICAMENTE si el héroe se alía con los goblins o con Osgo traicionando al reino.
+4. "rescate princesa": Se cumple ÚNICAMENTE si Osgo está "muerto", la princesa está "vivo", Y la narración indica que fue liberada o rescatada.
+5. "muerte princesa": Se cumple ÚNICAMENTE si estado_personajes["princesa"] == "muerto".
 
-Debes determinar si se cumple alguno de los finales posibles.
+Si ninguna de estas condiciones se cumple de forma explícita, el final es "sin_final".
+</rules>
 
-FINALES POSIBLES:
-
-1) muerte heroe
-
-Se cumple únicamente si:
-
-estado_personajes["heroe"] == "muerto"
-
---------------------------------------------------
-
-2) Escape
-
-Se cumple únicamente si:
-
-- El héroe está en "entrada_cueva"
-- La narración indica que abandona la misión,
-  se retira o decide no entrar a la cueva.
-
---------------------------------------------------
-
-3) Alianza goblin
-
-Se cumple únicamente si:
-
-- El héroe se alía con goblins
-- O se alía con Osgo
-- O traiciona al reino
-
---------------------------------------------------
-
-4) rescate princesa
-
-Se cumple únicamente si:
-
-- Osgo está muerto
-
-Y
-
-- La princesa está viva
-
-Y
-
-- La narración indica que fue liberada o rescatada
-
---------------------------------------------------
-
-5) muerte princesa
-
-Se cumple únicamente si:
-
-estado_personajes["princesa"] == "muerto"
-
---------------------------------------------------
-
-Si ningún final se cumple:
-
-"sin_final"
-
---------------------------------------------------
-
-Debes devolver EXCLUSIVAMENTE un JSON válido.
-
-Formato:
-
+<output_schema>
+Debes retornar EXCLUSIVAMENTE este objeto JSON, sin llaves ni texto adicional:
 {
-    "final": "sin_final"
+  "final": "sin_final" | "muerte heroe" | "rescate princesa" | "Alianza goblin" | "Escape" | "muerte princesa"
 }
+</output_schema>
 
-Valores permitidos:
-
-- "sin_final"
-- "muerte heroe"
-- "rescate princesa"
-- "Alianza goblin"
-- "Escape"
-- "muerte princesa"
-
-No inventes otros valores.
-No escribas explicaciones.
-Devuelve únicamente JSON.
+<formatting_constraints>
+- RESPUESTA PURA: No agregues "```json", ni introducciones, ni explicaciones.
+- ESTRUCTURA DE INICIO: Tu respuesta DEBE empezar con el carácter '{' y terminar con el carácter '}'.
+- VALORES: El valor de la clave "final" DEBE ser una de las 6 strings exactas especificadas. No inventes otros valores.
+</formatting_constraints>
 """
 
 
-def verificar_final(
-    estado,
-    narracion
-):
-
+def verificar_final(estado, narracion):
     gemini = GeminiClient()
-
     entrada = {
         "estado_partida": estado.to_dict(),
         "narracion": narracion
     }
 
-    prompt = f"""
-{PROMPT_VERIFICADOR_FINALES}
+    prompt = f"""{PROMPT_VERIFICADOR_FINALES}
 
-DATOS:
-
-{json.dumps(
-    entrada,
-    indent=4,
-    ensure_ascii=False
-)}
+<input_data>
+{json.dumps(entrada, indent=4, ensure_ascii=False)}
+</input_data>
 """
 
     resultado = gemini.generar_json(

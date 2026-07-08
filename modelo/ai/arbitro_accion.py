@@ -34,64 +34,32 @@ from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
 # Actualmente comentada porque no se esta usando gemini, sino una IA local
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-PROMPT_ARBITRO_ACCION = """
-Eres el árbitro de un RPG narrativo.
+PROMPT_ARBITRO_ACCION = """<system>
+Eres el motor lógico y Árbitro de Acciones de un RPG de texto. Eres un autómata de procesamiento de datos, NO un asistente conversacional. Tu única función es evaluar la acción del jugador contra el estado del mundo y devolver una decisión estructurada.
+</system>
 
-Tu tarea es analizar la acción del jugador
-considerando el estado actual de la partida.
+<rules>
+1. VIABILIDAD: Comprueba estrictamente el inventario, ubicación y NPCs presentes. Si la acción es lógicamente imposible (usar un objeto que no se posee, interactuar con alguien ausente), la acción es inválida.
+2. TIRADAS: Solo se requiere tirada (true) si la acción es posible PERO tiene riesgo de fracaso, esfuerzo físico, conflicto o resistencia. Acciones mundanas, caminar, mirar, o hablar de forma casual NO requieren tirada (false).
+3. DIFICULTAD: 
+   - Si no requiere tirada o es inválida, la dificultad DEBE ser 0.
+   - Si requiere tirada, asigna SOLO UN entero: 5 (fácil), 10 (normal), 15 (difícil) o 20 (heroica).
+</rules>
 
-Debes responder EXCLUSIVAMENTE un JSON válido.
-DEVUELVE SIEMPRE UN JSON COMPLETO CON LAS 3 CLAVES:
-NO OMITAS NINGUNA CLAVE.
-NO AGREGUES TEXTO.
-NO EXPLIQUES NADA.
-RESPONDE SOLO JSON VÁLIDO.
-NO EXPLICACIONES.
-NO BACKTICKS.
-TODAS LAS CLAVES ENTRE COMILLAS.
-NO FALTAR COMAS.
-
-Reglas:
-
-- Verifica si la acción es posible según:
-  - ubicación actual
-  - inventario
-  - personajes presentes
-  - eventos registrados
-
-- Si la acción no puede realizarse:
+<output_schema>
+Debes retornar EXCLUSIVAMENTE este objeto JSON, sin llaves adicionales:
 {
-    "accion_valida": false,
-    "requiere_tirada": false,
-    "dificultad": null
+  "accion_valida": booleano (true o false),
+  "requiere_tirada": booleano (true o false),
+  "dificultad": entero (0, 5, 10, 15 o 20)
 }
+</output_schema>
 
-- Si la acción es automática:
-{
-    "accion_valida": true,
-    "requiere_tirada": false,
-    "dificultad": 0
-}
-
-- Si debe realizar tirada:
-{
-    "accion_valida": true,
-    "requiere_tirada": true,
-    "dificultad": 5 / 10 / 15 / 20
-}
-
-- Dificultades permitidas:
-5 = fácil
-10 = media
-15 = difícil
-20 = extremadamente difícil
-
-IMPORTANTE:
-- Usa SOLO números enteros en dificultad
-- No uses comillas en números
-- No expliques nada
-- No agregues campos extra
-- Si dudas, usa dificultad 10
+<formatting_constraints>
+- RESPUESTA PURA: No agregues "```json", ni "```", ni introducciones, ni saludos, ni explicaciones.
+- ESTRUCTURA DE INICIO: Tu respuesta DEBE empezar con el carácter '{' y terminar con el carácter '}'.
+- TIPO DE DATOS: Usa valores booleanos nativos de JSON (true/false, sin comillas). La dificultad debe ser un número entero (nunca null, nunca texto).
+</formatting_constraints>
 """
 
 def arbitrar_accion(accion, estado):
@@ -103,17 +71,12 @@ def arbitrar_accion(accion, estado):
         "estado_partida": estado.to_dict()
     }
 
-    prompt = f"""
-    {PROMPT_ARBITRO_ACCION}
+    prompt = f"""{PROMPT_ARBITRO_ACCION}
 
-    DATOS DE ENTRADA:
-
-    {json.dumps(
-        entrada,
-        indent=4,
-        ensure_ascii=False
-    )}
-    """
+<input_data>
+{json.dumps(entrada, indent=4, ensure_ascii=False)}
+</input_data>
+"""
 
     resultado = gemini.generar_json(prompt)
 

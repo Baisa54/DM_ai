@@ -40,6 +40,7 @@ class GestorRecursos:
         self._imagenes = {}
         self._fuentes = {}
         self._sonidos = {}
+        self._volumen_general = 1.0
 
     def obtener_imagen(self, ruta, alpha=True):
         """
@@ -103,12 +104,21 @@ class GestorRecursos:
         if ruta not in self._sonidos:
             try:
                 sonido = pygame.mixer.Sound(ruta)
+                sonido.set_volume(self._volumen_general)
                 self._sonidos[ruta] = sonido
             except pygame.error as e:
                 print(f"Error al cargar el sonido '{ruta}': {e}")
                 return None
                 
         return self._sonidos[ruta]
+
+    def set_volumen_general(self, volumen):
+        """
+        Establece el volumen maestro para todos los sonidos cargados.
+        """
+        self._volumen_general = volumen
+        for sonido in self._sonidos.values():
+            sonido.set_volume(self._volumen_general)
 
     def limpiar_cache(self):
         """
