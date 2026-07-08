@@ -236,6 +236,9 @@ class EscenaJuego(EscenaBase):
         from Vista.widgets.popup_d20 import PopupD20
         self.popup_d20 = PopupD20(gestor_recursos)
         self.agregar_widget(self.popup_d20)
+        
+        # 12. Cargar estado inicial del juego en la UI
+        self._actualizar_ui_con_resultados()
 
     def _on_enviar_accion(self):
         """Disparado al apretar el botón Send."""
