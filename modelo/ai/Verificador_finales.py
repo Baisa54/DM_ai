@@ -1,9 +1,29 @@
-# ai/verificador_finales.py
-
-import json
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Verificador de finales
+#
+# Verificador de finales es el encargado de verificar si se cumple alguno de los finales posibles
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ PROMPT_VERIFICADOR_FINALES, prompt que se encarga de verificar los finales
+# @ verificar_final, funcion que se encarga de verificar los finales
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ verificar_final, recibe como parametro el estado de la partida
+#   --> Devuelve el final de la partida
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 from ai.LocalAICLient import LocalAIClient as GeminiClient
-# from ai.GeminiClient import GeminiClient
-
+# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
+#-@ from ai.GeminiClient import GeminiClient
+# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
+# Actualmente comentada porque no se esta usando gemini, sino una IA local
+import json
+# json para el manejo de datos
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 PROMPT_VERIFICADOR_FINALES = """
 Eres un verificador de finales para un RPG narrativo.

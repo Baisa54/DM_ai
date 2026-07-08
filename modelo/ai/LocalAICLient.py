@@ -1,14 +1,51 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# LocalAICLient
+#
+# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ _retry, funcion que se encarga de reintentar la solicitud a la IA local
+# @ generar_texto, funcion que se encarga de generar texto a partir de una descripcion
+# @ generar_json, funcion que se encarga de generar json a partir de una descripcion
+# @ generar_imagen, funcion que se encarga de generar imagen a partir de una descripcion
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ _retry, recibe como parametro la funcion que se va a ejecutar
+#   --> Devuelve el resultado de la funcion
+# @ generar_texto, recibe como parametro el prompt
+#   --> Devuelve el texto generado
+# @ generar_json, recibe como parametro el prompt
+#   --> Devuelve el json generado
+# @ generar_imagen, recibe como parametro el prompt
+#   --> Devuelve la imagen generada
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import json
+# json para el manejo de datos
 from huggingface_hub import InferenceClient
+# InferenceClient es el cliente que se utiliza para comunicarse con Hugging Face
 import requests
+# requests es el cliente que se utiliza para comunicarse con la IA local
 import time
-import random
+# time es el cliente que se utiliza para manejar el tiempo
 from PIL import Image
+# Image es el cliente que se utiliza para manejar las imagenes
 from io import BytesIO
+# BytesIO es el cliente que se utiliza para manejar los bytes
 import re
+# re es el cliente que se utiliza para manejar las expresiones regulares
 import traceback
+# traceback es el cliente que se utiliza para manejar los errores
 import socket
+# socket es el cliente que se utiliza para manejar las conexiones de red
 import requests
+# requests es el cliente que se utiliza para manejar las peticiones http
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class LocalAIClient:
 

@@ -1,5 +1,30 @@
-from ai.LocalAICLient import LocalAIClient 
-# from ai.GeminiClient import GeminiClient
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Generador de imagen de escena
+#
+# Generador de imagen de escena es el encargado de generar imagenes de la escena
+# a partir de una descripcion y los personajes.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Generador de imagen de escena, funcion que se encarga de generar imagenes de la escena
+#   a partir de una descripcion y los personajes.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ Generador de imagen de escena, recibe como parametro la descripcion de la escena
+#   y los personajes.
+#   --> Devuelve la imagen generada
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
+from ai.LocalAICLient import LocalAIClient
+# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
+#-@ from ai.GeminiClient import GeminiClient
+# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
+# Actualmente comentada porque no se esta usando gemini, sino una IA local
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 PROMPT_IMAGEN_ESCENA = """
 Fantasy RPG illustration.
@@ -22,12 +47,6 @@ Rules:
 * No UI.
 * Single coherent scene.
   """
-
-# --------------------------------------------------
-
-# FUNCION PRINCIPAL
-
-# --------------------------------------------------
 
 def generar_imagen_escena(
     narracion,

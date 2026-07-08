@@ -1,10 +1,59 @@
-import os
-import time
-import random
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# GeminiClient
+#
+# GeminiClient es el cliente que se utiliza para comunicarse con la IA local
+# La idea es que tenga metodos para generar texto, imagenes y JSON.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ GeminiClient, clase que se encarga de comunicarse con Genai a traves de un 
+#   prompt, ya sea para generar texto, imagenes o JSON. Lo hace a traves de API_key
+#   Que de momento esta HardCodeada. 
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ToDo
+# 
+# --> No depender de API_key en el codigo (Dependencia del sistema)
+# --> Que pueda elegir entre varios modelos
+# --> Que pueda elegir entre varios proveedores
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ _retry, funcion que se encarga de reintentar la peticion a la IA en caso de 
+#   que falle. Recibe como parametro la funcion que se encarga de hacer la peticion
+#   y el numero maximo de reintentos.
+# @ _call, funcion que se encarga de hacer la peticion a la IA
+#   --> Recibe el modelo y el prompt
+#   --> Devuelve la respuesta
+# @ generar_texto, funcion que se encarga de generar texto
+#   --> Recibe el prompt
+#   --> Devuelve el texto generado
+# @ generar_imagen, funcion que se encarga de generar imagenes
+#   --> Recibe el prompt y las imagenes de referencia
+#   --> Devuelve la imagen generada
+# @ generar_json, funcion que se encarga de generar JSON
+#   --> Recibe el prompt
+#   --> Devuelve el JSON generado
+# @ generar_json, funcion que se encarga de generar JSON
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import json
+# json para el manejo de datos
+import os
+# os para el manejo de archivos
+import time
+# time para el manejo de tiempos
+import random
+# random para el manejo de aleatoriedad
+import json
+# json para el manejo de datos
 from google import genai
+# genai para el manejo de la IA
 from PIL import Image
-
+# Image para el manejo de imagenes
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class GeminiClient:
 

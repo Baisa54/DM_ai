@@ -1,8 +1,31 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Imagenes de dialogos 
+#
+# Imagenes de dialogos es el encargado de generar imagenes de dialogos
+# a partir de una descripcion y los personajes.
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ prompt_visual, prompt que se encarga de generar la imagen del personaje
+#   y que se pasa como parametro para generar la imagen del personaje.
+# @ generar_imagen_dialogo, funcion que se encarga de generar la imagen del personaje
+#   a partir de una descripcion y los personajes.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ generar_imagen_dialogo, recibe como parametro el personaje y la emoción
+#   --> Devuelve la imagen generada
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 from ai.LocalAICLient import LocalAIClient as GeminiClient
-
-# --------------------------------------------------
-# PROMPT BASE
-# --------------------------------------------------
+# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
+#-@ from ai.GeminiClient import GeminiClient
+# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
+# Actualmente comentada porque no se esta usando gemini, sino una IA local
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 PROMPT_IMAGEN_DIALOGO = """
 Eres un generador de retratos para un RPG narrativo.

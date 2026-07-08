@@ -1,6 +1,38 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Dialogador
+#
+# Dialogador es el que se encarga de gestionar los dialogos entre los personajes
+# y el jugador. La idea es analizar si un NPC habla, extraer su dialogo, dejar la
+# narracion sin dialogos para luego acomodar el mensaje final
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ Prompt para la IA, en la que se detalla el comportamiento de dialogador
+#   y lo que debe devolver. Este prompt debe estar en formato JSON.
+# @ Dialogador, funcion que envia el prompt a la IA y devuelve el 
+#   JSON resultante.
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+#
+# @ Dialogador, funcion que recibe como parametro 
+#   [Narracion que genera el DM]
+#   --> Se encarga de extraer el dialogo del personaje mas importante
+#   --> Se encarga de extraer la emocion del personaje mas importante
+#   --> Se encarga de eliminar el dialogo del personaje mas importante de la narracion
+#   --> Se encarga de devolver el JSON resultante
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 import json
+# json para el manejo de datos
 from ai.LocalAICLient import LocalAIClient as GeminiClient
-# from ai.GeminiClient import GeminiClient
+# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
+#-@ from ai.GeminiClient import GeminiClient 
+# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
+# Actualmente comentada porque no se esta usando gemini, sino una IA local
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 PROMPT_DIALOGADOR = """
 Eres un analizador de diálogos para un RPG narrativo.

@@ -39,13 +39,18 @@
 #   --> Se muestra una ventana emergente
 #   --> La ventana muestra que una vez realizada la accion no hay vuelta atras
 #   --> Posee un boton de 'Reiniciar' que reinicia la partida
-#   --> Posee un boton de 'Cancelar' que cierra la ventana 
+#   --> Posee un boton de 'Cancelar' que cierra la ventana
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# Imports
+import pygame 
+# Pygame es el motor grafico que se utiliza para crear la interfaz grafica
+import sys 
+# Sys es el modulo que se utiliza para cerrar el programa
+from core.ventana import Ventana 
+# Ventana es la clase que se utiliza para crear la ventana
+from core.recursos import GestorRecursos 
+# GestorRecursos es la clase que se utiliza para cargar los recursos
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-
-import pygame
-import sys
-from core.ventana import Ventana
-from core.recursos import GestorRecursos
 
 class VistaGrafica:
     """

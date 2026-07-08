@@ -1,7 +1,35 @@
-import json
-
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Narrador
+#
+# Narrador es el encargado de generar la narracion de la historia
+# 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ELEMENTOS
+#
+# @ PROMPT_NARRADOR, prompt que se encarga de generar la narracion
+# @ construir_contexto_narrador, funcion que se encarga de construir el contexto
+# @ narrar_accion, funcion que se encarga de generar la narracion de la accion
+# @ PROMPT_NARRADOR_FINAL, prompt que se encarga de generar el final de la historia
+# @ narrar_final, funcion que se encarga de generar el final de la historia
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# INPUTS
+# 
+# @ narrar_accion, recibe como parametro el estado de la partida
+#   --> Devuelve la narracion de la accion
+# @ narrar_final, recibe como parametro el estado de la partida
+#   --> Devuelve el final de la historia
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Imports
 from ai.LocalAICLient import LocalAIClient as GeminiClient
-# from ai.GeminiClient import GeminiClient
+# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
+#-@ from ai.GeminiClient import GeminiClient
+# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
+# Actualmente comentada porque no se esta usando gemini, sino una IA local
+import json
+# json para el manejo de datos
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 PROMPT_NARRADOR = """
 Eres el Dungeon Master de una campaña RPG.
