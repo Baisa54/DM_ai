@@ -80,9 +80,23 @@ class TextoMultilinea(Widget):
         self._superficie_completa = pygame.Surface((self.ancho - (self.padding_x * 2), max(self._alto_total_texto, self.alto)), pygame.SRCALPHA)
         
         y_offset = 0
+        color_borde = (255, 255, 255) # Blanco
+        offset = 1
+        
         for linea in lineas:
-            superficie_texto = self._fuente.render(linea.strip(), True, self.color_texto)
-            self._superficie_completa.blit(superficie_texto, (0, y_offset))
+            texto_limpio = linea.strip()
+            if texto_limpio:
+                # Dibujar borde (4 direcciones)
+                borde = self._fuente.render(texto_limpio, True, color_borde)
+                self._superficie_completa.blit(borde, (-offset, y_offset))
+                self._superficie_completa.blit(borde, (offset, y_offset))
+                self._superficie_completa.blit(borde, (0, y_offset - offset))
+                self._superficie_completa.blit(borde, (0, y_offset + offset))
+                
+                # Dibujar texto original
+                superficie_texto = self._fuente.render(texto_limpio, True, self.color_texto)
+                self._superficie_completa.blit(superficie_texto, (0, y_offset))
+            
             y_offset += alto_linea
             
         self._scroll_y = 0

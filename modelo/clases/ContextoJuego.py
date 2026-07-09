@@ -118,3 +118,12 @@ class ContextoJuego:
             "estado": self.estado,
             "resultado_d20": self.resultado_d20
         }
+
+    def to_dict(self):
+        return {
+            "prompt_jugador": self.prompt_jugador,
+            "accion_valida": self.accion_valida,
+            "requiere_tirada": self.requiere_tirada,
+            "dificultad": self.dificultad,
+            "resultado_d20": self.resultado_d20
+        }

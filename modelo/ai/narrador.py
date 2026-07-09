@@ -99,6 +99,7 @@ FINALES POSIBLES:
 
 ESTILO:
 Narración épica, emocional y contundente cerrando la historia del RPG.
+IMPORTANTE: Asegúrate de escribir un final CONCISO y COMPLETO, que termine claramente con un punto y aparte. No dejes oraciones a medias ni historias inconclusas.
 </rules>
 
 <formatting_constraints>

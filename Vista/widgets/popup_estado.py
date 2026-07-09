@@ -32,7 +32,7 @@ class PopupEstado(Popup):
     Popup que muestra el estado actual de la campaña y el personaje.
     Utiliza un oscurecimiento modal para no permitir clics fuera de él.
     """
-    def __init__(self, gestor_recursos, on_cerrar=None):
+    def __init__(self, gestor_recursos, campania=None, on_cerrar=None):
         # Configuramos el popup centrado
         ancho_popup = 1000
         alto_popup = 700
@@ -46,6 +46,8 @@ class PopupEstado(Popup):
             ancho=ancho_popup,
             alto=alto_popup
         )
+        
+        self.campania = campania
         
         self.on_cerrar = on_cerrar
         self._fuente_titulo = pygame.font.Font(None, 42)
@@ -140,12 +142,30 @@ class PopupEstado(Popup):
         txt_titulo = self._fuente_titulo.render("ESTADO DEL JUGADOR", True, color_texto)
         superficie.blit(txt_titulo, (self.x + 390, self.y + 130))
         
-        # Datos mockeados
-        txt_salud = self._fuente_texto.render("Salud: Normal", True, color_texto)
+        # Datos reales
+        salud = "Normal"
+        inventario = "Vacío"
+        ubicacion = "Desconocida"
+
+        if hasattr(self, 'campania') and self.campania:
+            estado = self.campania.get_estado()
+            if estado:
+                salud_heroe = estado.get_estado_personaje("heroe")
+                if salud_heroe:
+                    salud = salud_heroe
+
+                objetos = [obj for obj in estado.objetos_heroe if obj]
+                if objetos:
+                    inventario = ", ".join(objetos)
+
+                if estado.ubicacion:
+                    ubicacion = estado.ubicacion
+
+        txt_salud = self._fuente_texto.render(f"Salud: {salud}", True, color_texto)
         superficie.blit(txt_salud, (self.x + 385, self.y + 230))
 
-        txt_inv = self._fuente_texto.render("Inv: Espada, Poción", True, color_texto)
+        txt_inv = self._fuente_texto.render(f"Inv: {inventario}", True, color_texto)
         superficie.blit(txt_inv, (self.x + 385, self.y + 330))
 
-        txt_ub = self._fuente_texto.render("Ubicación: Caverna", True, color_texto)
+        txt_ub = self._fuente_texto.render(f"Ubicación: {ubicacion}", True, color_texto)
         superficie.blit(txt_ub, (self.x + 385, self.y + 430))

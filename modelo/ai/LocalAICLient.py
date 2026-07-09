@@ -55,11 +55,11 @@ class LocalAIClient:
         self.ollama_url = "http://localhost:11434/api/generate"
 
         self.hf_client = InferenceClient(
-            api_key=""
+            api_key=None # REMOVED: Do not hardcode API keys
         )
 
     # --------------------------------------------------
-    # RETRY SIMPLE (ahora version maquina de guerra ultra debugger jajajaj)
+    # RETRY SIMPLE 
     # --------------------------------------------------
     def _retry(self, func, max_reintentos=3):
 
@@ -155,7 +155,7 @@ class LocalAIClient:
     # --------------------------------------------------
     # TEXTO (OLLAMA)
     # --------------------------------------------------
-    def generar_texto(self, prompt, model="qwen3:30b"):
+    def generar_texto(self, prompt, model="llama3"):
 
         def request():
 
@@ -183,7 +183,7 @@ class LocalAIClient:
     # --------------------------------------------------
     # JSON (OLLAMA + PARSEO ROBUSTO)
     # --------------------------------------------------
-    def generar_json(self, prompt, model="qwen3:30b"):
+    def generar_json(self, prompt, model="llama3"):
 
         def extract_json(text):
 
@@ -256,9 +256,8 @@ class LocalAIClient:
 
             payload = {
                 "model": model,
-                "prompt": prompt,
+                "prompt": prompt + "\n\nResponde ÚNICAMENTE con un JSON válido. No agregues texto adicional.",
                 "stream": False,
-                "format": "json",
                 "options": {
                     "num_ctx": 8192,       # Contexto súper amplio para leer todo el JSON y prompt
                     "num_predict": 1024,   # Output JSON suele ser corto, 1024 es sobradísimo
@@ -309,7 +308,14 @@ class LocalAIClient:
                 model="stabilityai/stable-diffusion-xl-base-1.0"
             )
 
-            return imagen
+            import os
+            import time
+            temp_dir = "modelo/game/assets/temp"
+            os.makedirs(temp_dir, exist_ok=True)
+            filepath = f"{temp_dir}/img_{int(time.time()*1000)}.png"
+            imagen.save(filepath)
+
+            return filepath
 
         try:
             return self._retry(request)

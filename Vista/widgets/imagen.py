@@ -51,6 +51,7 @@ class Imagen(Widget):
         self._mantener_proporcion = mantener_proporcion
         self._offset_x = 0
         self._offset_y = 0
+        self.texto_fallback = None
         
         self._superficie_original = None
         self._superficie_escalada = None
@@ -70,11 +71,12 @@ class Imagen(Widget):
     def cambiar_imagen(self, ruta_imagen):
         """
         Solicita una nueva imagen al gestor de recursos y la adapta al widget.
-        
-        Args:
-            ruta_imagen (str): Ruta de la nueva imagen.
+        Si la ruta es nula o vacía, limpia la imagen actual.
         """
-        self._superficie_original = self._gestor_recursos.obtener_imagen(ruta_imagen, alpha=self._alpha)
+        if not ruta_imagen:
+            self._superficie_original = None
+        else:
+            self._superficie_original = self._gestor_recursos.obtener_imagen(ruta_imagen, alpha=self._alpha)
         self._actualizar_escala()
 
     def _actualizar_escala(self):
@@ -129,6 +131,16 @@ class Imagen(Widget):
         self._actualizar_escala()
 
     def dibujar(self, superficie):
-        """Dibuja la imagen en la superficie destino si es visible."""
-        if self.visible and self._superficie_escalada:
+        """Dibuja la imagen en la superficie destino si es visible. Si no hay imagen pero hay un fallback, dibuja el texto."""
+        if not self.visible:
+            return
+            
+        if self._superficie_escalada:
             superficie.blit(self._superficie_escalada, (self.rect.x + self._offset_x, self.rect.y + self._offset_y))
+        elif self.texto_fallback:
+            import pygame
+            fnt = pygame.font.SysFont("arial", 24, italic=True)
+            txt = fnt.render(self.texto_fallback, True, (150, 150, 150))
+            cx = self.rect.x + (self.rect.width - txt.get_width()) // 2
+            cy = self.rect.y + (self.rect.height - txt.get_height()) // 2
+            superficie.blit(txt, (cx, cy))

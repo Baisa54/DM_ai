@@ -101,6 +101,10 @@ class EstadoJuego:
 
         self.final = final
 
+    def get_final(self):
+        
+        return self.final
+
     def set_estado_personaje(
         self,
         personaje,

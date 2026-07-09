@@ -352,17 +352,12 @@ class Campania:
         if not personaje:
             return
 
-        emocion = resultado["Emocion"]
-        personaje_data = PERSONAJES[personaje]
-
-        imagen_generada = generar_imagen_dialogo(
-            personaje_data,
-            emocion
-        )
-
-        self.mensaje.set_imagen_npc(
-            imagen_generada["imagen"]
-        )
+        personaje_data = PERSONAJES.get(personaje)
+        
+        if personaje_data and "imagen" in personaje_data:
+            self.mensaje.set_imagen_npc(
+                personaje_data["imagen"]
+            )
         
     def generar_imagen_resumen(self):
 

@@ -35,7 +35,7 @@ def genMessage():
     )
 
     mensaje.set_imagen_resumen(
-        "game/assets/imagen_inicio.png"
+        "modelo/game/assets/imagen_inicio.png"
     )
 
     return mensaje

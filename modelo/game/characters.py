@@ -27,6 +27,8 @@ PERSONAJES = {
             "Guerrero humano aventurero equipado con una espada común. "
             "Ha aceptado la misión de rescatar a la princesa secuestrada por los goblins.",
 
+        "imagen": "modelo/game/assets/heroe.png",
+
         "prompt_visual":
             "young human male warrior, fantasy RPG hero, medieval armor, steel sword, "
             "determined expression, cinematic lighting, dark fantasy style, highly detailed concept art"
@@ -40,6 +42,8 @@ PERSONAJES = {
         "descripcion":
             "Arquero elfo de gran puntería y amigo leal del héroe. "
             "Valiente y protector de sus aliados.",
+
+        "imagen": "modelo/game/assets/aelar.png",
 
         "prompt_visual":
             "male elf archer, fantasy RPG character, long silver hair, bow and arrows, "
@@ -55,6 +59,8 @@ PERSONAJES = {
             "Pequeña criatura verde de inteligencia limitada. "
             "Hambre constante y comportamiento caótico.",
 
+        "imagen": "modelo/game/assets/goblin.png",
+
         "prompt_visual":
             "small green goblin creature, dirty and mischievous, fantasy dungeon creature, "
             "ragged clothes, ugly face, dark cave lighting, RPG monster concept art"
@@ -69,6 +75,8 @@ PERSONAJES = {
             "Princesa del reino secuestrada por Osgo. "
             "Inteligente y decidida a sobrevivir.",
 
+        "imagen": "modelo/game/assets/princesa.png",
+
         "prompt_visual":
             "beautiful fantasy princess, long elegant dress slightly dirty, chained in dungeon, "
             "soft light, emotional expression, cinematic RPG style, highly detailed"
@@ -82,6 +90,8 @@ PERSONAJES = {
         "descripcion":
             "Líder de los goblins y guerrero temible. "
             "Posee un martillo de guerra y domina la cueva.",
+
+        "imagen": "modelo/game/assets/osgo.png",
 
         "prompt_visual":
             "massive orc warlord boss, muscular, armored, war hammer, intimidating presence, "
