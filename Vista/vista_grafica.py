@@ -80,8 +80,10 @@ class VistaGrafica:
 
         # 5. Iniciar música de fondo (mística/medieval)
         try:
+            from modelo.configuracion import ConfigManager
+            config = ConfigManager()
             pygame.mixer.music.load("Vista/resources/sounds/music.mp3")
-            pygame.mixer.music.set_volume(0.20)
+            pygame.mixer.music.set_volume(config.get_volumen())
             pygame.mixer.music.play(-1) # -1 reproduce en bucle infinito
         except Exception as e:
             print(f"No se pudo cargar la música de fondo: {e}")

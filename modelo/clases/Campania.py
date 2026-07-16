@@ -284,13 +284,15 @@ class Campania:
         estado_objeto = objetos.get("heroe", "Sin cambios")
         nombre_objeto = objetos.get("name_obj", None)
 
-        if estado_objeto != "Sin cambios" and nombre_objeto is not None:
+        if isinstance(estado_objeto, str) and estado_objeto.strip().lower() != "sin cambios" and nombre_objeto:
+            
+            estado_limpio = estado_objeto.strip().lower()
 
-            if estado_objeto == "Pierde":
-                self.estado.quitar_objeto_heroe(nombre_objeto)
+            if "pierde" in estado_limpio:
+                self.estado.quitar_objeto_heroe(str(nombre_objeto).strip())
 
-            elif estado_objeto == "Obtiene":
-                self.estado.agregar_objeto_heroe(nombre_objeto)
+            elif "obtiene" in estado_limpio:
+                self.estado.agregar_objeto_heroe(str(nombre_objeto).strip())
 
         # -------------------------
         # SALA
@@ -363,7 +365,8 @@ class Campania:
 
         imagen = generar_imagen_escena(
             self.mensaje.get_narracion(),
-            self.estado.obtener_imagenes_escena()
+            self.estado.obtener_imagenes_escena(),
+            self.estado.obtener_rutas_imagenes_personajes()
         )
 
         if imagen is not None:
@@ -373,6 +376,7 @@ class Campania:
         else:
 
             print("[DEBUG] imagen no generada")
+            self.mensaje.set_imagen_resumen(None)
         
     def obtener_mensaje_vista(self):
 

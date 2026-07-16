@@ -1,0 +1,5 @@
+pygame>=2.0.0
+requests
+huggingface-hub
+Pillow
+google-genai

@@ -20,11 +20,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
 from modelo.ai.LocalAICLient import LocalAIClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+from modelo.ai.GeminiClient import GeminiClient
+from modelo.configuracion import ConfigManager
 
 PROMPT_IMAGEN_ESCENA = """
 Fantasy RPG illustration.
@@ -50,39 +47,48 @@ Rules:
 
 def generar_imagen_escena(
     narracion,
-    prompts_personajes
+    prompts_personajes,
+    rutas_imagenes=None
     ):
 
     personajes = "\n".join(prompts_personajes)
 
-    prompt_final = f"""
-
+    prompt_instrucciones = f"""
+    Eres un experto en redactar prompts para generadores de imágenes por IA (tipo Midjourney/DALL-E).
+    Necesito que crees UN SOLO prompt en INGLÉS detallado y optimizado basado en esta narración y personajes.
+    Debe centrarse puramente en la parte visual: iluminación, composición, aspecto de los personajes y el entorno.
+    
     {PROMPT_IMAGEN_ESCENA}
 
     CHARACTERS:
-
     {personajes}
 
     SCENE DESCRIPTION:
-
     {narracion}
+    
+    DEVUELVE ÚNICA Y EXCLUSIVAMENTE EL PROMPT EN INGLÉS, SIN INTRODUCCIONES NI COMILLAS NI NOTAS ADICIONALES.
     """
 
     print("\n" + "=" * 80)
-    print("PROMPT IMAGEN")
-    print("=" * 80)
-    print(prompt_final)
-    print("=" * 80)
-
+    print("PIDIENDO A LA IA LOCAL QUE MEJORE EL PROMPT...")
     try:
+        local_ai = LocalAIClient()
+        prompt_optimizado = local_ai.generar_texto(prompt_instrucciones).strip()
+        print("PROMPT OPTIMIZADO GENERADO:")
+        print(prompt_optimizado)
+        print("=" * 80)
 
-        return LocalAIClient().generar_imagen(
-            prompt_final
-        )
+        config = ConfigManager()
+        if config.get_proveedor_imagen() == "gemini":
+            gemini = GeminiClient()
+            return gemini.generar_imagen(
+                prompt=prompt_optimizado,
+                imagenes_referencia=rutas_imagenes
+            )
+        else:
+            return LocalAIClient().generar_imagen(prompt_optimizado)
 
     except Exception as e:
-
         print("\n[ERROR GENERANDO IMAGEN]")
         print(str(e))
-
         return None

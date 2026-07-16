@@ -20,12 +20,9 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
-from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+from modelo.ai.LocalAICLient import LocalAIClient
+from modelo.ai.GeminiClient import GeminiClient
+from modelo.configuracion import ConfigManager
 
 PROMPT_IMAGEN_DIALOGO = """
 Eres un generador de retratos para un RPG narrativo.
@@ -66,7 +63,11 @@ Descripción del personaje:
 
 def generar_imagen_dialogo(personaje, emocion):
 
-    gemini = GeminiClient()
+    config = ConfigManager()
+    if config.get_proveedor_imagen() == "gemini":
+        cliente = GeminiClient()
+    else:
+        cliente = LocalAIClient()
 
     # usamos SOLO prompt_visual del personaje
     prompt_final = PROMPT_IMAGEN_DIALOGO.format(
@@ -74,7 +75,7 @@ def generar_imagen_dialogo(personaje, emocion):
         descripcion=personaje["prompt_visual"]
     )
 
-    imagen_generada = gemini.generar_imagen(prompt_final)
+    imagen_generada = cliente.generar_imagen(prompt_final)
 
     return {
         "imagen": imagen_generada

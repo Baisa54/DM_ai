@@ -23,6 +23,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
 import pygame
+import pygame.scrap
 # pygame se usa para renderizar texto sobre superficies y trazar la línea del cursor
 import time
 # time permite calcular los intervalos del parpadeo del cursor
@@ -76,6 +77,8 @@ class CajaTexto(Widget):
         self.color_texto = (255, 255, 255)
         self.color_placeholder = (180, 180, 180)
         self.color_cursor = (255, 255, 255)
+        self.color_borde = None
+
         
         # Padding (espaciado interno)
         self.padding_x = 20
@@ -111,6 +114,12 @@ class CajaTexto(Widget):
     def texto(self):
         """Propiedad para acceder (solo lectura) al texto actual ingresado por el usuario."""
         return self._texto
+        
+    @texto.setter
+    def texto(self, valor):
+        self._texto = valor
+        self._cursor_pos = len(valor)
+        self._ajustar_scroll()
 
     def limpiar(self):
         """Borra todo el texto contenido."""
@@ -187,6 +196,31 @@ class CajaTexto(Widget):
                 if self._cursor_pos < len(self._texto):
                     self._cursor_pos += 1
                     
+            elif (evento.mod & pygame.KMOD_CTRL or evento.mod & pygame.KMOD_META) and evento.key == pygame.K_c:
+                # Copiar
+                try:
+                    if not pygame.scrap.get_init():
+                        pygame.scrap.init()
+                    pygame.scrap.put_text(self._texto)
+                except Exception as e:
+                    print("Error al copiar:", e)
+                    
+            elif (evento.mod & pygame.KMOD_CTRL or evento.mod & pygame.KMOD_META) and evento.key == pygame.K_v:
+                # Pegar
+                try:
+                    if not pygame.scrap.get_init():
+                        pygame.scrap.init()
+                    texto_pegado = pygame.scrap.get_text()
+                    if texto_pegado:
+                        # Limpiar retornos de carro y nulos
+                        texto_pegado = texto_pegado.replace('\r', '').replace('\n', '').strip('\x00')
+                        for char in texto_pegado:
+                            if char.isprintable() and len(self._texto) < self._max_longitud:
+                                self._texto = self._texto[:self._cursor_pos] + char + self._texto[self._cursor_pos:]
+                                self._cursor_pos += 1
+                except Exception as e:
+                    print("Error al pegar:", e)
+                    
             else:
                 # Escritura de caracteres visibles
                 char = evento.unicode
@@ -235,6 +269,11 @@ class CajaTexto(Widget):
 
         # Dibujar el texto final desplazado por el scroll
         if texto_render:
+            if hasattr(self, 'color_borde') and self.color_borde:
+                for dx, dy in [(-1, -1), (1, -1), (-1, 1), (1, 1), (-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    s_borde = self._fuente.render(texto_render, True, self.color_borde)
+                    superficie.blit(s_borde, (self.x + pad_x - self._scroll_x + dx, self.y + pad_y + dy))
+
             superficie_texto = self._fuente.render(texto_render, True, color_render)
             superficie.blit(superficie_texto, (self.x + pad_x - self._scroll_x, self.y + pad_y))
 

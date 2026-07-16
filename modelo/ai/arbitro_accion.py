@@ -24,101 +24,82 @@
 #   --> Se devuelve el JSON resultante
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Imports
 import json
-# json para el manejo de datos
-from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient 
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-PROMPT_ARBITRO_ACCION = """<system>
-Eres el motor lógico y Árbitro de Acciones de un RPG de texto. Eres un autómata de procesamiento de datos, NO un asistente conversacional. Tu única función es evaluar la acción del jugador contra el estado del mundo y devolver una decisión estructurada.
-</system>
-
-<rules>
-1. VIABILIDAD: Comprueba estrictamente el inventario, ubicación y NPCs presentes. Si la acción es lógicamente imposible (usar un objeto que no se posee, interactuar con alguien ausente), la acción es inválida.
-2. TIRADAS: Solo se requiere tirada (true) si la acción es posible PERO tiene riesgo de fracaso, esfuerzo físico, conflicto o resistencia. Acciones mundanas, caminar, mirar, o hablar de forma casual NO requieren tirada (false).
-3. DIFICULTAD: 
-   - Si no requiere tirada o es inválida, la dificultad DEBE ser 0.
-   - Si requiere tirada, asigna SOLO UN entero: 5 (fácil), 10 (normal), 15 (difícil) o 20 (heroica).
-</rules>
-
-<output_schema>
-Debes retornar EXCLUSIVAMENTE este objeto JSON, sin llaves adicionales:
-{
-  "accion_valida": booleano (true o false),
-  "requiere_tirada": booleano (true o false),
-  "dificultad": entero (0, 5, 10, 15 o 20)
+HERRAMIENTA_EVALUAR_ACCION = {
+    "name": "evaluar_accion_jugador",
+    "description": "Evalúa estrictamente si la acción del jugador es lógicamente posible basándose en su inventario, ubicación actual y entidades presentes en la sala.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "analisis_inventario_y_entorno": {
+                "type": "string",
+                "description": "Razonamiento estricto: ¿El jugador posee el objeto que intenta usar? ¿El objetivo o monstruo al que se dirige está físicamente presente en la sala actual? Explica por qué es o no es posible."
+            },
+            "accion_valida": {
+                "type": "boolean",
+                "description": "Debe ser false si intenta usar objetos que no tiene, invocar criaturas ausentes o hacer magia sin tener el poder. True solo si físicamente puede intentarlo con lo que tiene."
+            },
+            "requiere_tirada": {
+                "type": "boolean",
+                "description": "True solo si la acción es válida y conlleva un riesgo de fracasar (ej: atacar, saltar, empujar). Falso para acciones triviales (hablar, caminar)."
+            },
+            "dificultad": {
+                "type": "integer",
+                "enum": [0, 5, 10, 15, 20],
+                "description": "0 si es inválida o no requiere tirada. Si requiere: 5 (fácil), 10 (normal), 15 (difícil), 20 (casi imposible)."
+            }
+        },
+        "required": ["analisis_inventario_y_entorno", "accion_valida", "requiere_tirada", "dificultad"]
+    }
 }
-</output_schema>
-
-<formatting_constraints>
-- RESPUESTA PURA: No agregues "```json", ni "```", ni introducciones, ni saludos, ni explicaciones.
-- ESTRUCTURA DE INICIO: Tu respuesta DEBE empezar con el carácter '{' y terminar con el carácter '}'.
-- TIPO DE DATOS: Usa valores booleanos nativos de JSON (true/false, sin comillas). La dificultad debe ser un número entero (nunca null, nunca texto).
-</formatting_constraints>
-"""
 
 def arbitrar_accion(accion, estado):
-
-    gemini = GeminiClient()
+    from modelo.configuracion import ConfigManager
+    config = ConfigManager()
+    
+    if config.get_proveedor_texto() == "gemini":
+        from modelo.ai.GeminiClient import GeminiClient
+        cliente = GeminiClient()
+    else:
+        from modelo.ai.LocalAICLient import LocalAIClient
+        cliente = LocalAIClient()
 
     entrada = {
         "accion_jugador": accion,
         "estado_partida": estado.to_dict()
     }
 
-    prompt = f"""{PROMPT_ARBITRO_ACCION}
+    prompt = f"""Eres el Árbitro implacable del juego.
+Tu trabajo es evitar que el jugador haga trampa o alucine elementos que no existen. Revisa detenidamente el inventario del jugador y quién está en la sala antes de permitir la acción.
+Si el jugador intenta algo para lo que no tiene recursos (ej: 'ataco con una metralleta' o 'llamo a un dragón'), debes marcarlo como inválido.
 
-<input_data>
+<contexto_actual>
 {json.dumps(entrada, indent=4, ensure_ascii=False)}
-</input_data>
-"""
+</contexto_actual>
 
-    resultado = gemini.generar_json(prompt)
+Llama a la herramienta para dictaminar."""
+
+    resultado = cliente.generar_con_herramienta(prompt, HERRAMIENTA_EVALUAR_ACCION)
 
     # -----------------------------
-    # DEBUG BRUTAL
+    # DEBUG
     # -----------------------------
     print("\n" + "=" * 80)
     print("RESPUESTA ARBITRO RAW:")
     print(json.dumps(resultado, indent=4, ensure_ascii=False))
     print("=" * 80 + "\n")
 
-    required_keys = ["accion_valida", "requiere_tirada", "dificultad"]
-
-    # -----------------------------
-    # VALIDACIÓN FLEXIBLE
-    # -----------------------------
-    for key in required_keys:
-        if key not in resultado:
-            raise ValueError(f"[ARBITRO] Falta clave obligatoria: {key} -> {resultado}")
-
-    # normalizar dificultad (MUY IMPORTANTE)
-    dificultad = resultado.get("dificultad", None)
-
-    # casos válidos explícitos
-    if dificultad is None:
-        if resultado["requiere_tirada"]:
-            raise ValueError(f"[ARBITRO] dificultad=None pero requiere_tirada=True -> {resultado}")
+    # normalizar dificultad (seguridad adicional por si el LLM falla)
+    dificultad = resultado.get("dificultad", 0)
+    try:
+        dificultad = int(dificultad)
+    except:
         dificultad = 0
 
-    # si viene como string accidental
-    if isinstance(dificultad, str):
-        try:
-            dificultad = int(dificultad)
-        except:
-            raise ValueError(f"[ARBITRO] dificultad no numérica -> {dificultad}")
-
     dificultades_validas = [0, 5, 10, 15, 20]
-
     if dificultad not in dificultades_validas:
-        raise ValueError(
-            f"[ARBITRO] Dificultad inválida: {dificultad} | esperado {dificultades_validas} -> {resultado}"
-        )
+        dificultad = 10 if resultado.get("requiere_tirada") else 0
 
     resultado["dificultad"] = dificultad
 

@@ -58,9 +58,11 @@ from PIL import Image
 class GeminiClient:
 
     def __init__(self):
+        from modelo.configuracion import ConfigManager
+        self.config = ConfigManager()
 
         self.client = genai.Client(
-            api_key=""
+            api_key=self.config.get_gemini_key()
         )
 
     # --------------------------------------------------
@@ -118,11 +120,55 @@ class GeminiClient:
     def generar_texto(
         self,
         prompt,
-        modelo="gemini-2.5-flash"
+        modelo="gemini-2.0-flash"
     ):
 
         def request():
             return self._call(modelo, prompt).text
+
+        return self._retry(request)
+
+    # --------------------------------------------------
+    # TOOL CALLING
+    # --------------------------------------------------
+    def generar_con_herramienta(
+        self,
+        prompt,
+        herramienta_schema,
+        modelo="gemini-2.0-flash"
+    ):
+        from google.genai import types
+
+        func_decl = types.FunctionDeclaration(
+            name=herramienta_schema["name"],
+            description=herramienta_schema.get("description", ""),
+            parameters=herramienta_schema["parameters"]
+        )
+
+        tool = types.Tool(function_declarations=[func_decl])
+
+        config = types.GenerateContentConfig(
+            tools=[tool],
+            temperature=0.0
+        )
+
+        def request():
+            response = self.client.models.generate_content(
+                model=modelo,
+                contents=prompt,
+                config=config
+            )
+
+            if response.function_calls:
+                for call in response.function_calls:
+                    if call.name == herramienta_schema["name"]:
+                        if isinstance(call.args, dict):
+                            return call.args
+                        else:
+                            # Algunos versiones devuelven struct
+                            return dict(call.args)
+                            
+            raise ValueError(f"Gemini no utilizó la herramienta {herramienta_schema['name']}")
 
         return self._retry(request)
 

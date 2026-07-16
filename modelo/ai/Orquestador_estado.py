@@ -31,65 +31,67 @@ from modelo.game.characters import PERSONAJES
 
 
 
-PROMPT_ORQUESTADOR = """<system>
-Eres el "Orquestador de Estado" de un motor RPG. Eres un autómata de extracción de datos, NO un asistente conversacional. Tu tarea es analizar una narración y convertirla estrictamente en un objeto JSON que refleje los cambios de estado del mundo.
-</system>
-
-<rules>
-1. MUTABILIDAD DE ESTADO: No inventes personajes, objetos ni ubicaciones. Usa "Sin cambios" si el estado de un elemento no se vio afectado explícitamente en la narración.
-2. VIDA: Si un personaje sufre daño, asigna "daño". Si se recupera o sana, asigna "se cura".
-3. OBJETOS: Si el héroe pierde un objeto, usa "pierde". Si recoge uno, usa "obtiene". En la clave "name_obj", escribe el nombre literal del objeto afectado (o null si es "Sin cambios").
-4. DIÁLOGOS: Si detectas que un NPC habla y tiene líneas de diálogo, "npc_habla" debe ser true.
-5. RESUMEN: En "accion_Jugador", describe la acción en NO MÁS DE 4 PALABRAS.
-</rules>
-
-<output_schema>
-Debes retornar EXCLUSIVAMENTE este objeto JSON, sin llaves ni texto adicional:
-{
-    "vida": {
-        "heroe": "Sin cambios" | "daño" | "se cura",
-        "companero": "Sin cambios" | "daño" | "se cura",
-        "goblin": "Sin cambios" | "daño" | "se cura",
-        "princesa": "Sin cambios" | "daño" | "se cura",
-        "osgo": "Sin cambios" | "daño" | "se cura"
-    },
-    "objeto": {
-        "heroe": "Sin cambios" | "pierde" | "obtiene",
-        "name_obj": "nombre del objeto" | null
-    },
-    "sala": "Sin cambios" | "entrada_cueva" | "puerta_goblins" | "gran_salon" | "sala_osgo",
-    "npc_habla": true | false,
-    "accion_Jugador": "string (max 4 palabras)"
+HERRAMIENTA_ACTUALIZAR_ESTADO = {
+    "name": "actualizar_estado",
+    "description": "Actualiza el estado de los personajes, inventario y ubicacion tras la narración.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "vida": {
+                "type": "object",
+                "properties": {
+                    "heroe": {"type": "string", "enum": ["Sin cambios", "daño", "se cura"]},
+                    "companero": {"type": "string", "enum": ["Sin cambios", "daño", "se cura"]},
+                    "goblin": {"type": "string", "enum": ["Sin cambios", "daño", "se cura"]},
+                    "princesa": {"type": "string", "enum": ["Sin cambios", "daño", "se cura"]},
+                    "osgo": {"type": "string", "enum": ["Sin cambios", "daño", "se cura"]}
+                },
+                "required": ["heroe", "companero", "goblin", "princesa", "osgo"]
+            },
+            "objeto": {
+                "type": "object",
+                "properties": {
+                    "heroe": {"type": "string", "enum": ["Sin cambios", "pierde", "obtiene"]},
+                    "name_obj": {"type": "string", "description": "Nombre literal del objeto afectado, o vacio si no hay cambios"}
+                },
+                "required": ["heroe", "name_obj"]
+            },
+            "sala": {
+                "type": "string",
+                "enum": ["Sin cambios", "entrada_cueva", "puerta_goblins", "gran_salon", "sala_osgo"]
+            },
+            "npc_habla": {
+                "type": "boolean",
+                "description": "Devuelve true si algun personaje que no sea el jugador dijo dialogos."
+            },
+            "accion_Jugador": {
+                "type": "string",
+                "description": "Resumen muy breve de la accion, maximo 4 palabras."
+            }
+        },
+        "required": ["vida", "objeto", "sala", "npc_habla", "accion_Jugador"]
+    }
 }
-</output_schema>
-
-<formatting_constraints>
-- RESPUESTA PURA: No agregues "```json", ni introducciones, ni explicaciones.
-- ESTRUCTURA DE INICIO: Tu respuesta DEBE empezar con el carácter '{' y terminar con el carácter '}'.
-- CUIDADO DE COMAS: Verifica que no te falten comas entre propiedades, como entre "npc_habla" y "accion_Jugador".
-</formatting_constraints>
-"""
 
 
 def construir_contexto_orquestador(narracion):
-    return f"""<input_data>
-<salas_permitidas>
-{list(SALAS.keys())}
-</salas_permitidas>
-
-<personajes_permitidos>
-{list(PERSONAJES.keys())}
-</personajes_permitidos>
-
+    return f"""Eres el motor de estado del juego. Extrae los cambios de estado de la siguiente narración llamando a la herramienta `actualizar_estado`.
 <narracion>
 {narracion}
-</narracion>
-</input_data>"""
+</narracion>"""
 
 def orquestar_narracion(narracion):
-    gemini = GeminiClient()
-    prompt = f"{PROMPT_ORQUESTADOR}\n\n{construir_contexto_orquestador(narracion)}"
-
-    resultado = gemini.generar_json(prompt)
+    from modelo.configuracion import ConfigManager
+    config = ConfigManager()
+    
+    if config.get_proveedor_texto() == "gemini":
+        from modelo.ai.GeminiClient import GeminiClient
+        cliente = GeminiClient()
+    else:
+        from modelo.ai.LocalAICLient import LocalAIClient
+        cliente = LocalAIClient()
+        
+    prompt = construir_contexto_orquestador(narracion)
+    resultado = cliente.generar_con_herramienta(prompt, HERRAMIENTA_ACTUALIZAR_ESTADO)
 
     return resultado

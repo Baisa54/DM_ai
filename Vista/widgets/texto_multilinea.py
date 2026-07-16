@@ -107,8 +107,25 @@ class TextoMultilinea(Widget):
 
         # Manejo de scroll si el cursor está sobre la caja
         if self.rect.collidepoint(pygame.mouse.get_pos()):
+            cambio_scroll = 0
             if evento.type == pygame.MOUSEWHEEL:
-                self._scroll_y -= evento.y * 30
+                # Usar precise_y si está disponible para touchpads suaves (Pygame 2)
+                y_val = getattr(evento, 'precise_y', evento.y)
+                # Si es touchpad el valor puede ser decimal muy chico, lo multiplicamos
+                cambio_scroll = -y_val * 40
+                
+                # Si el sistema solo arroja valores de rueda normales, garantizamos movimiento
+                if cambio_scroll == 0 and evento.y != 0:
+                    cambio_scroll = -evento.y * 40
+                    
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if evento.button == 4: # Scroll Up
+                    cambio_scroll = -40
+                elif evento.button == 5: # Scroll Down
+                    cambio_scroll = 40
+
+            if cambio_scroll != 0:
+                self._scroll_y += cambio_scroll
                 
                 # Limitar el scroll
                 max_scroll = max(0, self._alto_total_texto - (self.alto - (self.padding_y * 2)))

@@ -50,12 +50,15 @@ import requests
 class LocalAIClient:
 
     def __init__(self):
+        from modelo.configuracion import ConfigManager
+        self.config = ConfigManager()
 
         # Ollama local
         self.ollama_url = "http://localhost:11434/api/generate"
 
+        hf_key = self.config.get_huggingface_key()
         self.hf_client = InferenceClient(
-            api_key=None # REMOVED: Do not hardcode API keys
+            api_key=hf_key if hf_key else None
         )
 
     # --------------------------------------------------
@@ -90,22 +93,25 @@ class LocalAIClient:
                 traceback.print_exc()
 
                 # 🔴 POSIBLES CAUSAS AUTOMÁTICAS
+                # R POSIBLES CAUSAS AUTOMATICAS
                 print("\n[DIAGNOSTIC CHECKLIST]")
 
                 # 1. RED
                 try:
                     socket.gethostbyname("localhost")
-                    print("✔ localhost resolvible")
-                except:
-                    print("❌ problema DNS localhost")
-
+                    print("[+] localhost resolvible")
+                except Exception as e:
+                    print("[x] problema DNS localhost")
+                    print(f"[!] {e}")
+                    pass
+                
                 # 2. OLLAMA
                 try:
                     import requests
                     r = requests.get("http://localhost:11434", timeout=3)
-                    print(f"✔ Ollama responde HTTP {r.status_code}")
+                    print(f"[+] Ollama responde HTTP {r.status_code}")
                 except Exception as ollama_err:
-                    print(f"❌ Ollama no responde: {repr(ollama_err)}")
+                    print(f"[x] Ollama no responde: {repr(ollama_err)}")
 
                 # 3. HF CLIENT EXISTE
                 try:
@@ -155,7 +161,8 @@ class LocalAIClient:
     # --------------------------------------------------
     # TEXTO (OLLAMA)
     # --------------------------------------------------
-    def generar_texto(self, prompt, model="llama3"):
+    def generar_texto(self, prompt):
+        model = self.config.get_modelo_local()
 
         def request():
 
@@ -183,7 +190,8 @@ class LocalAIClient:
     # --------------------------------------------------
     # JSON (OLLAMA + PARSEO ROBUSTO)
     # --------------------------------------------------
-    def generar_json(self, prompt, model="llama3"):
+    def generar_json(self, prompt):
+        model = self.config.get_modelo_local()
 
         def extract_json(text):
 
@@ -223,6 +231,8 @@ class LocalAIClient:
 
                 print("\n" + "=" * 80)
                 print("❌ LOCAL AI JSON ERROR")
+                
+
                 print("=" * 80)
 
                 print("\n[ERROR TYPE]")
@@ -328,3 +338,56 @@ class LocalAIClient:
             print(str(e))
 
             return None
+
+    # --------------------------------------------------
+    # TOOL CALLING (OLLAMA)
+    # --------------------------------------------------
+    def generar_con_herramienta(self, prompt, herramienta_schema):
+        model = self.config.get_modelo_local()
+
+        def request():
+            url = self.ollama_url.replace("/api/generate", "/api/chat")
+            
+            payload = {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "stream": False,
+                "options": {
+                    "temperature": 0.0
+                },
+                "tools": [
+                    {
+                        "type": "function",
+                        "function": herramienta_schema
+                    }
+                ]
+            }
+
+            import requests
+            r = requests.post(
+                url,
+                json=payload,
+                timeout=3000  
+            )
+
+            r.raise_for_status()
+            respuesta = r.json()
+            
+            mensaje = respuesta.get("message", {})
+            tool_calls = mensaje.get("tool_calls", [])
+            
+            if not tool_calls:
+                raise ValueError("Ollama no devolvió llamadas a herramientas (tool_calls vacío)")
+                
+            for call in tool_calls:
+                func = call.get("function", {})
+                if func.get("name") == herramienta_schema["name"]:
+                    args = func.get("arguments", {})
+                    if isinstance(args, str):
+                        import json
+                        args = json.loads(args)
+                    return args
+                    
+            raise ValueError(f"Ollama no utilizó la herramienta esperada {herramienta_schema['name']}")
+
+        return self._retry(request)

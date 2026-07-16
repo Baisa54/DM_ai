@@ -24,58 +24,72 @@
 #   --> Se encarga de devolver el JSON resultante
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Imports
 import json
-# json para el manejo de datos
-from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient 
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-PROMPT_DIALOGADOR = """<system>
-Eres un analizador léxico y separador de diálogos para un motor de RPG narrativo. Eres un autómata de procesamiento de texto, NO un asistente conversacional. Tu tarea es recibir un bloque de texto narrativo, extraer el diálogo principal de un NPC, y devolver la narración reescrita SIN diálogos directos.
-</system>
-
-<rules>
-1. DETECCIÓN: Analiza la narración recibida buscando cualquier línea de diálogo pronunciada por personajes.
-2. REESCRITURA DE NARRACIÓN: Elimina TODOS los diálogos directos ("textos entre comillas" o guiones) de TODOS los personajes (incluido el Héroe). Reescribe la narración de forma fluida resumiendo lo sucedido pero SIN incluir citas textuales de nadie.
-3. EXTRACCIÓN DE DIÁLOGO NPC: Extrae exactamente el texto del diálogo (sin comillas) del NPC más importante que haya hablado. 
-4. EXCLUSIÓN DEL HÉROE: Si el Héroe (jugador) habla, ignóralo por completo para los campos 'Personaje', 'Emocion' y 'dialogo'. Estos campos son SOLO para NPCs.
-5. PRIORIDAD DE NPCs (de mayor a menor): osgo > princesa > companero > goblin. (Solo usa estos nombres exactamente en minúscula). Si hablan varios, extrae solo al de mayor prioridad.
-6. EMOCIONES PERMITIDAS: feliz, triste, enojado, asustado, sorprendido, neutral. Selecciona una en base al tono del diálogo.
-</rules>
-
-<output_schema>
-Debes retornar EXCLUSIVAMENTE este objeto JSON, sin llaves ni texto adicional:
-{
-  "Narracion": "La narración original reescrita y adaptada, eliminando cualquier diálogo directo.",
-  "Personaje": "nombre en minúscula del NPC que habla (o null si nadie habla)",
-  "Emocion": "una de las emociones permitidas (o null si nadie habla)",
-  "dialogo": "texto exacto de lo que dijo el NPC (o null si nadie habla)"
+HERRAMIENTA_EXTRAER_DIALOGO = {
+    "name": "extraer_dialogo_npc",
+    "description": "Analiza una narración para extraer el diálogo directo del NPC más importante y reescribe la narración sin diálogos.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "narracion_analisis": {
+                "type": "string",
+                "description": "Piensa brevemente: ¿Hay diálogos directos? ¿Quién los dice? Ignora al héroe. Prioridad: osgo > princesa > companero > goblin."
+            },
+            "Narracion": {
+                "type": "string",
+                "description": "La narración original reescrita y adaptada fluidamente, eliminando TODO diálogo directo de cualquier personaje."
+            },
+            "Personaje": {
+                "type": "string",
+                "enum": ["companero", "goblin", "princesa", "osgo"],
+                "description": "Nombre del NPC que habla. Si nadie habla o solo habla el héroe, omite este campo o envíalo vacío.",
+                "nullable": True
+            },
+            "Emocion": {
+                "type": "string",
+                "enum": ["feliz", "triste", "enojado", "asustado", "sorprendido", "neutral"],
+                "description": "Emoción que transmite el diálogo. Omite si nadie habla.",
+                "nullable": True
+            },
+            "dialogo": {
+                "type": "string",
+                "description": "Texto exacto pronunciado por el NPC (sin comillas). Omite si nadie habla.",
+                "nullable": True
+            }
+        },
+        "required": ["narracion_analisis", "Narracion"]
+    }
 }
-</output_schema>
-
-<formatting_constraints>
-- RESPUESTA PURA: No agregues "```json", ni introducciones ("Aquí tienes..."), ni explicaciones.
-- ESTRUCTURA DE INICIO: Tu respuesta DEBE empezar con el carácter '{' y terminar con el carácter '}'.
-- TIPO DE DATOS: Si no hay diálogo de NPC, Personaje, Emocion y dialogo DEBEN ser el valor null nativo de JSON (no el string "null").
-</formatting_constraints>
-"""
 
 def dialogador(narracion):
+    from modelo.configuracion import ConfigManager
+    config = ConfigManager()
+    
+    if config.get_proveedor_texto() == "gemini":
+        from modelo.ai.GeminiClient import GeminiClient
+        cliente = GeminiClient()
+    else:
+        from modelo.ai.LocalAICLient import LocalAIClient
+        cliente = LocalAIClient()
 
-    gemini = GeminiClient()
+    prompt = f"""<system>
+Eres el Dialogador del motor RPG. Eres una máquina de procesamiento estructural.
+NO DEBES RESPONDER CON TEXTO NORMAL. TU ÚNICO PROPÓSITO ES INVOCAR LA HERRAMIENTA `extraer_dialogo_npc`.
 
-    prompt = f"""{PROMPT_DIALOGADOR}
+Reglas:
+- Se te entregará una narración generada por el DM. Debes detectar si un NPC importante habló.
+- Prioridad: osgo > princesa > companero > goblin. (Si hablan varios, extrae solo al de mayor prioridad).
+- Si el héroe habla, ignóralo, solo nos importan los NPCs.
+- DEBES usar la herramienta provista para enviar tu respuesta estructurada. NUNCA respondas con texto libre.
+</system>
 
-<input_data>
+<narracion_original>
 {narracion}
-</input_data>
+</narracion_original>
 """
 
-    resultado = gemini.generar_json(prompt)
+    resultado = cliente.generar_con_herramienta(prompt, HERRAMIENTA_EXTRAER_DIALOGO)
 
     personaje = resultado.get("Personaje")
     emocion = resultado.get("Emocion")
@@ -91,9 +105,13 @@ def dialogador(narracion):
         "companero": "companero",
         "compañero": "companero",
         "aelar": "companero",
+        "elfo": "companero",
+        "arquero": "companero",
         "goblin": "goblin",
+        "goblins": "goblin",
         "princesa": "princesa",
-        "osgo": "osgo"
+        "osgo": "osgo",
+        "orco": "osgo"
     }
 
     MAP_EMOCIONES = {

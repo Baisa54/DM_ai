@@ -163,3 +163,14 @@ class EstadoJuego:
             )
 
         return imagenes
+
+    def obtener_rutas_imagenes_personajes(self):
+        rutas = []
+        if "imagen" in PERSONAJES["heroe"]:
+            rutas.append(PERSONAJES["heroe"]["imagen"])
+            
+        for personaje in self.personajes_presentes:
+            if "imagen" in PERSONAJES[personaje]:
+                rutas.append(PERSONAJES[personaje]["imagen"])
+                
+        return rutas

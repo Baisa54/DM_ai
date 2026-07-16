@@ -16,64 +16,74 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
-from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
 import json
-# json para el manejo de datos
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-PROMPT_VERIFICADOR_FINALES = """<system>
-Eres el "Verificador de Finales" de un RPG narrativo. Eres un autómata de procesamiento lógico, NO un asistente conversacional. Tu tarea es cruzar el estado actual y la última narración para determinar si el juego ha terminado.
-</system>
-
-<rules>
-Evalúa las condiciones y decide el final correspondiente. 
-SOLO puedes elegir UNO de los siguientes finales válidos:
-
-1. "muerte heroe": Se cumple ÚNICAMENTE si estado_personajes["heroe"] == "muerto".
-2. "Escape": Se cumple ÚNICAMENTE si el héroe está en "entrada_cueva" Y la narración indica explícitamente que abandona la misión o huye.
-3. "Alianza goblin": Se cumple ÚNICAMENTE si el héroe se alía con los goblins o con Osgo traicionando al reino.
-4. "rescate princesa": Se cumple ÚNICAMENTE si Osgo está "muerto", la princesa está "vivo", Y la narración indica que fue liberada o rescatada.
-5. "muerte princesa": Se cumple ÚNICAMENTE si estado_personajes["princesa"] == "muerto".
-
-Si ninguna de estas condiciones se cumple de forma explícita, el final es "sin_final".
-</rules>
-
-<output_schema>
-Debes retornar EXCLUSIVAMENTE este objeto JSON, sin llaves ni texto adicional:
-{
-  "final": "sin_final" | "muerte heroe" | "rescate princesa" | "Alianza goblin" | "Escape" | "muerte princesa"
+HERRAMIENTA_VERIFICAR_FINAL = {
+    "name": "verificar_final_juego",
+    "description": "Cruza el estado actual del juego y la última narración para determinar si el juego ha terminado en alguno de los finales oficiales.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "razonamiento": {
+                "type": "string",
+                "description": "Explica brevemente por qué se cumple o no se cumple un final, basándote en el estado de los personajes y la narración."
+            },
+            "final": {
+                "type": "string",
+                "enum": ["sin_final", "muerte heroe", "rescate princesa", "Alianza goblin", "Escape", "muerte princesa"],
+                "description": "El final alcanzado. Si no hay indicios claros de que el juego haya terminado, usa 'sin_final'."
+            }
+        },
+        "required": ["razonamiento", "final"]
+    }
 }
-</output_schema>
-
-<formatting_constraints>
-- RESPUESTA PURA: No agregues "```json", ni introducciones, ni explicaciones.
-- ESTRUCTURA DE INICIO: Tu respuesta DEBE empezar con el carácter '{' y terminar con el carácter '}'.
-- VALORES: El valor de la clave "final" DEBE ser una de las 6 strings exactas especificadas. No inventes otros valores.
-</formatting_constraints>
-"""
-
 
 def verificar_final(estado, narracion):
-    gemini = GeminiClient()
+    from modelo.configuracion import ConfigManager
+    config = ConfigManager()
+    
+    if config.get_proveedor_texto() == "gemini":
+        from modelo.ai.GeminiClient import GeminiClient
+        cliente = GeminiClient()
+    else:
+        from modelo.ai.LocalAICLient import LocalAIClient
+        cliente = LocalAIClient()
+
     entrada = {
         "estado_partida": estado.to_dict(),
         "narracion": narracion
     }
 
-    prompt = f"""{PROMPT_VERIFICADOR_FINALES}
+    prompt = f"""<system>
+Eres el Verificador de Finales del juego. Eres una máquina de procesamiento estructural.
+NO DEBES RESPONDER CON TEXTO NORMAL. TU ÚNICO PROPÓSITO ES INVOCAR LA HERRAMIENTA `verificar_final_juego`.
 
-<input_data>
+Tu tarea es decidir si la partida ha terminado basándote en la última narración y el estado.
+REGLAS ESTRICTAS DE FINALES:
+1. "muerte heroe": Solo si el héroe está muerto (estado "muerto") o la narración dice explícitamente que murió.
+2. "Escape": Solo si el héroe está en "entrada_cueva" y la narración dice que huye o abandona.
+3. "Alianza goblin": Solo si el héroe se alía con los goblins o con Osgo.
+4. "rescate princesa": Solo si Osgo está muerto, la princesa está viva, y la narración dice que fue rescatada.
+5. "muerte princesa": Solo si la princesa muere.
+
+Si ninguna condición se cumple explícitamente de forma concluyente, el final es "sin_final".
+DEBES usar la herramienta provista para enviar tu respuesta. NUNCA respondas con texto libre.
+</system>
+
+<contexto_actual>
 {json.dumps(entrada, indent=4, ensure_ascii=False)}
-</input_data>
+</contexto_actual>
 """
 
-    resultado = gemini.generar_json(
-        prompt
-    )
+    resultado = cliente.generar_con_herramienta(prompt, HERRAMIENTA_VERIFICAR_FINAL)
+
+    # -----------------------------
+    # DEBUG
+    # -----------------------------
+    print("\n" + "=" * 80)
+    print("RESPUESTA VERIFICADOR FINAL RAW:")
+    print(json.dumps(resultado, indent=4, ensure_ascii=False))
+    print("=" * 80 + "\n")
 
     finales_validos = [
         "sin_final",
@@ -84,10 +94,10 @@ def verificar_final(estado, narracion):
         "muerte princesa"
     ]
 
-    if resultado["final"] not in finales_validos:
-
-        raise ValueError(
-            "Final inválido devuelto por Gemini"
-        )
+    final = resultado.get("final", "sin_final")
+    if final not in finales_validos:
+        final = "sin_final"
+        
+    resultado["final"] = final
 
     return resultado

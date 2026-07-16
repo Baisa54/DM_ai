@@ -89,15 +89,18 @@ class EscenaJuego(EscenaBase):
         )
         self.agregar_widget(btn_cerrar)
 
-        # 4.5. Botón de Control de Volumen (Al lado del botón de cerrar)
-        from Vista.widgets.boton_volumen import BotonVolumen
-        # Tamaño 80x80, centrado verticalmente con el botón de cerrar
-        btn_volumen = BotonVolumen(
-            x=btn_cerrar.x - 80 - 20, y=20 + (140 - 80) // 2,
-            ancho=80, alto=80,
-            gestor_recursos=gestor_recursos
+        # 4.5. Botón de Configuración (Tuerca/Ajustes)
+        from Vista.widgets.boton import Boton
+        btn_config = Boton(
+            x=btn_cerrar.x - 100 - 20, y=20 + (140 - 100) // 2,
+            ruta_normal="Vista/resources/images/config_normal.png",
+            ruta_hover="Vista/resources/images/config_hover.png",
+            ruta_presionado="Vista/resources/images/config_pressed.png",
+            gestor_recursos=gestor_recursos,
+            ancho=100, alto=100,
+            on_click=lambda: getattr(self, 'popup_configuracion', None) and self.popup_configuracion.abrir()
         )
-        self.agregar_widget(btn_volumen)
+        self.agregar_widget(btn_config)
 
         # 4.6 Botón DEBUG oculto
         self._debug_visible = False
@@ -249,6 +252,14 @@ class EscenaJuego(EscenaBase):
             on_cerrar=lambda: None
         )
         self.agregar_widget(self.popup_estado)
+
+        # 10.5. Modal de Configuración
+        from Vista.widgets.popup_configuracion import PopupConfiguracion
+        self.popup_configuracion = PopupConfiguracion(
+            gestor_recursos=gestor_recursos,
+            on_cerrar=lambda: None
+        )
+        self.agregar_widget(self.popup_configuracion)
 
         # 11. Modal de Tirada D20
         from Vista.widgets.popup_d20 import PopupD20
@@ -439,9 +450,18 @@ class EscenaJuego(EscenaBase):
                 return True
                 
             # Botón Nube de Diálogo (si hay diálogo)
-            # Dibujado aprox en: x entre 920 y 1000, y entre 500 y 580 (centro derecha)
-            if getattr(self, '_hay_dialogo', False):
-                if 920 <= x <= 1000 and 500 <= y <= 580:
+            # No se puede clickear si hay un popup abierto
+            popup_abierto = (
+                (getattr(self, 'popup_salir', None) and self.popup_salir.visible) or
+                (getattr(self, 'popup_reiniciar', None) and self.popup_reiniciar.visible) or
+                (getattr(self, 'popup_estado', None) and self.popup_estado.visible) or
+                (getattr(self, 'popup_configuracion', None) and self.popup_configuracion.visible) or
+                (getattr(self, 'popup_d20', None) and self.popup_d20.visible)
+            )
+            
+            if getattr(self, '_hay_dialogo', False) and not popup_abierto:
+                # Posición: x=1800, y=150, tamaño 80x80
+                if 1800 <= x <= 1880 and 150 <= y <= 230:
                     self._dialogo_fullscreen_visible = True
                     return True
                     
@@ -508,10 +528,19 @@ class EscenaJuego(EscenaBase):
         fnt_debug_btn = pygame.font.Font(None, 20)
         superficie.blit(fnt_debug_btn.render("DEBUG", True, (200, 200, 200)), (10, 8))
 
-        # Dibujar botón de nube de diálogo si hay diálogo
-        if getattr(self, '_hay_dialogo', False):
-            # Centro derecha aprox: x=920, y=500
-            bx, by = 920, 500
+        # Chequear si hay un popup abierto para ocultar la burbuja
+        popup_abierto = (
+            (getattr(self, 'popup_salir', None) and self.popup_salir.visible) or
+            (getattr(self, 'popup_reiniciar', None) and self.popup_reiniciar.visible) or
+            (getattr(self, 'popup_estado', None) and self.popup_estado.visible) or
+            (getattr(self, 'popup_configuracion', None) and self.popup_configuracion.visible) or
+            (getattr(self, 'popup_d20', None) and self.popup_d20.visible)
+        )
+
+        # Dibujar botón de nube de diálogo si hay diálogo y no hay popups tapando
+        if getattr(self, '_hay_dialogo', False) and not popup_abierto:
+            # A la derecha del todo
+            bx, by = 1800, 150
             bw, bh = 80, 80
             pygame.draw.ellipse(superficie, (200, 200, 255), (bx, by, bw, bh))
             pygame.draw.ellipse(superficie, (50, 50, 150), (bx, by, bw, bh), 3)
