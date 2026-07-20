@@ -386,6 +386,34 @@ class LocalAIClient:
                     if isinstance(args, str):
                         import json
                         args = json.loads(args)
+                        
+                    # NORMALIZACIÓN GLOBAL DE BOOLEANOS
+                    # Previene el error de LLMs locales devolviendo "false" (string) 
+                    # en lugar de false (booleano matemático)
+                    def normalize_booleans(d):
+                        if isinstance(d, dict):
+                            for k, v in d.items():
+                                if isinstance(v, str):
+                                    v_low = v.lower().strip()
+                                    if v_low == "true":
+                                        d[k] = True
+                                    elif v_low == "false":
+                                        d[k] = False
+                                elif isinstance(v, dict) or isinstance(v, list):
+                                    normalize_booleans(v)
+                        elif isinstance(d, list):
+                            for i, v in enumerate(d):
+                                if isinstance(v, str):
+                                    v_low = v.lower().strip()
+                                    if v_low == "true":
+                                        d[i] = True
+                                    elif v_low == "false":
+                                        d[i] = False
+                                elif isinstance(v, dict) or isinstance(v, list):
+                                    normalize_booleans(v)
+                        return d
+                        
+                    args = normalize_booleans(args)
                     return args
                     
             raise ValueError(f"Ollama no utilizó la herramienta esperada {herramienta_schema['name']}")

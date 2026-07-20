@@ -67,8 +67,8 @@ from modelo.tools.gen_messege import genMessage
 from modelo.ai.narrador import narrar_accion, narrar_final
 # narrar_accion es el encargado de generar la narracion de la accion
 # narrar_final es el encargado de generar el final de la historia
-from modelo.ai.Orquestador_estado import orquestar_narracion
-# orquestar_narracion es el encargado de orquestar la narracion
+from modelo.ai.Orquestador_estado import orquestar_accion
+# orquestar_accion es el encargado de actualizar el estado de la partida
 from modelo.ai.Verificador_finales import verificar_final
 # verificar_final es el encargado de verificar los finales
 from modelo.ai.imagen_NPC import generar_imagen_dialogo
@@ -209,15 +209,20 @@ class Campania:
         texto = narrar_accion(
             self.contexto.get_prompt_jugador(),
             self.estado,
-            self.contexto.get_resultado_d20()
+            self.contexto.get_resultado_d20(),
+            getattr(self, "ubicacion_anterior", None)
         )
 
         self.mensaje.set_narracion(texto)
 
     def orquestador(self):
 
-        resultado = orquestar_narracion(
-            self.mensaje.get_narracion()
+        self.ubicacion_anterior = self.estado.get_ubicacion()
+
+        resultado = orquestar_accion(
+            self.contexto.get_prompt_jugador(),
+            self.contexto.get_resultado_d20(),
+            self.estado
         )
 
         # -------------------------
@@ -298,17 +303,16 @@ class Campania:
         # SALA
         # -------------------------
         sala = resultado.get("sala", "Sin cambios")
+        ubicacion_actual = self.estado.get_ubicacion()
 
-        salas_validas = [
-            "entrada_cueva",
-            "puerta_goblins",
-            "gran_salon",
-            "sala_osgo"
-        ]
-
-        if sala in salas_validas:
-
-            self.estado.set_ubicacion(sala)
+        from modelo.game.campaign import SALAS
+        
+        if sala != "Sin cambios" and sala in SALAS:
+            salidas_validas = SALAS.get(ubicacion_actual, {}).get("salidas", [])
+            if sala in salidas_validas or sala == ubicacion_actual:
+                self.estado.set_ubicacion(sala)
+            else:
+                print(f"[Orquestador] SALTO INVÁLIDO IGNORADO: De {ubicacion_actual} a {sala}. Solo permitidas: {salidas_validas}")
 
         # -------------------------
         # NPC HABLA
@@ -335,37 +339,53 @@ class Campania:
     def habla_personaje(self):
 
         resultado = dialogador(
-            self.mensaje.get_narracion()
+            self.mensaje.get_narracion(),
+            self.estado.personajes_presentes
         )
 
         narracion_actual = self.mensaje.get_narracion()
+        narracion_limpia = resultado.get("Narracion") or narracion_actual
+        dialogo = resultado.get("dialogo")
+        personaje = resultado.get("Personaje")
+        
+        if personaje and dialogo:
+            import re
+            # Primero intentar limpiar la frase con su introducción (ej: dice: "hola" -> dice.)
+            narracion_limpia = re.sub(r'[:,]\s*\"[^\"]*\"', '.', narracion_limpia)
+            # Limpiar cualquier otra cosa entre comillas que haya quedado
+            narracion_limpia = re.sub(r'\"[^\"]*\"', '', narracion_limpia)
+            # Fallback en caso de que el LLM no haya usado comillas
+            if dialogo in narracion_limpia:
+                narracion_limpia = narracion_limpia.replace(dialogo, "")
+            
+            # Limpiar posibles dobles puntos o espacios sobrantes
+            narracion_limpia = narracion_limpia.replace('..', '.').replace(' .', '.').strip()
 
-        self.mensaje.set_narracion(
-            resultado["Narracion"] or narracion_actual
-        )
+        self.mensaje.set_narracion(narracion_limpia)
 
+        # Actualizar primero la imagen del personaje (si existe)
+        if personaje:
+            personaje_data = PERSONAJES.get(personaje)
+            if personaje_data and "imagen" in personaje_data:
+                self.mensaje.set_imagen_npc(
+                    personaje_data["imagen"]
+                )
+
+        # Ahora sí, setear el diálogo usando la imagen actualizada
         self.mensaje.set_dialogo_npc(
-            resultado["dialogo"],
+            dialogo,
             self.mensaje.get_imagen_npc() 
         )
-
-        personaje = resultado.get("Personaje")
-
-        if not personaje:
-            return
-
-        personaje_data = PERSONAJES.get(personaje)
-        
-        if personaje_data and "imagen" in personaje_data:
-            self.mensaje.set_imagen_npc(
-                personaje_data["imagen"]
-            )
         
     def generar_imagen_resumen(self):
+        from modelo.game.campaign import SALAS
+        ubicacion_actual = self.estado.get_ubicacion()
+        descripcion_sala = SALAS.get(ubicacion_actual, {}).get("descripcion", "")
 
         imagen = generar_imagen_escena(
             self.mensaje.get_narracion(),
             self.estado.obtener_imagenes_escena(),
+            descripcion_sala,
             self.estado.obtener_rutas_imagenes_personajes()
         )
 

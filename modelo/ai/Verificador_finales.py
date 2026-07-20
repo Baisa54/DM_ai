@@ -61,7 +61,7 @@ NO DEBES RESPONDER CON TEXTO NORMAL. TU ÚNICO PROPÓSITO ES INVOCAR LA HERRAMIE
 Tu tarea es decidir si la partida ha terminado basándote en la última narración y el estado.
 REGLAS ESTRICTAS DE FINALES:
 1. "muerte heroe": Solo si el héroe está muerto (estado "muerto") o la narración dice explícitamente que murió.
-2. "Escape": Solo si el héroe está en "entrada_cueva" y la narración dice que huye o abandona.
+2. "Escape": Si la narración dice explícitamente que el héroe huye, abandona la misión, o se aleja definitivamente de la aventura, sin importar en qué sala se encuentre.
 3. "Alianza goblin": Solo si el héroe se alía con los goblins o con Osgo.
 4. "rescate princesa": Solo si Osgo está muerto, la princesa está viva, y la narración dice que fue rescatada.
 5. "muerte princesa": Solo si la princesa muere.

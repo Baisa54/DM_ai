@@ -3,3 +3,4 @@ requests
 huggingface-hub
 Pillow
 google-genai
+pyperclip

@@ -244,6 +244,14 @@ class EscenaJuego(EscenaBase):
         )
         self.agregar_widget(self.popup_reiniciar)
 
+        # 9.5 Modal Alerta
+        from Vista.widgets.popup_alerta import PopupAlerta
+        self.popup_alerta = PopupAlerta(
+            gestor_recursos=gestor_recursos,
+            texto_alerta="Acción no válida.\nEl DM rechaza esta acción."
+        )
+        self.agregar_widget(self.popup_alerta)
+
         # 10. Modal de Estado del Personaje
         from Vista.widgets.popup_estado import PopupEstado
         self.popup_estado = PopupEstado(
@@ -333,6 +341,8 @@ class EscenaJuego(EscenaBase):
                     # Dar feedback visual en el pergamino para que el usuario sepa qué pasó
                     texto_actual = self.texto_narracion.texto
                     self.texto_narracion.texto = texto_actual + "\n\n[El DM rechaza tu acción por considerarla imposible, fuera de contexto o inválida. Intenta otra cosa.]"
+                    
+                    self._abrir_alerta_flag = True
                     return
                     
                 if resultado.get("requiere_tirada", False):
@@ -358,13 +368,13 @@ class EscenaJuego(EscenaBase):
     def _procesar_turno_ai(self):
         """Ejecuta toda la lógica de la campaña en segundo plano."""
         try:
-            self.mensaje_procesando = "Narrando la historia..."
-            print("[IA] Narrando...")
-            self.campania.narracion()
-            
             self.mensaje_procesando = "Actualizando el estado del mundo..."
             print("[IA] Orquestador...")
             self.campania.orquestador()
+
+            self.mensaje_procesando = "Narrando la historia..."
+            print("[IA] Narrando...")
+            self.campania.narracion()
             
             self.mensaje_procesando = "Verificando el destino..."
             print("[IA] Verificando finales...")
@@ -470,6 +480,18 @@ class EscenaJuego(EscenaBase):
                 self._debug_visible = False
                 return True
 
+        # Si estamos procesando, bloqueamos clicks en la UI para evitar doble envío
+        if self.procesando_ia or getattr(self, '_debug_visible', False):
+            import pygame
+            if evento.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN):
+                return True
+                
+        return super().manejar_evento(evento)
+
+    def actualizar(self):
+        """Se llama una vez por frame. Ideal para revisar flags de hilos."""
+        super().actualizar()
+        
         # Si se levantó el flag de D20 desde un hilo
         if hasattr(self, '_abrir_d20_flag') and self._abrir_d20_flag:
             self._abrir_d20_flag = False
@@ -479,13 +501,9 @@ class EscenaJuego(EscenaBase):
                 on_resultado=self._on_resultado_d20
             )
             
-        # Si estamos procesando, bloqueamos clicks en la UI para evitar doble envío
-        if self.procesando_ia or getattr(self, '_debug_visible', False):
-            import pygame
-            if evento.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN):
-                return True
-                
-        return super().manejar_evento(evento)
+        if hasattr(self, '_abrir_alerta_flag') and self._abrir_alerta_flag:
+            self._abrir_alerta_flag = False
+            self.popup_alerta.abrir()
 
     def _on_resultado_d20(self, resultado_num, tipo):
         """Callback cuando el dado termina de rodar."""
@@ -534,7 +552,8 @@ class EscenaJuego(EscenaBase):
             (getattr(self, 'popup_reiniciar', None) and self.popup_reiniciar.visible) or
             (getattr(self, 'popup_estado', None) and self.popup_estado.visible) or
             (getattr(self, 'popup_configuracion', None) and self.popup_configuracion.visible) or
-            (getattr(self, 'popup_d20', None) and self.popup_d20.visible)
+            (getattr(self, 'popup_d20', None) and self.popup_d20.visible) or
+            (getattr(self, 'popup_alerta', None) and self.popup_alerta.visible)
         )
 
         # Dibujar botón de nube de diálogo si hay diálogo y no hay popups tapando

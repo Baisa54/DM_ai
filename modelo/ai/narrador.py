@@ -42,6 +42,8 @@ IMPORTANTE: DEBES RESPONDER SIEMPRE EN ESPAÑOL.
    - Nunca inventes objetos que no existan en el inventario o la escena.
    - Nunca inventes personajes que no estén presentes.
    - Respeta escrupulosamente la ubicación actual y los eventos que ya ocurrieron.
+   - Si el jugador decide huir, abandonar la misión o escapar, descríbelo alejándose de la cueva hacia el exterior (el bosque/hogar), NO adentrándose en ella.
+   - NO mates personajes clave (como el héroe o el compañero) a menos que sea una consecuencia inevitable de un combate letal o una pifia extremadamente peligrosa.
 
 2. INTERPRETACIÓN DE RESULTADOS:
    - FRACASO: Produce un resultado negativo razonablemente posible. No rompe las reglas del mundo.
@@ -59,15 +61,34 @@ IMPORTANTE: DEBES RESPONDER SIEMPRE EN ESPAÑOL.
 
 <formatting_constraints>
 Devuelve ÚNICA Y EXCLUSIVAMENTE el texto de la narración pura. 
-NO incluyas "Aquí está la narración:", NO incluyas explicaciones, NO agregues notas al final.
+NO incluyas "Aquí está la narración:", NO agregues notas al final.
+PROHIBIDO estrictamente usar introducciones como "Como Dungeon Master, te describo..." o "Esta es la historia...". EMPIEZA DIRECTAMENTE CON LA NARRACIÓN DE LA ACCIÓN.
 </formatting_constraints>
 """
 
-def construir_contexto_narrador(estado, accion, resultado_accion):
+def construir_contexto_narrador(estado, accion, resultado_accion, ubicacion_anterior=None):
+    from modelo.game.campaign import SALAS
+    ubicacion_actual = estado.get_ubicacion()
+    datos_sala = SALAS.get(ubicacion_actual, {})
+    descripcion_sala = datos_sala.get("descripcion", "")
+    objetos_sala = datos_sala.get("objetos", [])
+    
+    transicion = ""
+    if ubicacion_anterior and ubicacion_anterior != ubicacion_actual:
+        sala_anterior = SALAS.get(ubicacion_anterior, {})
+        nombre_anterior = sala_anterior.get("nombre", ubicacion_anterior)
+        nombre_actual = datos_sala.get("nombre", ubicacion_actual)
+        transicion = f"\n<transicion_sala>\nEl jugador acaba de moverse desde '{nombre_anterior}' hacia la nueva sala '{nombre_actual}'. Su acción describe cómo llegó aquí. Narra su llegada al nuevo entorno.\n</transicion_sala>\n"
+
     return f"""<input_data>
 <estado_actual>
 {json.dumps(estado.to_dict(), indent=4, ensure_ascii=False)}
 </estado_actual>
+{transicion}
+<entorno_fisico_actual>
+Descripción oficial de la nueva sala: {descripcion_sala}
+Objetos tirados en el suelo: {objetos_sala}
+</entorno_fisico_actual>
 
 <accion_del_jugador>
 {accion}
@@ -79,9 +100,9 @@ def construir_contexto_narrador(estado, accion, resultado_accion):
 </input_data>"""
 
 
-def narrar_accion(accion, estado, resultado_d20):
+def narrar_accion(accion, estado, resultado_d20, ubicacion_anterior=None):
     gemini = GeminiClient()
-    prompt = f"{PROMPT_NARRADOR}\n\n{construir_contexto_narrador(estado, accion, resultado_d20)}"
+    prompt = f"{PROMPT_NARRADOR}\n\n{construir_contexto_narrador(estado, accion, resultado_d20, ubicacion_anterior)}"
     return gemini.generar_texto(prompt)
 
 PROMPT_NARRADOR_FINAL = """<system>

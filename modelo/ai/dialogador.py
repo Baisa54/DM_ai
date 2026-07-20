@@ -34,11 +34,7 @@ HERRAMIENTA_EXTRAER_DIALOGO = {
         "properties": {
             "narracion_analisis": {
                 "type": "string",
-                "description": "Piensa brevemente: ¿Hay diálogos directos? ¿Quién los dice? Ignora al héroe. Prioridad: osgo > princesa > companero > goblin."
-            },
-            "Narracion": {
-                "type": "string",
-                "description": "La narración original reescrita y adaptada fluidamente, eliminando TODO diálogo directo de cualquier personaje."
+                "description": "Piensa brevemente: ¿Hay diálogos directos? ¿Quién los dice? Ignora al héroe. Si hablan varios NPCs, elige al que diga la frase más importante."
             },
             "Personaje": {
                 "type": "string",
@@ -58,11 +54,11 @@ HERRAMIENTA_EXTRAER_DIALOGO = {
                 "nullable": True
             }
         },
-        "required": ["narracion_analisis", "Narracion"]
+        "required": ["narracion_analisis"]
     }
 }
 
-def dialogador(narracion):
+def dialogador(narracion, personajes_presentes=None):
     from modelo.configuracion import ConfigManager
     config = ConfigManager()
     
@@ -73,14 +69,18 @@ def dialogador(narracion):
         from modelo.ai.LocalAICLient import LocalAIClient
         cliente = LocalAIClient()
 
+    personajes_str = ", ".join(personajes_presentes) if personajes_presentes else "ninguno"
+
     prompt = f"""<system>
 Eres el Dialogador del motor RPG. Eres una máquina de procesamiento estructural.
 NO DEBES RESPONDER CON TEXTO NORMAL. TU ÚNICO PROPÓSITO ES INVOCAR LA HERRAMIENTA `extraer_dialogo_npc`.
 
 Reglas:
 - Se te entregará una narración generada por el DM. Debes detectar si un NPC importante habló.
-- Prioridad: osgo > princesa > companero > goblin. (Si hablan varios, extrae solo al de mayor prioridad).
+- Personajes físicamente presentes en la escena: [{personajes_str}]. SOLO puedes extraer diálogos de estos personajes.
+- Si hablan varios NPCs, extrae solo el diálogo más relevante o impactante para la historia.
 - Si el héroe habla, ignóralo, solo nos importan los NPCs.
+- Si la narración menciona que un personaje habla pero NO ESTÁ en la lista de personajes presentes, ignóralo por completo.
 - DEBES usar la herramienta provista para enviar tu respuesta estructurada. NUNCA respondas con texto libre.
 </system>
 
@@ -123,17 +123,17 @@ Reglas:
         "neutral": "neutral"
     }
 
-    personaje = MAP_PERSONAJES.get(personaje)
-    emocion = MAP_EMOCIONES.get(emocion)
+    personaje_mapeado = MAP_PERSONAJES.get(personaje) if personaje else None
+    emocion_mapeada = MAP_EMOCIONES.get(emocion) if emocion else None
 
-    if personaje is None and resultado.get("Personaje") is not None:
-        raise ValueError("Personaje inválido devuelto por Gemini")
-
-    if emocion is None and resultado.get("Emocion") is not None:
-        raise ValueError("Emoción inválida devuelta por Gemini")
+    if personaje and not personaje_mapeado:
+        print(f"[Dialogador] Advertencia: Personaje '{personaje}' no reconocido. Se ignorará.")
+        
+    if emocion and not emocion_mapeada:
+        print(f"[Dialogador] Advertencia: Emoción '{emocion}' no reconocida. Se ignorará.")
 
     return {
         **resultado,
-        "Personaje": personaje,
-        "Emocion": emocion
+        "Personaje": personaje_mapeado,
+        "Emocion": emocion_mapeada
     }

@@ -65,14 +65,34 @@ def arbitrar_accion(accion, estado):
         from modelo.ai.LocalAICLient import LocalAIClient
         cliente = LocalAIClient()
 
+    from modelo.game.campaign import SALAS
+    ubicacion_actual = estado.get_ubicacion()
+    datos_sala = SALAS.get(ubicacion_actual, {})
+    salidas_validas = datos_sala.get("salidas", [])
+    descripcion_sala = datos_sala.get("descripcion", "")
+    objetos_sala = datos_sala.get("objetos", [])
+
     entrada = {
         "accion_jugador": accion,
-        "estado_partida": estado.to_dict()
+        "estado_partida": estado.to_dict(),
+        "entorno_fisico_actual": {
+            "descripcion": descripcion_sala,
+            "objetos_en_el_suelo": objetos_sala
+        },
+        "salidas_validas_desde_aqui": salidas_validas
     }
 
     prompt = f"""Eres el Árbitro implacable del juego.
-Tu trabajo es evitar que el jugador haga trampa o alucine elementos que no existen. Revisa detenidamente el inventario del jugador y quién está en la sala antes de permitir la acción.
-Si el jugador intenta algo para lo que no tiene recursos (ej: 'ataco con una metralleta' o 'llamo a un dragón'), debes marcarlo como inválido.
+Tu trabajo es evitar que el jugador haga trampa o alucine elementos que no existen. Revisa detenidamente el inventario del jugador, quién está en la sala, y a dónde puede moverse antes de permitir la acción.
+El jugador no conoce los nombres internos de las 'salidas_validas_desde_aqui'. Si su acción describe avanzar, entrar, abrir puertas o explorar en una dirección que lógicamente concuerda con avanzar en la aventura, debes ACEPTARLA ('accion_valida': true). Solo rechaza el movimiento si intenta teletransportarse o atravesar paredes.
+EXCEPCIÓN IMPORTANTE: Si el jugador intenta huir de la aventura, abandonar la misión, o escapar definitivamente hacia el exterior, esto SIEMPRE ES UNA ACCIÓN VÁLIDA y debes permitirla ('accion_valida': true).
+Si el jugador intenta atacar con un arma, DEBE tener esa arma específica en su inventario, de lo contrario la acción es inválida.
+REGLA DE LA PUERTA: Si el jugador intenta entrar a 'sala_osgo' o abrir su puerta reforzada, DEBE tener la 'llave_templo' en su inventario. Sin esta llave, la acción es inválida.
+Fuera de las armas y esta llave obligatoria, sé lo más permisivo posible respetando el contexto espacial del jugador. Acciones verbales y físicas básicas (intimidar, engañar, empujar, patear) son SIEMPRE VÁLIDAS.
+
+REGLAS PARA TIRADA DE DADOS (requiere_tirada):
+- Moverse pacíficamente de una sala a otra, observar, o recoger objetos libres NUNCA requieren tirada (requiere_tirada: false).
+- Atacar, defenderse, esquivar, engañar, intimidar, persuadir, saltar, forzar puertas, o hacer acciones hostiles SIEMPRE requieren tirada (requiere_tirada: true).
 
 <contexto_actual>
 {json.dumps(entrada, indent=4, ensure_ascii=False)}
@@ -97,9 +117,20 @@ Llama a la herramienta para dictaminar."""
     except:
         dificultad = 0
 
+    # normalizar requiere_tirada y accion_valida
+    requiere_tirada = resultado.get("requiere_tirada", False)
+    if isinstance(requiere_tirada, str):
+        requiere_tirada = requiere_tirada.lower() == "true"
+    resultado["requiere_tirada"] = bool(requiere_tirada)
+
+    accion_valida = resultado.get("accion_valida", True)
+    if isinstance(accion_valida, str):
+        accion_valida = accion_valida.lower() == "true"
+    resultado["accion_valida"] = bool(accion_valida)
+
     dificultades_validas = [0, 5, 10, 15, 20]
     if dificultad not in dificultades_validas:
-        dificultad = 10 if resultado.get("requiere_tirada") else 0
+        dificultad = 10 if resultado["requiere_tirada"] else 0
 
     resultado["dificultad"] = dificultad
 

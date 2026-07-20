@@ -18,6 +18,7 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
+import json
 from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
 # LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
 #-@ from modelo.ai.GeminiClient import GeminiClient
@@ -74,13 +75,32 @@ HERRAMIENTA_ACTUALIZAR_ESTADO = {
 }
 
 
-def construir_contexto_orquestador(narracion):
-    return f"""Eres el motor de estado del juego. Extrae los cambios de estado de la siguiente narración llamando a la herramienta `actualizar_estado`.
-<narracion>
-{narracion}
-</narracion>"""
+def construir_contexto_orquestador(accion, resultado_d20, estado):
+    ubicacion_actual = estado.get_ubicacion()
+    datos_sala = SALAS.get(ubicacion_actual, {})
+    
+    return f"""Eres el motor de estado del juego. Compara el estado actual con la acción del jugador y el resultado de los dados, y extrae ÚNICAMENTE los cambios llamando a la herramienta `actualizar_estado`.
+Si el jugador intenta moverse hacia una salida válida y el resultado NO es un fracaso o pifia grave que lo impida, actualiza la sala. Si la acción implica daño o curación y fue un éxito o crítico, actualiza la vida.
 
-def orquestar_narracion(narracion):
+<estado_previo>
+{json.dumps(estado.to_dict(), indent=4, ensure_ascii=False)}
+</estado_previo>
+
+<entorno_fisico_actual>
+Descripción oficial de la sala: {datos_sala.get("descripcion", "")}
+Objetos tirados en el suelo: {datos_sala.get("objetos", [])}
+Salidas válidas: {datos_sala.get("salidas", [])}
+</entorno_fisico_actual>
+
+<accion_jugador>
+{accion}
+</accion_jugador>
+
+<resultado_accion>
+{resultado_d20}
+</resultado_accion>"""
+
+def orquestar_accion(accion, resultado_d20, estado):
     from modelo.configuracion import ConfigManager
     config = ConfigManager()
     
@@ -91,7 +111,7 @@ def orquestar_narracion(narracion):
         from modelo.ai.LocalAICLient import LocalAIClient
         cliente = LocalAIClient()
         
-    prompt = construir_contexto_orquestador(narracion)
+    prompt = construir_contexto_orquestador(accion, resultado_d20, estado)
     resultado = cliente.generar_con_herramienta(prompt, HERRAMIENTA_ACTUALIZAR_ESTADO)
 
     return resultado

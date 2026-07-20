@@ -65,12 +65,19 @@ class EstadoJuego:
             "osgo": ""
         }
         self.objetos_heroe = [
-            ""
+            "espada"
         ]
 
     def set_ubicacion(self, ubicacion):
 
         self.ubicacion = ubicacion
+        
+        from modelo.game.campaign import SALAS
+        if ubicacion in SALAS:
+            self.personajes_presentes = list(SALAS[ubicacion].get("personajes", []))
+
+    def get_ubicacion(self):
+        return self.ubicacion
 
 
     def agregar_evento(self, evento):

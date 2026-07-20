@@ -24,6 +24,7 @@
 # Imports
 import pygame
 import pygame.scrap
+import pyperclip
 # pygame se usa para renderizar texto sobre superficies y trazar la línea del cursor
 import time
 # time permite calcular los intervalos del parpadeo del cursor
@@ -199,18 +200,14 @@ class CajaTexto(Widget):
             elif (evento.mod & pygame.KMOD_CTRL or evento.mod & pygame.KMOD_META) and evento.key == pygame.K_c:
                 # Copiar
                 try:
-                    if not pygame.scrap.get_init():
-                        pygame.scrap.init()
-                    pygame.scrap.put_text(self._texto)
+                    pyperclip.copy(self._texto)
                 except Exception as e:
                     print("Error al copiar:", e)
                     
             elif (evento.mod & pygame.KMOD_CTRL or evento.mod & pygame.KMOD_META) and evento.key == pygame.K_v:
                 # Pegar
                 try:
-                    if not pygame.scrap.get_init():
-                        pygame.scrap.init()
-                    texto_pegado = pygame.scrap.get_text()
+                    texto_pegado = pyperclip.paste()
                     if texto_pegado:
                         # Limpiar retornos de carro y nulos
                         texto_pegado = texto_pegado.replace('\r', '').replace('\n', '').strip('\x00')

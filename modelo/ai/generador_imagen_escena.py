@@ -48,6 +48,7 @@ Rules:
 def generar_imagen_escena(
     narracion,
     prompts_personajes,
+    descripcion_entorno="",
     rutas_imagenes=None
     ):
 
@@ -55,15 +56,18 @@ def generar_imagen_escena(
 
     prompt_instrucciones = f"""
     Eres un experto en redactar prompts para generadores de imágenes por IA (tipo Midjourney/DALL-E).
-    Necesito que crees UN SOLO prompt en INGLÉS detallado y optimizado basado en esta narración y personajes.
+    Necesito que crees UN SOLO prompt en INGLÉS detallado y optimizado basado en esta narración, personajes y el entorno físico real de la sala.
     Debe centrarse puramente en la parte visual: iluminación, composición, aspecto de los personajes y el entorno.
     
     {PROMPT_IMAGEN_ESCENA}
 
+    OFFICIAL SCENE ENVIRONMENT / BACKGROUND:
+    {descripcion_entorno}
+
     CHARACTERS:
     {personajes}
 
-    SCENE DESCRIPTION:
+    NARRATION (WHAT IS HAPPENING):
     {narracion}
     
     DEVUELVE ÚNICA Y EXCLUSIVAMENTE EL PROMPT EN INGLÉS, SIN INTRODUCCIONES NI COMILLAS NI NOTAS ADICIONALES.
