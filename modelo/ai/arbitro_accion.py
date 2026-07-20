@@ -87,12 +87,14 @@ Tu trabajo es evitar que el jugador haga trampa o alucine elementos que no exist
 El jugador no conoce los nombres internos de las 'salidas_validas_desde_aqui'. Si su acción describe avanzar, entrar, abrir puertas o explorar en una dirección que lógicamente concuerda con avanzar en la aventura, debes ACEPTARLA ('accion_valida': true). Solo rechaza el movimiento si intenta teletransportarse o atravesar paredes.
 EXCEPCIÓN IMPORTANTE: Si el jugador intenta huir de la aventura, abandonar la misión, o escapar definitivamente hacia el exterior, esto SIEMPRE ES UNA ACCIÓN VÁLIDA y debes permitirla ('accion_valida': true).
 Si el jugador intenta atacar con un arma, DEBE tener esa arma específica en su inventario, de lo contrario la acción es inválida.
-REGLA DE LA PUERTA: Si el jugador intenta entrar a 'sala_osgo' o abrir su puerta reforzada, DEBE tener la 'llave_templo' en su inventario. Sin esta llave, la acción es inválida.
-Fuera de las armas y esta llave obligatoria, sé lo más permisivo posible respetando el contexto espacial del jugador. Acciones verbales y físicas básicas (intimidar, engañar, empujar, patear) son SIEMPRE VÁLIDAS.
+REGLAS ESTRICTAS DE PUERTAS:
+Si la accion del jugador implica moverse, entrar, mirar o acercarse a "sala_osgo" o a la sala del jefe, DEBE OBLIGATORIAMENTE tener el objeto "llave_templo" en su inventario. Sin esa llave, DEBES rechazar la accion obligatoriamente ("accion_valida": false, "dificultad": 0).
 
 REGLAS PARA TIRADA DE DADOS (requiere_tirada):
-- Moverse pacíficamente de una sala a otra, observar, o recoger objetos libres NUNCA requieren tirada (requiere_tirada: false).
-- Atacar, defenderse, esquivar, engañar, intimidar, persuadir, saltar, forzar puertas, o hacer acciones hostiles SIEMPRE requieren tirada (requiere_tirada: true).
+- Moverse libremente de una sala a otra, observar el entorno o recoger objetos del suelo, NUNCA requieren tirada (requiere_tirada: false).
+- Atacar, defenderse, forzar puertas y CUALQUIER ACCION VERBAL que busque INFLUIR a un NPC (como mentir, engañar, intimidar o persuadir) SIEMPRE requieren tirada obligatoriamente (requiere_tirada: true).
+
+RECUERDA: Si el jugador dice "le miento", es "requiere_tirada": true. Si intenta "entrar a sala de osgo" sin llave, es "accion_valida": false.
 
 <contexto_actual>
 {json.dumps(entrada, indent=4, ensure_ascii=False)}
