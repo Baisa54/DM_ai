@@ -120,7 +120,7 @@ FINALES POSIBLES:
 - "muerte heroe": Final trágico. El héroe muere. Tonalidad triste, oscura y definitiva.
 - "rescate princesa": Final positivo. El héroe rescata a la princesa y recibe una gran recompensa.
 - "Alianza goblin": Final de traición. El héroe se une a los goblins para traicionar al reino.
-- "Escape": Final ambiguo. El héroe abandona la misión y huye de la cueva. Nunca sabrá qué había dentro.
+- "Escape": Final ambiguo. El héroe SOBREVIVE, abandona la misión y huye de la cueva (sano o herido, pero VIVO). Nunca sabrá qué había dentro. ESTRICTAMENTE PROHIBIDO matar al héroe en este final.
 - "muerte princesa": Final extremadamente triste. La princesa muere y la misión fracasa.
 
 ESTILO:

@@ -48,28 +48,6 @@ SALAS = {
             "Una enorme puerta roja bloquea el paso. "
             "Dos goblins hambrientos vigilan la entrada.",
 
-        "objetos": [],
-
-        "personajes": [
-            "companero",
-            "goblin", 
-            "heroe"
-        ],
-
-        "salidas": [
-            "entrada_cueva",
-            "gran_salon"
-        ]
-    },
-
-    "gran_salon": {
-
-        "nombre": "Gran Salón Goblin",
-
-        "descripcion":
-            "Un antiguo templo convertido en guarida goblin. "
-            "Al fondo se encuentra una puerta metálica reforzada.",
-
         "objetos": [
             "llave_templo"
         ],
@@ -81,8 +59,8 @@ SALAS = {
         ],
 
         "salidas": [
-            "puerta_goblins",
-            "sala_osgo"
+            "sala_osgo",
+            "entrada_cueva"
         ]
     },
 
@@ -104,7 +82,7 @@ SALAS = {
         ],
 
         "salidas": [
-            "gran_salon"
+            "puerta_goblins"
         ]
     }
 }

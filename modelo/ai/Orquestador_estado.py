@@ -59,7 +59,7 @@ HERRAMIENTA_ACTUALIZAR_ESTADO = {
             },
             "sala": {
                 "type": "string",
-                "enum": ["Sin cambios", "entrada_cueva", "puerta_goblins", "gran_salon", "sala_osgo"]
+                "enum": ["Sin cambios", "entrada_cueva", "puerta_goblins", "sala_osgo"]
             },
             "npc_habla": {
                 "type": "boolean",
@@ -79,8 +79,13 @@ def construir_contexto_orquestador(accion, resultado_d20, estado):
     ubicacion_actual = estado.get_ubicacion()
     datos_sala = SALAS.get(ubicacion_actual, {})
     
+    nombres_salidas = {s: SALAS.get(s, {}).get("nombre", s) for s in datos_sala.get("salidas", [])}
+
     return f"""Eres el motor de estado del juego. Compara el estado actual con la acción del jugador y el resultado de los dados, y extrae ÚNICAMENTE los cambios llamando a la herramienta `actualizar_estado`.
-Si el jugador intenta moverse hacia una salida válida y el resultado NO es un fracaso o pifia grave que lo impida, actualiza la sala. Si la acción implica daño o curación y fue un éxito o crítico, actualiza la vida.
+Si el jugador intenta moverse hacia una salida válida, avanzar a la siguiente sala de forma genérica, o cruzar una puerta, y el resultado NO es un fracaso, OBLIGATORIAMENTE actualiza la sala usando el ID exacto de la salida válida. Si la acción implica daño o curación y fue un éxito o crítico, actualiza la vida.
+
+REGLA ESTRICTA Y ABSOLUTA:
+NUNCA razones, expliques ni devuelvas texto normal. Aún si la tirada es un "fracaso" y no hay cambios en el estado, DEBES ejecutar la herramienta `actualizar_estado` con los valores "Sin cambios". ¡PROHIBIDO hablar o razonar fuera de la llamada a la herramienta!
 
 <estado_previo>
 {json.dumps(estado.to_dict(), indent=4, ensure_ascii=False)}
@@ -89,7 +94,7 @@ Si el jugador intenta moverse hacia una salida válida y el resultado NO es un f
 <entorno_fisico_actual>
 Descripción oficial de la sala: {datos_sala.get("descripcion", "")}
 Objetos tirados en el suelo: {datos_sala.get("objetos", [])}
-Salidas válidas: {datos_sala.get("salidas", [])}
+Salidas válidas (ID EXACTO: Nombre): {json.dumps(nombres_salidas, ensure_ascii=False)}
 </entorno_fisico_actual>
 
 <accion_jugador>

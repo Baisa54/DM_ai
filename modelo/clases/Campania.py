@@ -226,6 +226,13 @@ class Campania:
         )
 
         # -------------------------
+        # HISTORIAL DE ACCIONES
+        # -------------------------
+        resumen_accion = resultado.get("accion_Jugador", "")
+        if resumen_accion:
+            self.estado.agregar_decision(resumen_accion)
+
+        # -------------------------
         # VIDA / ESTADOS PERSONAJE
         # -------------------------
         vida = resultado.get("vida", {})

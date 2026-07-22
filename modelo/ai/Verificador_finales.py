@@ -62,7 +62,7 @@ Tu tarea es decidir si la partida ha terminado basándote en la última narraci�
 REGLAS ESTRICTAS DE FINALES:
 1. "muerte heroe": Solo si el héroe está muerto (estado "muerto") o la narración dice explícitamente que murió.
 2. "Escape": Si la narración dice explícitamente que el héroe huye, abandona la misión, o se aleja definitivamente de la aventura, sin importar en qué sala se encuentre.
-3. "Alianza goblin": Solo si el héroe se alía con los goblins o con Osgo.
+3. "Alianza goblin": Si la narración o la acción del jugador indican claramente que el héroe ofrece su lealtad, hace un trato, se arrodilla o se une a los goblins o a Osgo de forma amistosa/subordinada.
 4. "rescate princesa": Solo si Osgo está muerto, la princesa está viva, y la narración dice que fue rescatada.
 5. "muerte princesa": Solo si la princesa muere.
 

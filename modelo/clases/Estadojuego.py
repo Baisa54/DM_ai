@@ -83,11 +83,15 @@ class EstadoJuego:
     def agregar_evento(self, evento):
 
         self.eventos.append(evento)
+        if len(self.eventos) > 5:
+            self.eventos.pop(0)
 
 
     def agregar_decision(self, decision):
 
         self.decisiones.append(decision)
+        if len(self.decisiones) > 5:
+            self.decisiones.pop(0)
 
 
     def agregar_personaje(self, personaje):
@@ -159,14 +163,16 @@ class EstadoJuego:
 
         imagenes = []
 
+        # Agregar heroe
+        estado_heroe = self.estados_personajes.get("heroe", "normal")
         imagenes.append(
-            PERSONAJES["heroe"]["prompt_visual"]
+            f"Character: heroe, Status: {estado_heroe}, Description: {PERSONAJES['heroe']['prompt_visual']}"
         )
 
         for personaje in self.personajes_presentes:
-
+            estado_personaje = self.estados_personajes.get(personaje, "normal")
             imagenes.append(
-                PERSONAJES[personaje]["prompt_visual"]
+                f"Character: {personaje}, Status: {estado_personaje}, Description: {PERSONAJES[personaje]['prompt_visual']}"
             )
 
         return imagenes

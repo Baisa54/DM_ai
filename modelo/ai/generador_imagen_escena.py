@@ -43,6 +43,7 @@ Rules:
 * No speech bubbles.
 * No UI.
 * Single coherent scene.
+* STRICT SAFETY POLICY: Absolutely NO blood, NO gore, NO mutilation, and NO extreme violence. Keep the violence PG-13 (suggested combat, dramatic poses, but no graphic details or wounds).
   """
 
 def generar_imagen_escena(
