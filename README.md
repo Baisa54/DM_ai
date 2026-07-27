@@ -14,6 +14,7 @@ Para poder ejecutar el juego en tu computadora, especialmente si lo haces por pr
 El juego está programado en Python, por lo que es necesario tenerlo instalado en tu sistema.
 * **Descarga:** Puedes descargarlo de forma gratuita desde su página oficial: [python.org/downloads](https://www.python.org/downloads/).
 * **⚠️ Instalación en Windows:** Es **crítico** que, al iniciar el instalador de Python, te asegures de marcar la casilla inferior que dice **"Add Python to PATH"** (Agregar Python al PATH). Si omites este paso, los archivos ejecutables no podrán detectar Python y el juego no abrirá.
+* **Librerías (Pygame):** Aunque los ejecutables del juego intentan instalar todas las dependencias por ti, si tienes algún problema al abrirlo, te recomendamos abrir una terminal (o Símbolo del Sistema) y ejecutar manualmente: `pip install pygame` (o `pip install -r requirements.txt`).
 
 ### 2. Ollama
 Ollama es el motor que permite ejecutar modelos de Inteligencia Artificial de forma local en tu computadora, lo cual es necesario para la generación de la historia del juego.
@@ -52,6 +53,16 @@ classDiagram
         +reiniciar()
         +recibir_accion_jugador(accion)
         +arbitrar_accion_jugador()
+        +resolver_tirada()
+        +no_requiere_tirada()
+        +narracion()
+        +orquestador()
+        +verificar_finales()
+        +habla_personaje()
+        +generar_imagen_resumen()
+        +obtener_mensaje_vista()
+        +limpiar_mensaje()
+        +narracion_final()
     }
 
     class EstadoJuego {
@@ -63,8 +74,20 @@ classDiagram
         +List objetos_heroe
         +String final
         +set_ubicacion(ubicacion)
+        +get_ubicacion()
         +agregar_evento(evento)
         +agregar_decision(decision)
+        +agregar_personaje(personaje)
+        +quitar_personaje(personaje)
+        +set_final(final)
+        +get_final()
+        +set_estado_personaje(personaje, estado)
+        +get_estado_personaje(personaje)
+        +agregar_objeto_heroe(objeto)
+        +quitar_objeto_heroe(objeto)
+        +obtener_imagenes_escena()
+        +obtener_rutas_imagenes_personajes()
+        +to_dict()
     }
 
     class ContextoJuego {
@@ -72,6 +95,23 @@ classDiagram
         +boolean accion_valida
         +boolean requiere_tirada
         +int dificultad
+        +EstadoJuego estado
+        +String resultado_d20
+        +set_prompt_jugador(prompt)
+        +get_prompt_jugador()
+        +set_accion_valida(accion_valida)
+        +get_accion_valida()
+        +set_requiere_tirada(requiere_tirada)
+        +get_requiere_tirada()
+        +set_dificultad(dificultad)
+        +get_dificultad()
+        +set_estado(estado)
+        +get_estado()
+        +set_resultado_d20(resultado)
+        +get_resultado_d20()
+        +set_exito()
+        +mostrar()
+        +to_dict()
     }
 
     class MensajeJuego {
@@ -80,6 +120,18 @@ classDiagram
         +String narracion_npc
         +String imagen_npc
         +hay_dialogo_npc()
+        +obtener_seccion_obligatoria()
+        +obtener_mensaje_completo()
+        +set_narracion(narracion)
+        +get_narracion()
+        +set_imagen_resumen(imagen_resumen)
+        +get_imagen_resumen()
+        +set_narracion_npc(narracion_npc)
+        +get_narracion_npc()
+        +set_imagen_npc(imagen_npc)
+        +get_imagen_npc()
+        +set_dialogo_npc(narracion_npc, imagen_npc)
+        +limpiar_dialogo_npc()
     }
 
     Campania *-- ContextoJuego
@@ -92,39 +144,46 @@ classDiagram
 - **Submódulo `game/`**: Incluye archivos de soporte (`characters.py`, `items.py`, `campaign.py`) para definir y estructurar los atributos crudos de los actores, campañas y objetos.
 
 ### 2. Motores de Inteligencia Artificial (`modelo/ai/`)
-Este es el motor de inferencia narrativa del DM, compuesto por clientes de red y varios "agentes" especialistas:
+El flujo de juego funciona como un ciclo continuo (Game Loop) donde la acción del jugador pasa por una "cadena de montaje" de **Agentes de IA Especializados**. Estos agentes se comunican entre sí y modifican el **Estado de la partida** central en cada turno:
 
 ```mermaid
-flowchart TD
-    subgraph Motor de IA [Arquitectura de Motores de IA]
-        direction TB
-        
-        subgraph Agentes [Agentes Especialistas]
-            Arbitro(arbitro_accion.py)
-            Orq(Orquestador_estado.py)
-            Narrador(narrador.py / dialogador.py)
-            GenVis(Generadores Visuales)
-            Verif(Verificador_finales.py)
-        end
-        
-        subgraph Comunicacion [Capa de Clientes API]
-            Gemini(GeminiClient.py<br/>Nube)
-            Local(LocalAIClient.py<br/>Ollama)
-            OllamaMgr(ollama_manager.py)
-            
-            OllamaMgr -.-> Local
-        end
-        
-        Agentes -->|Consultas y Prompts| Comunicacion
-    end
+flowchart LR
+    Jugador([Jugador])
+    Arbitro[Árbitro de acción]
+    Tirada[Tirada de d20]
+    Orq[Orquestador de estado]
+    Dialogador[Dialogador]
+    Narrador[Narrador]
+    Verif[Verificador de finales]
+    GenVis[Generador de imágenes]
+    Estado[(Estado de la partida)]
+
+    Jugador -- acción --> Arbitro
+    Arbitro -- requiere tirada --> Tirada
+    Tirada -- resultado --> Orq
+    Arbitro -- sin tirada --> Orq
+    
+    Orq -- actualiza --> Estado
+    Orq --> Dialogador
+    Dialogador --> Narrador
+    Narrador --> Verif
+    Verif --> GenVis
+    GenVis -- respuesta --> Jugador
+
+    Arbitro -. lee .-> Estado
+    Narrador -. lee .-> Estado
+    Verif -. lee .-> Estado
 ```
 
-- **Clientes (`GeminiClient.py`, `LocalAIClient.py`)**: Se encargan de la comunicación directa con las APIs (Google en la nube y Ollama en local). El modelo local es administrado directamente por el módulo **`ollama_manager.py`**.
-- **`Orquestador_estado.py`**: Define dinámicamente cuáles son las salidas o caminos posibles para el jugador basándose en el estado actual.
-- **`narrador.py` y `dialogador.py`**: Generan la narrativa ambiental y estructuran las conversaciones de los NPCs, asegurando la inmersión rolera.
-- **`arbitro_accion.py`**: Interpreta la acción del jugador para decidir si requiere una resolución de reglas (ej. tirada de d20) o si se resuelve narrativamente.
-- **`Verificador_finales.py`**: Analiza en segundo plano si las condiciones impuestas para superar el escenario se han cumplido.
-- **Generadores Visuales (`generador_imagen_escena.py`, `imagen_NPC.py`)**: Sub-agentes encargados de la creación de prompts gráficos para ilustrar las ubicaciones y personajes.
+**Explicación detallada de cada Agente y Componente:**
+
+- **Árbitro de Acción (`arbitro_accion.py`)**: Es el primer filtro cognitivo. Analiza lo que el jugador intenta hacer y decide de forma objetiva si es una acción trivial (ej: "Miro el cielo") o si existe un riesgo que requiere aplicar las reglas del juego (ej: "Salto el abismo"). Si hay riesgo, exige lanzar una *Tirada de d20*.
+- **Orquestador de Estado (`Orquestador_estado.py`)**: Es el administrador de los datos duros. Recibe el desenlace matemático (éxito, fracaso, daño, etc.) y decide *qué cambia físicamente* en el mundo: actualiza la salud, mueve los objetos del inventario y define transiciones de sala. Luego, guarda estos datos en el JSON del estado de la partida.
+- **Dialogador (`dialogador.py`)**: Cuando la escena involucra personajes (NPCs), este agente "actúa" asumiendo su personalidad. Reacciona a las acciones del jugador generando diálogos que encajan con las emociones y secretos del NPC.
+- **Narrador (`narrador.py`)**: Cumple el rol del clásico Dungeon Master literario. Junta todo lo que acaba de suceder (consecuencias físicas, resultados de dados, diálogos) y redacta la respuesta inmersiva definitiva que describe la escena para el jugador.
+- **Verificador de Finales (`Verificador_finales.py`)**: Trabaja de manera invisible en segundo plano. Tras cada turno, escanea silenciosamente el estado del mundo para comprobar si el jugador ha ganado, ha muerto o ha disparado algún final secreto de la campaña.
+- **Generadores Visuales (`generador_imagen_escena.py`, `imagen_NPC.py`)**: Son la parte "artística". Al terminar de construir la narrativa, extraen un resumen visual y elaboran *prompts* detallados que se envían a generadores de imágenes (como Stable Diffusion) para ilustrar la pantalla final.
+- **Capa de Clientes API (`GeminiClient.py`, `LocalAIClient.py`)**: Es la vía de comunicación. Todos los agentes mencionados anteriormente son posibles gracias a esta capa que envía y recibe información de los "cerebros" reales: ya sea el modelo de Google en la nube (Gemini) o los modelos locales en tu PC vía Ollama (administrados automáticamente por `ollama_manager.py`).
 
 ### 3. Herramientas ("Tool Calling") (`modelo/tools/`)
 Para evitar que los modelos de lenguaje "alucinen" resoluciones mecánicas, he implementado funciones de código estricto que las IAs pueden invocar:
