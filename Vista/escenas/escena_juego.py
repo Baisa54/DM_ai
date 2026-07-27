@@ -530,11 +530,10 @@ class EscenaJuego(EscenaBase):
             # Dibujar texto animado
             font = pygame.font.Font(None, 64)
             puntos = "." * (int(time.time() * 3) % 4)
-            texto_render = font.render(getattr(self, 'mensaje_procesando', "Procesando...") + puntos, True, (255, 255, 255))
             
-            # Efecto de pulso en opacidad
+            # Efecto de pulso (variamos el color en vez de opacidad para evitar un bug de SDL2/Pygame en Linux)
             alpha = int(128 + 127 * math.sin(time.time() * 5))
-            texto_render.set_alpha(alpha)
+            texto_render = font.render(getattr(self, 'mensaje_procesando', "Procesando...") + puntos, True, (alpha, alpha, alpha))
             
             # Centrar en pantalla
             cx = (superficie.get_width() - texto_render.get_width()) // 2

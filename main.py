@@ -55,6 +55,21 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error al verificar modelos locales: {e}")
     # -------------------------------------------------------------
+    # LIMPIEZA DE CARPETA TEMPORAL DE IMÁGENES
+    # -------------------------------------------------------------
+    import os
+    import glob
+    try:
+        temp_dir = "modelo/game/assets/temp"
+        if os.path.exists(temp_dir):
+            print(f"Limpiando imágenes temporales antiguas en {temp_dir}...")
+            archivos = glob.glob(os.path.join(temp_dir, "*"))
+            for archivo in archivos:
+                if os.path.isfile(archivo):
+                    os.remove(archivo)
+    except Exception as e:
+        print(f"Error al limpiar la carpeta temporal: {e}")
+    # -------------------------------------------------------------
 
     app = VistaGrafica()
     app.iniciar()
