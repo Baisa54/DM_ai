@@ -33,6 +33,9 @@ class PopupEstado(Popup):
     Utiliza un oscurecimiento modal para no permitir clics fuera de él.
     """
     def __init__(self, gestor_recursos, campania=None, on_cerrar=None):
+        """
+        Inicializa el modal de estado del personaje (salud, inventario, ubicación y personajes presentes).
+        """
         # Configuramos el popup centrado
         ancho_popup = 1000
         alto_popup = 700
@@ -50,8 +53,8 @@ class PopupEstado(Popup):
         self.campania = campania
         
         self.on_cerrar = on_cerrar
-        self._fuente_titulo = pygame.font.Font(None, 42)
-        self._fuente_texto = pygame.font.Font(None, 32)
+        self._fuente_titulo = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/Cinzel-Bold.ttf", 42)
+        self._fuente_texto = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/MedievalSharp-Regular.ttf", 32)
         
         # 1. Botón Cerrar (Lo devolvemos a la esquina superior derecha del marco de madera)
         btn_cerrar = Boton(
@@ -102,6 +105,7 @@ class PopupEstado(Popup):
         self.agregar_widget(ico_location)
 
     def _cerrar_interno(self):
+        """Cierra el popup e invoca el callback on_cerrar."""
         self.cerrar()
         if self.on_cerrar:
             self.on_cerrar()

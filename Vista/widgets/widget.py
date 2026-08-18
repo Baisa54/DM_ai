@@ -59,34 +59,42 @@ class Widget:
 
     @property
     def x(self):
+        """Coordenada X del widget."""
         return self._rect.x
         
     @x.setter
     def x(self, valor):
+        """Establece la coordenada X del widget."""
         self._rect.x = valor
 
     @property
     def y(self):
+        """Coordenada Y del widget."""
         return self._rect.y
         
     @y.setter
     def y(self, valor):
+        """Establece la coordenada Y del widget."""
         self._rect.y = valor
 
     @property
     def ancho(self):
+        """Ancho en píxeles del widget."""
         return self._rect.width
         
     @ancho.setter
     def ancho(self, valor):
+        """Establece el ancho del widget."""
         self._rect.width = valor
 
     @property
     def alto(self):
+        """Alto en píxeles del widget."""
         return self._rect.height
         
     @alto.setter
     def alto(self, valor):
+        """Establece el alto del widget."""
         self._rect.height = valor
 
     @property
@@ -103,6 +111,7 @@ class Widget:
 
     @visible.setter
     def visible(self, estado):
+        """Establece la visibilidad del widget."""
         self._visible = estado
 
     @property
@@ -112,6 +121,7 @@ class Widget:
 
     @habilitado.setter
     def habilitado(self, estado):
+        """Establece si el widget está habilitado."""
         self._habilitado = estado
 
     # --- Métodos del Ciclo de Vida (Interfaz a sobrescribir) ---

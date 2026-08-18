@@ -114,19 +114,23 @@ class Imagen(Widget):
     # Sobrescribimos ancho y alto para reescalar la imagen automáticamente si cambia el tamaño
     @property
     def ancho(self):
+        """Devuelve el ancho del widget Imagen."""
         return self._rect.width
         
     @ancho.setter
     def ancho(self, valor):
+        """Establece el ancho de la imagen y reescala la superficie."""
         self._rect.width = valor
         self._actualizar_escala()
 
     @property
     def alto(self):
+        """Devuelve el alto del widget Imagen."""
         return self._rect.height
         
     @alto.setter
     def alto(self, valor):
+        """Establece el alto de la imagen y reescala la superficie."""
         self._rect.height = valor
         self._actualizar_escala()
 

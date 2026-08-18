@@ -25,10 +25,22 @@ import random
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 def tirar_d20():
+    """
+    Genera un valor entero aleatorio entre 1 y 20 simulando un dado D20.
+    """
     return random.randint(1, 20)
 
 def verificar_tirada(resultado, dificultad):
-
+    """
+    Evalúa la tirada de dado contra una dificultad determinada.
+    
+    Args:
+        resultado (int): Valor obtenido en el dado D20 (1 a 20).
+        dificultad (int): Valor objetivo de dificultad.
+        
+    Returns:
+        dict: Diccionario indicando si hubo éxito (bool) y el tipo de resultado ('pifia', 'critico', 'normal').
+    """
     if resultado == 1:
         return {
             "exito": False,

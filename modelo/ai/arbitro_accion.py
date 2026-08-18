@@ -55,6 +55,16 @@ HERRAMIENTA_EVALUAR_ACCION = {
 }
 
 def arbitrar_accion(accion, estado):
+    """
+    Evalúa la validez y requisitos de una acción del jugador invocando al modelo IA (Gemini u Ollama).
+    
+    Args:
+        accion (str): Prompt con la intención ingresada por el jugador.
+        estado (EstadoJuego): Estado actual de la partida.
+        
+    Returns:
+        dict: Diccionario con la clasificación de validez, si requiere tirada y dificultad asignada.
+    """
     from modelo.configuracion import ConfigManager
     config = ConfigManager()
     

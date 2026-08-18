@@ -67,6 +67,9 @@ PROHIBIDO estrictamente usar introducciones como "Como Dungeon Master, te descri
 """
 
 def construir_contexto_narrador(estado, accion, resultado_accion, ubicacion_anterior=None):
+    """
+    Construye el bloque de contexto en formato XML/texto que se envía al Narrador IA.
+    """
     from modelo.game.campaign import SALAS
     ubicacion_actual = estado.get_ubicacion()
     datos_sala = SALAS.get(ubicacion_actual, {})
@@ -101,6 +104,9 @@ Objetos tirados en el suelo: {objetos_sala}
 
 
 def narrar_accion(accion, estado, resultado_d20, ubicacion_anterior=None):
+    """
+    Genera el texto narrativo correspondiente a la acción del jugador y resultado de la tirada.
+    """
     gemini = GeminiClient()
     prompt = f"{PROMPT_NARRADOR}\n\n{construir_contexto_narrador(estado, accion, resultado_d20, ubicacion_anterior)}"
     return gemini.generar_texto(prompt)
@@ -135,6 +141,9 @@ NO incluyas "Aquí está el final:", NO incluyas explicaciones, NO agregues nota
 """
 
 def narrar_final(estado, accion, resultado_accion):
+    """
+    Genera la narración final del epílogo de la campaña según la condición de término alcanzada.
+    """
     gemini = GeminiClient()
     prompt = f"""{PROMPT_NARRADOR_FINAL}
 

@@ -52,7 +52,18 @@ def generar_imagen_escena(
     descripcion_entorno="",
     rutas_imagenes=None
     ):
-
+    """
+    Construye el prompt optimizado y llama a la API de IA de imágenes (HuggingFace o Gemini) para ilustrar la escena.
+    
+    Args:
+        narracion (str): Texto narrativo del turno.
+        prompts_personajes (list): Lista de descripciones visuales de los personajes.
+        descripcion_entorno (str): Descripción de la sala o entorno.
+        rutas_imagenes (list): Rutas a imágenes de referencia visual.
+        
+    Returns:
+        str: Ruta a la imagen generada guardada localmente o None si falla.
+    """
     personajes = "\n".join(prompts_personajes)
 
     prompt_instrucciones = f"""

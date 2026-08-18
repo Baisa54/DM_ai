@@ -59,6 +59,9 @@ class VistaGrafica:
     crear la ventana y mantener vivo el proceso gráfico hasta que finalice.
     """
     def __init__(self):
+        """
+        Inicializa la ventana de Pygame, recursos de audio/imágenes y la escena principal del juego.
+        """
         # 1. Inicializar pygame
         pygame.init()
         
@@ -89,6 +92,9 @@ class VistaGrafica:
             print(f"No se pudo cargar la música de fondo: {e}")
 
     def iniciar(self):
+        """
+        Inicia el bucle principal de la aplicación gráfica y gestiona el cierre limpio.
+        """
         # 4. Ejecutar el loop principal
         self.ventana.iniciar()
         

@@ -48,8 +48,14 @@ import requests
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class LocalAIClient:
+    """
+    Cliente local para peticiones a Ollama (texto/JSON) y Hugging Face Inference API (imágenes).
+    """
 
     def __init__(self):
+        """
+        Inicializa la URL local de Ollama y el cliente de Hugging Face.
+        """
         from modelo.configuracion import ConfigManager
         self.config = ConfigManager()
 
@@ -65,7 +71,9 @@ class LocalAIClient:
     # RETRY SIMPLE 
     # --------------------------------------------------
     def _retry(self, func, max_reintentos=3):
-
+        """
+        Reintenta una llamada a función si ocurren errores de red o tiempo de espera.
+        """
         last_error = None
 
         for i in range(max_reintentos):
@@ -93,79 +101,43 @@ class LocalAIClient:
                 traceback.print_exc()
 
                 # 🔴 POSIBLES CAUSAS AUTOMÁTICAS
-                # R POSIBLES CAUSAS AUTOMATICAS
                 print("\n[DIAGNOSTIC CHECKLIST]")
 
                 # 1. RED
                 try:
-                    socket.gethostbyname("localhost")
-                    print("[+] localhost resolvible")
-                except Exception as e:
-                    print("[x] problema DNS localhost")
-                    print(f"[!] {e}")
-                    pass
-                
-                # 2. OLLAMA
-                try:
-                    import requests
-                    r = requests.get("http://localhost:11434", timeout=3)
-                    print(f"[+] Ollama responde HTTP {r.status_code}")
-                except Exception as ollama_err:
-                    print(f"[x] Ollama no responde: {repr(ollama_err)}")
+                    socket.create_connection(("8.8.8.8", 53), timeout=2)
+                    print(" [OK] Internet Conectado")
+                except Exception:
+                    print(" [FALLO] Sin Conexión a Internet")
 
-                # 3. HF CLIENT EXISTE
+                # 2. OLLAMA LOCAL
                 try:
-                    if hasattr(self, "hf_client"):
-                        print("✔ hf_client inicializado")
+                    r = requests.get("http://localhost:11434", timeout=2)
+                    if r.status_code == 200:
+                        print(" [OK] Ollama activo localmente")
                     else:
-                        print("❌ hf_client NO existe")
-                except:
-                    print("❌ error verificando hf_client")
+                        print(f" [ADVERTENCIA] Ollama respondió status {r.status_code}")
+                except Exception:
+                    print(" [FALLO] Ollama NO está corriendo en http://localhost:11434")
 
-                # 4. ERROR CLASIFICADO
-                err_str = str(e).lower()
+                print("="*80 + "\n")
 
-                print("\n[PROBABLE CAUSA]")
+                if i < max_reintentos - 1:
+                    time.sleep(2)
 
-                if "connection refused" in err_str:
-                    print("❌ servicio apagado o puerto incorrecto")
-
-                elif "timeout" in err_str:
-                    print("❌ timeout (modelo lento o bloqueado)")
-
-                elif "404" in err_str:
-                    print("❌ modelo no encontrado (Ollama/HF)")
-
-                elif "json" in err_str:
-                    print("❌ error de parsing JSON del modelo")
-
-                elif "getaddrinfo" in err_str:
-                    print("❌ problema DNS / internet")
-
-                else:
-                    print("⚠ causa desconocida")
-
-                # 🔁 RETRY INFO
-                espera = 2 ** i
-                print(f"\n[RETRY] intento {i+1}/{max_reintentos}")
-                print(f"[WAIT] {espera:.2f}s\n")
-
-                import time, random
-                time.sleep(espera)
-
-        raise Exception(
-            f"\n❌ LOCAL AI FALLÓ DEFINITIVAMENTE\n"
-            f"Último error: {repr(last_error)}"
-        )
+        raise last_error
 
     # --------------------------------------------------
     # TEXTO (OLLAMA)
     # --------------------------------------------------
     def generar_texto(self, prompt):
+        """
+        Genera texto a través del modelo local de Ollama.
+        """
         model = self.config.get_modelo_local()
 
         def request():
-
+            """Realiza la petición HTTP POST a Ollama para generar texto."""
             payload = {
                 "model": model,
                 "prompt": prompt,
@@ -191,10 +163,13 @@ class LocalAIClient:
     # JSON (OLLAMA + PARSEO ROBUSTO)
     # --------------------------------------------------
     def generar_json(self, prompt):
+        """
+        Genera y limpia respuestas estructuradas en formato JSON producidas por Ollama.
+        """
         model = self.config.get_modelo_local()
 
         def extract_json(text):
-
+            """Extrae y repara bloques JSON embebidos dentro de respuestas en texto plano."""
             text = text.strip()
 
             # quitar markdown
@@ -263,7 +238,7 @@ class LocalAIClient:
         # REQUEST OLLAMA
         # --------------------------------------------------
         def request():
-
+            """Envía el prompt formateado para obtener la respuesta JSON desde Ollama."""
             payload = {
                 "model": model,
                 "prompt": prompt + "\n\nResponde ÚNICAMENTE con un JSON válido. No agregues texto adicional.",
@@ -310,9 +285,12 @@ class LocalAIClient:
     # --------------------------------------------------
 
     def generar_imagen(self, prompt):
+        """
+        Genera una imagen a través de la API de Hugging Face Inference y la guarda temporalmente.
+        """
 
         def request():
-
+            """Genera la imagen en Hugging Face y guarda la ruta en disco."""
             imagen = self.hf_client.text_to_image(
                 prompt,
                 model="stabilityai/stable-diffusion-xl-base-1.0"
@@ -343,9 +321,13 @@ class LocalAIClient:
     # TOOL CALLING (OLLAMA)
     # --------------------------------------------------
     def generar_con_herramienta(self, prompt, herramienta_schema):
+        """
+        Ejecuta una petición a Ollama enviando la declaración de una herramienta para obtener una respuesta estructurada.
+        """
         model = self.config.get_modelo_local()
 
         def request():
+            """Llama a la API /api/chat de Ollama con la definición de la herramienta."""
             url = self.ollama_url.replace("/api/generate", "/api/chat")
             
             payload = {
@@ -391,6 +373,9 @@ class LocalAIClient:
                     # Previene el error de LLMs locales devolviendo "false" (string) 
                     # en lugar de false (booleano matemático)
                     def normalize_booleans(d):
+                        """
+                        Normaliza cadenas 'true' / 'false' devueltas por el modelo a booleanos reales.
+                        """
                         if isinstance(d, dict):
                             for k, v in d.items():
                                 if isinstance(v, str):

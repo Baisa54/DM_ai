@@ -78,93 +78,90 @@ from modelo.ai.dialogador import dialogador
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class Campania:
+    """
+    Controlador principal de la lógica de juego y máquina de estados de la campaña.
+    """
 
     def __init__(self):
-
+        """
+        Inicializa una nueva campaña de juego creando el estado inicial, contexto y mensaje inicial.
+        """
         self.estado_ui = "MENU"
-
         self.contexto = ContextoJuego()
-
         self.estado = gen_state()
-
         self.mensaje = genMessage()
 
     def reiniciar(self):
-
+        """
+        Reinicia la partida a su estado inicial limando el contexto y la historia.
+        """
         self.estado_ui = "MENU"
         self.contexto = ContextoJuego()
         self.estado = gen_state()
         self.mensaje = genMessage()
 
     def get_contexto(self):
-
+        """
+        Obtiene el objeto ContextoJuego actual de la partida.
+        """
         return self.contexto
 
     def get_estado(self):
-
+        """
+        Obtiene el objeto EstadoJuego actual de la partida.
+        """
         return self.estado
 
     def get_mensaje(self):
-
+        """
+        Obtiene el objeto MensajeJuego actual de la partida.
+        """
         return self.mensaje
 
-    def set_contexto(
-        self,
-        contexto
-    ):
-
+    def set_contexto(self, contexto):
+        """
+        Establece la referencia del objeto ContextoJuego.
+        """
         self.contexto = contexto
 
-    def set_estado(
-        self,
-        estado
-    ):
-
+    def set_estado(self, estado):
+        """
+        Establece la referencia del objeto EstadoJuego.
+        """
         self.estado = estado
 
-    def set_mensaje(
-        self,
-        mensaje
-    ):
-
+    def set_mensaje(self, mensaje):
+        """
+        Establece la referencia del objeto MensajeJuego.
+        """
         self.mensaje = mensaje
 
-    def recibir_accion_jugador(
-        self,
-        accion
-    ):
-
-        self.contexto.set_prompt_jugador(
-            accion
-        )
-
-        self.contexto.set_estado(
-            self.estado
-        )
+    def recibir_accion_jugador(self, accion):
+        """
+        Registra la acción enviada por el jugador en el contexto actual.
+        """
+        self.contexto.set_prompt_jugador(accion)
+        self.contexto.set_estado(self.estado)
 
     def arbitrar_accion_jugador(self):
-
+        """
+        Invoca al árbitro de IA para determinar si la acción es válida, si requiere tirada de dado D20 y su dificultad.
+        """
         resultado = arbitrar_accion(
             self.contexto.get_prompt_jugador(),
             self.contexto.get_estado()
         )
 
-        self.contexto.set_accion_valida(
-            resultado["accion_valida"]
-        )
-
-        self.contexto.set_requiere_tirada(
-            resultado["requiere_tirada"]
-        )
-
-        self.contexto.set_dificultad(
-            resultado["dificultad"]
-        )
+        self.contexto.set_accion_valida(resultado["accion_valida"])
+        self.contexto.set_requiere_tirada(resultado["requiere_tirada"])
+        self.contexto.set_dificultad(resultado["dificultad"])
 
         return resultado
 
     def resolver_tirada(self):
-
+        """
+        Ejecuta la tirada de dado D20 aleatoria y evalúa su éxito, fracaso, pifia o crítico contra la dificultad.
+        """
         resultado_d20 = tirar_d20()
 
         resultado = verificar_tirada(
@@ -173,28 +170,13 @@ class Campania:
         )
 
         if resultado["tipo"] == "pifia":
-
-            self.contexto.set_resultado_d20(
-                "pifia"
-            )
-
+            self.contexto.set_resultado_d20("pifia")
         elif resultado["tipo"] == "critico":
-
-            self.contexto.set_resultado_d20(
-                "critico"
-            )
-
+            self.contexto.set_resultado_d20("critico")
         elif resultado["exito"]:
-
-            self.contexto.set_resultado_d20(
-                "exito"
-            )
-
+            self.contexto.set_resultado_d20("exito")
         else:
-
-            self.contexto.set_resultado_d20(
-                "fracaso"
-            )
+            self.contexto.set_resultado_d20("fracaso")
 
         return {
             "tirada": resultado_d20,
@@ -202,10 +184,15 @@ class Campania:
         }
     
     def no_requiere_tirada(self):
+        """
+        Marca la acción del turno como exitosa automáticamente al no requerir tirada de dados.
+        """
         self.contexto.set_exito()
 
     def narracion(self):
-
+        """
+        Invoca al generador de narración IA para generar la respuesta narrativa basada en la acción y el resultado.
+        """
         texto = narrar_accion(
             self.contexto.get_prompt_jugador(),
             self.estado,
@@ -216,7 +203,9 @@ class Campania:
         self.mensaje.set_narracion(texto)
 
     def orquestador(self):
-
+        """
+        Analiza las consecuencias de la acción en el estado del juego (cambios de sala, salud, objetos y diálogos de NPC).
+        """
         self.ubicacion_anterior = self.estado.get_ubicacion()
 
         resultado = orquestar_accion(
@@ -327,24 +316,24 @@ class Campania:
         npc_habla = resultado.get("npc_habla", False)
 
         if npc_habla:
-
             self.habla_personaje()
 
     def verificar_finales(self):
-
+        """
+        Verifica si la narración o estado actual activa una condición de final de partida.
+        """
         resultado = verificar_final(
             self.estado,
             self.mensaje.get_narracion()
         )
 
-        self.estado.set_final(
-            resultado["final"]
-        )
+        self.estado.set_final(resultado["final"])
         return resultado
 
-
     def habla_personaje(self):
-
+        """
+        Procesa e identifica diálogos hablados por NPCs en la narración actual.
+        """
         resultado = dialogador(
             self.mensaje.get_narracion(),
             self.estado.personajes_presentes
@@ -357,34 +346,29 @@ class Campania:
         
         if personaje and dialogo:
             import re
-            # Primero intentar limpiar la frase con su introducción (ej: dice: "hola" -> dice.)
             narracion_limpia = re.sub(r'[:,]\s*\"[^\"]*\"', '.', narracion_limpia)
-            # Limpiar cualquier otra cosa entre comillas que haya quedado
             narracion_limpia = re.sub(r'\"[^\"]*\"', '', narracion_limpia)
-            # Fallback en caso de que el LLM no haya usado comillas
             if dialogo in narracion_limpia:
                 narracion_limpia = narracion_limpia.replace(dialogo, "")
             
-            # Limpiar posibles dobles puntos o espacios sobrantes
             narracion_limpia = narracion_limpia.replace('..', '.').replace(' .', '.').strip()
 
         self.mensaje.set_narracion(narracion_limpia)
 
-        # Actualizar primero la imagen del personaje (si existe)
         if personaje:
             personaje_data = PERSONAJES.get(personaje)
             if personaje_data and "imagen" in personaje_data:
-                self.mensaje.set_imagen_npc(
-                    personaje_data["imagen"]
-                )
+                self.mensaje.set_imagen_npc(personaje_data["imagen"])
 
-        # Ahora sí, setear el diálogo usando la imagen actualizada
         self.mensaje.set_dialogo_npc(
             dialogo,
             self.mensaje.get_imagen_npc() 
         )
         
     def generar_imagen_resumen(self):
+        """
+        Genera la imagen descriptiva ilustrada del estado actual de la escena.
+        """
         from modelo.game.campaign import SALAS
         ubicacion_actual = self.estado.get_ubicacion()
         descripcion_sala = SALAS.get(ubicacion_actual, {}).get("descripcion", "")
@@ -397,24 +381,27 @@ class Campania:
         )
 
         if imagen is not None:
-
             self.mensaje.set_imagen_resumen(imagen)
-
         else:
-
             print("[DEBUG] imagen no generada")
             self.mensaje.set_imagen_resumen(None)
         
     def obtener_mensaje_vista(self):
-
+        """
+        Obtiene el diccionario serializado del mensaje para ser consumido por la vista gráfica.
+        """
         return self.mensaje.obtener_mensaje_completo()
 
     def limpiar_mensaje(self):
-        
+        """
+        Limpia los campos del mensaje para preparar el siguiente turno.
+        """
         self.mensaje.limpiar_dialogo_npc()
 
     def narracion_final(self):
-
+        """
+        Genera la narración de conclusión o epílogo al finalizar la campaña.
+        """
         texto = narrar_final(
             self.estado,
             self.contexto.get_prompt_jugador(),
@@ -424,4 +411,7 @@ class Campania:
         self.mensaje.set_narracion(texto)
 
     def get_estado_(self):
+        """
+        Obtiene el estado en formato de diccionario.
+        """
         return self.estado.to_dict()

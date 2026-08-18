@@ -4,6 +4,9 @@ from Vista.widgets.boton import Boton
 
 class PopupAlerta(Popup):
     def __init__(self, gestor_recursos, texto_alerta, on_cerrar=None):
+        """
+        Inicializa un popup modal de alerta informativo.
+        """
         ancho_popup = 800
         alto_popup = 500
         x_popup = (1920 - ancho_popup) // 2
@@ -17,10 +20,11 @@ class PopupAlerta(Popup):
             alto=alto_popup
         )
         self.texto = texto_alerta
-        self._fuente = pygame.font.Font(None, 48)
+        self._fuente = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/MedievalSharp-Regular.ttf", 44)
         self.on_cerrar = on_cerrar
         
         def _cerrar_interno():
+            """Cierra el popup de alerta e invoca el callback on_cerrar si está definido."""
             self.cerrar()
             if self.on_cerrar:
                 self.on_cerrar()
@@ -37,6 +41,9 @@ class PopupAlerta(Popup):
         self.agregar_widget(btn_cerrar_rojo)
         
     def manejar_evento(self, evento):
+        """
+        Intercepta eventos y bloquea clicks sobre la capa de fondo.
+        """
         if not self.habilitado or not self.visible:
             return False
         for hijo in reversed(self._hijos):
@@ -47,6 +54,9 @@ class PopupAlerta(Popup):
         return False
 
     def dibujar(self, superficie):
+        """
+        Dibuja el overlay semitransparente, el contenedor modal y el mensaje de alerta.
+        """
         if not self.visible: return
         overlay = pygame.Surface((1920, 1080), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 160))

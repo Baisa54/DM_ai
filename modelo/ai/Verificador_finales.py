@@ -39,6 +39,16 @@ HERRAMIENTA_VERIFICAR_FINAL = {
 }
 
 def verificar_final(estado, narracion):
+    """
+    Evalúa si la condición actual de la historia o la salud del héroe/personajes desencadena un final de juego.
+    
+    Args:
+        estado (EstadoJuego): Objeto con el estado dinámico del juego.
+        narracion (str): Narración del turno actual.
+        
+    Returns:
+        dict: Diccionario con la clave 'final' indicando la clave del final alcanzado o None si continúa.
+    """
     from modelo.configuracion import ConfigManager
     config = ConfigManager()
     

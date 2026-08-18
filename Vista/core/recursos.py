@@ -74,20 +74,25 @@ class GestorRecursos:
         La clave en la caché está compuesta por la ruta y el tamaño de la fuente.
 
         Args:
-            ruta (str): Ruta al archivo de la fuente (.ttf). Puede ser None para la fuente por defecto.
+            ruta (str): Ruta al archivo de la fuente (.ttf). Puede ser None para la fuente por defecto (D&D).
             tamano (int): Tamaño de la fuente en píxeles.
 
         Returns:
             pygame.font.Font: Objeto de fuente listo para renderizar texto.
         """
-        clave = (ruta, tamano)
+        import os
+        ruta_final = ruta or "Vista/resources/fuentes/MedievalSharp-Regular.ttf"
+        if not os.path.exists(ruta_final):
+            ruta_final = None
+
+        clave = (ruta_final, tamano)
         if clave not in self._fuentes:
             try:
-                fuente = pygame.font.Font(ruta, tamano)
+                fuente = pygame.font.Font(ruta_final, tamano)
                 self._fuentes[clave] = fuente
             except pygame.error as e:
-                print(f"Error al cargar la fuente '{ruta}': {e}")
-                return None
+                print(f"Error al cargar la fuente '{ruta_final}': {e}")
+                return pygame.font.Font(None, tamano)
         
         return self._fuentes[clave]
 

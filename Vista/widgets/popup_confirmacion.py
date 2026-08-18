@@ -32,6 +32,9 @@ class PopupConfirmacion(Popup):
     Oscurece el fondo completo (modal) y muestra botones de confirmar y cancelar.
     """
     def __init__(self, gestor_recursos, texto_pregunta, on_confirmar, on_cancelar=None, ruta_icono=None):
+        """
+        Inicializa el modal de confirmación con opciones de confirmar y cancelar.
+        """
         # Configuramos el popup en el centro de la pantalla virtual (1920x1080)
         ancho_popup = 1000
         alto_popup = 650
@@ -47,8 +50,8 @@ class PopupConfirmacion(Popup):
         )
         
         self.texto = texto_pregunta
-        # Fuente más grande y clara para el mensaje
-        self._fuente = pygame.font.Font(None, 64)
+        # Fuente estilo D&D para el mensaje de confirmación
+        self._fuente = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/MedievalSharp-Regular.ttf", 44)
         self.on_cancelar = on_cancelar
         
         # Icono opcional centrado arriba del texto
@@ -79,6 +82,7 @@ class PopupConfirmacion(Popup):
         
         # Función interna para cancelar y cerrar el popup a la vez
         def _cancelar_interno():
+            """Cierra el popup de confirmación e invoca el callback de cancelación si está especificado."""
             self.cerrar()
             if self.on_cancelar:
                 self.on_cancelar()

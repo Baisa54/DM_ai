@@ -95,29 +95,34 @@ class CajaTexto(Widget):
 
     @property
     def ancho(self):
+        """Devuelve el ancho de la caja de texto."""
         return self._rect.width
         
     @ancho.setter
     def ancho(self, valor):
+        """Establece el ancho de la caja de texto y actualiza la escala del fondo."""
         self._rect.width = valor
         self._actualizar_escala_fondo()
 
     @property
     def alto(self):
+        """Devuelve el alto de la caja de texto."""
         return self._rect.height
         
     @alto.setter
     def alto(self, valor):
+        """Establece el alto de la caja de texto y actualiza la escala del fondo."""
         self._rect.height = valor
         self._actualizar_escala_fondo()
 
     @property
     def texto(self):
-        """Propiedad para acceder (solo lectura) al texto actual ingresado por el usuario."""
+        """Propiedad para acceder al texto actual ingresado por el usuario."""
         return self._texto
         
     @texto.setter
     def texto(self, valor):
+        """Establece manualmente el contenido del texto y ubica el cursor al final."""
         self._texto = valor
         self._cursor_pos = len(valor)
         self._ajustar_scroll()
@@ -206,17 +211,42 @@ class CajaTexto(Widget):
                     
             elif (evento.mod & pygame.KMOD_CTRL or evento.mod & pygame.KMOD_META) and evento.key == pygame.K_v:
                 # Pegar
+                texto_pegado = None
+                # Intentar vía pyperclip
                 try:
                     texto_pegado = pyperclip.paste()
-                    if texto_pegado:
-                        # Limpiar retornos de carro y nulos
-                        texto_pegado = texto_pegado.replace('\r', '').replace('\n', '').strip('\x00')
-                        for char in texto_pegado:
-                            if char.isprintable() and len(self._texto) < self._max_longitud:
-                                self._texto = self._texto[:self._cursor_pos] + char + self._texto[self._cursor_pos:]
-                                self._cursor_pos += 1
-                except Exception as e:
-                    print("Error al pegar:", e)
+                except Exception:
+                    pass
+
+                # Fallback 1: pygame.scrap
+                if not texto_pegado:
+                    try:
+                        if not pygame.scrap.get_init():
+                            pygame.scrap.init()
+                        if pygame.scrap.get_init():
+                            res = pygame.scrap.get(pygame.SCRAP_TEXT)
+                            if res:
+                                texto_pegado = res.decode('utf-8', errors='ignore')
+                    except Exception:
+                        pass
+
+                # Fallback 2: tkinter
+                if not texto_pegado:
+                    try:
+                        import tkinter
+                        tk = tkinter.Tk()
+                        tk.withdraw()
+                        texto_pegado = tk.clipboard_get()
+                        tk.destroy()
+                    except Exception:
+                        pass
+
+                if texto_pegado:
+                    texto_pegado = str(texto_pegado).replace('\r', '').replace('\n', '').strip('\x00')
+                    for char in texto_pegado:
+                        if char.isprintable() and len(self._texto) < self._max_longitud:
+                            self._texto = self._texto[:self._cursor_pos] + char + self._texto[self._cursor_pos:]
+                            self._cursor_pos += 1
                     
             else:
                 # Escritura de caracteres visibles

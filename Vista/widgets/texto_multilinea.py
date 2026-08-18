@@ -6,6 +6,9 @@ class TextoMultilinea(Widget):
     Widget para mostrar texto largo en múltiples líneas con auto-wrap y scroll vertical.
     """
     def __init__(self, x, y, ancho, alto, gestor_recursos, fuente_ruta=None, fuente_tamano=28, color_texto=(30, 20, 10)):
+        """
+        Inicializa el widget de texto multilínea con auto-wrap y soporte para desplazamiento (scroll).
+        """
         super().__init__(x, y, ancho, alto)
         self._gestor_recursos = gestor_recursos
         self._fuente = self._gestor_recursos.obtener_fuente(fuente_ruta, fuente_tamano)
@@ -24,10 +27,12 @@ class TextoMultilinea(Widget):
 
     @property
     def texto(self):
+        """Obtiene el contenido actual del texto."""
         return self._texto
 
     @texto.setter
     def texto(self, valor):
+        """Establece el texto y renderiza el bloque de líneas resultante."""
         self._texto = str(valor)
         self._renderizar_texto()
 
@@ -102,6 +107,9 @@ class TextoMultilinea(Widget):
         self._scroll_y = 0
 
     def manejar_evento(self, evento):
+        """
+        Procesa el desplazamiento del scroll con la rueda del mouse.
+        """
         if not self.visible or not self.habilitado:
             return False
 
@@ -135,6 +143,9 @@ class TextoMultilinea(Widget):
         return False
 
     def dibujar(self, superficie):
+        """
+        Dibuja la porción visible del bloque de texto según la posición actual del scroll.
+        """
         if not self.visible or not self._superficie_completa:
             return
 

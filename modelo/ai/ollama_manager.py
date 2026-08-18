@@ -19,6 +19,9 @@ class OllamaManager:
     ]
 
     def __init__(self):
+        """
+        Inicializa el gestor de modelos locales de Ollama y el hilo de descargas.
+        """
         self.descarga_activa = False
         self.progreso_actual = 0.0
         self.estado_descarga = ""
@@ -81,6 +84,9 @@ class OllamaManager:
         return instalados
 
     def _pull_worker(self, modelo_id):
+        """
+        Hilo en segundo plano para descargar un modelo desde Ollama registrando el progreso porcentual.
+        """
         self.descarga_activa = True
         self.progreso_actual = 0.0
         self.estado_descarga = f"Iniciando descarga de {modelo_id}..."

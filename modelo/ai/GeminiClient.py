@@ -56,8 +56,14 @@ from PIL import Image
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class GeminiClient:
+    """
+    Cliente encapsulador para peticiones a la API oficial de Google Gemini.
+    """
 
     def __init__(self):
+        """
+        Inicializa el cliente de Gemini obteniendo la API Key desde ConfigManager.
+        """
         from modelo.configuracion import ConfigManager
         self.config = ConfigManager()
 
@@ -69,7 +75,9 @@ class GeminiClient:
     # CORE CALL (interno)
     # --------------------------------------------------
     def _call(self, model, contents):
-
+        """
+        Llama al método de generación de contenido del cliente oficial de Gemini.
+        """
         return self.client.models.generate_content(
             model=model,
             contents=contents
@@ -79,7 +87,9 @@ class GeminiClient:
     # RETRY WRAPPER
     # --------------------------------------------------
     def _retry(self, func, max_reintentos=5):
-
+        """
+        Envuelve una función en una estrategia de reintentos exponenciales.
+        """
         for intento in range(max_reintentos):
 
             try:
@@ -122,8 +132,11 @@ class GeminiClient:
         prompt,
         modelo="gemini-2.0-flash"
     ):
-
+        """
+        Genera una respuesta en texto plano a partir de un prompt dado.
+        """
         def request():
+            """Ejecuta la petición de texto a la API de Gemini."""
             return self._call(modelo, prompt).text
 
         return self._retry(request)
@@ -137,6 +150,9 @@ class GeminiClient:
         herramienta_schema,
         modelo="gemini-2.0-flash"
     ):
+        """
+        Realiza una llamada a Gemini forzando el uso de una herramienta/función declarada en el esquema.
+        """
         from google.genai import types
 
         func_decl = types.FunctionDeclaration(
@@ -153,6 +169,7 @@ class GeminiClient:
         )
 
         def request():
+            """Ejecuta la petición de herramienta a Gemini."""
             response = self.client.models.generate_content(
                 model=modelo,
                 contents=prompt,
@@ -181,9 +198,11 @@ class GeminiClient:
         imagenes_referencia=None,
         modelo="gemini-2.0-flash-preview-image-generation"
     ):
-
+        """
+        Genera una imagen utilizando Gemini Imagen a partir del prompt y opcionales imágenes de referencia.
+        """
         def request():
-
+            """Ejecuta la generación de imagen multimodal con Gemini."""
             contenidos = [prompt]
 
             if imagenes_referencia:
@@ -203,8 +222,11 @@ class GeminiClient:
         prompt,
         modelo="gemini-2.0-flash-lite"
     ):
-
+        """
+        Genera y parsea una respuesta estructurada en formato JSON desde Gemini.
+        """
         def request():
+            """Ejecuta la solicitud y parsea la respuesta JSON de Gemini."""
             respuesta = self._call(modelo, prompt)
             print("================================")
             print("RESPUESTA GEMINI:")

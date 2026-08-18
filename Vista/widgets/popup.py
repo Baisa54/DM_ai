@@ -75,19 +75,23 @@ class Popup(Widget):
 
     @property
     def ancho(self):
+        """Devuelve el ancho del popup en píxeles."""
         return self._rect.width
         
     @ancho.setter
     def ancho(self, valor):
+        """Establece el ancho del popup y reescala la imagen de fondo."""
         self._rect.width = valor
         self._actualizar_escala_fondo()
 
     @property
     def alto(self):
+        """Devuelve el alto del popup en píxeles."""
         return self._rect.height
         
     @alto.setter
     def alto(self, valor):
+        """Establece el alto del popup y reescala la imagen de fondo."""
         self._rect.height = valor
         self._actualizar_escala_fondo()
 

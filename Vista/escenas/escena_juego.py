@@ -220,6 +220,7 @@ class EscenaJuego(EscenaBase):
 
         # 8. Modal de confirmación de salida (Se agrega al final para renderizarse arriba)
         def confirmar_cierre():
+            """Cierra la aplicación emitiendo el evento QUIT de Pygame."""
             import pygame
             pygame.event.post(pygame.event.Event(pygame.QUIT))
             
@@ -233,6 +234,7 @@ class EscenaJuego(EscenaBase):
         
         # 9. Modal de confirmación de reinicio
         def confirmar_reinicio():
+            """Cierra el popup de reinicio y restablece la partida a su estado inicial."""
             self.popup_reiniciar.cerrar()
             self._reiniciar_juego()
             
@@ -291,6 +293,7 @@ class EscenaJuego(EscenaBase):
         self.procesando_ia = True
         
         def generar_final():
+            """Genera la narración e ilustración final en un hilo secundario."""
             import pygame
             try:
                 self.campania.narracion_final()
@@ -332,6 +335,7 @@ class EscenaJuego(EscenaBase):
         self.procesando_ia = True
         
         def arbitrar():
+            """Valida la acción enviada mediante el árbitro de IA."""
             try:
                 resultado = self.campania.arbitrar_accion_jugador()
                 if not resultado.get("accion_valida", False):
@@ -430,6 +434,9 @@ class EscenaJuego(EscenaBase):
                 self.btn_confirmar.y = 1080 - 140 - 20
 
     def manejar_evento(self, evento):
+        """
+        Garantiza la captura e interceptación de eventos de mouse y teclado según los popups y estados del juego.
+        """
         import pygame
         
         # --- Pantalla Final ---
@@ -513,6 +520,9 @@ class EscenaJuego(EscenaBase):
         self._iniciar_hilo_procesamiento()
 
     def dibujar(self, superficie):
+        """
+        Dibuja la escena del juego, paneles de narración, retratos de personajes y pantallas de carga/finales.
+        """
         import pygame
         # Dibuja todos los widgets normalmente
         super().dibujar(superficie)

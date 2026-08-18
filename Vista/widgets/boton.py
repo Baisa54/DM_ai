@@ -84,19 +84,23 @@ class Boton(Widget):
 
     @property
     def ancho(self):
+        """Devuelve el ancho del botón en píxeles."""
         return self._rect.width
         
     @ancho.setter
     def ancho(self, valor):
+        """Establece el ancho del botón y reescala sus imágenes."""
         self._rect.width = valor
         self._actualizar_escala()
 
     @property
     def alto(self):
+        """Devuelve el alto del botón en píxeles."""
         return self._rect.height
         
     @alto.setter
     def alto(self, valor):
+        """Establece el alto del botón y reescala sus imágenes."""
         self._rect.height = valor
         self._actualizar_escala()
 

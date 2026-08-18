@@ -75,13 +75,21 @@ class Ventana:
 
     @property
     def pantalla(self):
-        # Ahora el exterior (Escenas, widgets) dibuja en la superficie virtual
+        """
+        Devuelve la superficie virtual de resolución fija (1920x1080) para el renderizado de escenas.
+        """
         return self._superficie_virtual
 
     def cambiar_escena(self, escena):
+        """
+        Cambia la escena activa que se está ejecutando en el bucle principal.
+        """
         self._escena_actual = escena
 
     def iniciar(self):
+        """
+        Inicia el bucle principal del juego procesando eventos, actualizaciones y renderizado.
+        """
         self._corriendo = True
         
         while self._corriendo:

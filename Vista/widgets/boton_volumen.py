@@ -8,6 +8,9 @@ class BotonVolumen(Widget):
     Al hacer clic, cicla entre los estados y ajusta la música y los efectos de sonido.
     """
     def __init__(self, x, y, ancho, alto, gestor_recursos):
+        """
+        Inicializa el botón de volumen con cinco niveles discontinuos de intensidad de audio.
+        """
         super().__init__(x, y, ancho, alto)
         self.gestor_recursos = gestor_recursos
         self.estados = ["100", "75", "50", "25", "0"]
@@ -20,6 +23,9 @@ class BotonVolumen(Widget):
         self._mouse_presionado = False
 
     def manejar_evento(self, evento):
+        """
+        Gestiona la interacción del mouse sobre el botón de volumen para ciclar el nivel al hacer click.
+        """
         if not self.habilitado or not self.visible:
             return False
 
@@ -54,6 +60,9 @@ class BotonVolumen(Widget):
         return False
 
     def _cambiar_estado(self):
+        """
+        Avanza al siguiente nivel de volumen (100, 75, 50, 25, 0) y actualiza el mezclador de Pygame.
+        """
         # Ciclar el estado
         self.indice_estado = (self.indice_estado + 1) % len(self.estados)
         estado = self.estados[self.indice_estado]
@@ -81,6 +90,9 @@ class BotonVolumen(Widget):
         self.gestor_recursos.set_volumen_general(volumen_sfx)
 
     def dibujar(self, superficie):
+        """
+        Dibuja el widget del botón de volumen con su ícono representativo.
+        """
         if not self.visible:
             return
             

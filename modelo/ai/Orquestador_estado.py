@@ -76,6 +76,9 @@ HERRAMIENTA_ACTUALIZAR_ESTADO = {
 
 
 def construir_contexto_orquestador(accion, resultado_d20, estado):
+    """
+    Construye el prompt estructurado para que la IA extraiga los cambios de estado (salud, sala, ítems).
+    """
     ubicacion_actual = estado.get_ubicacion()
     datos_sala = SALAS.get(ubicacion_actual, {})
     
@@ -106,6 +109,9 @@ Salidas válidas (ID EXACTO: Nombre): {json.dumps(nombres_salidas, ensure_ascii=
 </resultado_accion>"""
 
 def orquestar_accion(accion, resultado_d20, estado):
+    """
+    Invoca la herramienta de actualización de estado de la IA y devuelve los cambios producidos en el turno.
+    """
     from modelo.configuracion import ConfigManager
     config = ConfigManager()
     

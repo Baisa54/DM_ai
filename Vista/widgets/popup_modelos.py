@@ -7,6 +7,9 @@ from Vista.widgets.popup_confirmacion import PopupConfirmacion
 
 class PopupModelos(Popup):
     def __init__(self, gestor_recursos, on_cerrar=None):
+        """
+        Inicializa el modal de gestión y descarga de modelos locales de Ollama.
+        """
         ancho_popup = 1600
         alto_popup = 900
         x_popup = (1920 - ancho_popup) // 2
@@ -26,9 +29,9 @@ class PopupModelos(Popup):
         self.ram_sistema = self.ollama.obtener_ram_gb()
         self.modelos_instalados = self.ollama.obtener_modelos_instalados()
         
-        self._fuente_titulo = pygame.font.Font(None, 42)
-        self._fuente_texto = pygame.font.Font(None, 28)
-        self._fuente_chica = pygame.font.Font(None, 22)
+        self._fuente_titulo = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/Cinzel-Bold.ttf", 42)
+        self._fuente_texto = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/MedievalSharp-Regular.ttf", 28)
+        self._fuente_chica = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/MedievalSharp-Regular.ttf", 22)
         
         # Botón Cerrar
         btn_cerrar = Boton(
@@ -44,11 +47,15 @@ class PopupModelos(Popup):
 
         # Crear botones para los modelos
         self.botones_accion = []
-        y_offset = self.y + 300
+        card_w = 840
+        card_h = 92
+        card_gap = 105
+        y_start = self.y + 260
+        bx_base = self.x + (self.ancho - card_w) // 2
         
         for idx, mod in enumerate(OllamaManager.MODELOS_DISPONIBLES):
-            bx = self.x + 1050
-            by = y_offset + (idx * 110)
+            bx = bx_base + card_w - 170
+            by = y_start + (idx * card_gap) + 12
             
             btn = Boton(
                 x=bx, y=by,
@@ -56,7 +63,7 @@ class PopupModelos(Popup):
                 ruta_hover="Vista/resources/images/Input_Box.png",
                 ruta_presionado="Vista/resources/images/Input_Box.png",
                 gestor_recursos=gestor_recursos,
-                ancho=160, alto=50,
+                ancho=150, alto=50,
                 on_click=lambda m=mod: self._on_click_modelo(m)
             )
             self.botones_accion.append(btn)
@@ -65,6 +72,7 @@ class PopupModelos(Popup):
         self.popup_confirmacion = None
 
     def _cerrar_interno(self):
+        """Cierra el popup de modelos siempre que no haya una descarga en curso."""
         if self.ollama.descarga_activa:
             # No permitir cerrar si está descargando
             return
@@ -74,6 +82,7 @@ class PopupModelos(Popup):
             self.on_cerrar()
 
     def _on_click_modelo(self, modelo):
+        """Maneja el clic en un modelo para seleccionarlo como activo o iniciar su descarga con confirmación."""
         if self.ollama.descarga_activa:
             return
 
@@ -103,6 +112,7 @@ class PopupModelos(Popup):
                 self._iniciar_descarga(modelo["id"])
 
     def _iniciar_descarga(self, modelo_id):
+        """Inicia el proceso de descarga de un modelo en segundo plano."""
         if self.popup_confirmacion:
             self.popup_confirmacion.cerrar()
             self.popup_confirmacion = None
@@ -110,6 +120,7 @@ class PopupModelos(Popup):
         self.ollama.iniciar_descarga(modelo_id)
 
     def manejar_evento(self, evento):
+        """Procesa los eventos impidiendo la propagación a la pantalla trasera."""
         if not self.habilitado or not self.visible:
             return False
 
@@ -124,6 +135,7 @@ class PopupModelos(Popup):
         return False
 
     def dibujar(self, superficie):
+        """Dibuja la burbuja superior de estado, la lista de modelos locales y la barra de progreso de descarga."""
         if not self.visible:
             return
 
@@ -138,43 +150,62 @@ class PopupModelos(Popup):
         color_alerta = (200, 50, 50)
         color_ok = (50, 150, 50)
         
-        # No dibujamos título porque ya está en el pergamino, pero podemos poner la RAM arriba.
-        txt_ram = self._fuente_texto.render(f"RAM Detectada: {self.ram_sistema:.1f} GB", True, color_texto)
-        superficie.blit(txt_ram, (self.x + 350, self.y + 200))
-        
-        # Modelo actualmente seleccionado
-        modelo_actual = self.config.get_modelo_local()
-        txt_actual = self._fuente_texto.render(f"Modelo Activo: {modelo_actual}", True, color_ok)
-        superficie.blit(txt_actual, (self.x + 350, self.y + 235))
-        
-        # Aviso si Ollama no está activo
-        if not hasattr(self.ollama, 'servidor_ollama_activo') or not self.ollama.servidor_ollama_activo:
-            txt_warn = self._fuente_texto.render("¡AVISO: Servidor Ollama no detectado! Ábrelo para ver tus modelos.", True, color_alerta)
-            superficie.blit(txt_warn, (self.x + 350, self.y + 270))
+        # -----------------------------------------------------------------
+        # Burbuja de Información Superior (Fuera del recuadro, arriba de todo)
+        # -----------------------------------------------------------------
+        bw, bh = 1100, 75
+        bx = (1920 - bw) // 2
+        by = 15
 
-        # Lista de modelos
-        y_offset = self.y + 300
+        bubble = pygame.Surface((bw, bh), pygame.SRCALPHA)
+        pygame.draw.rect(bubble, (30, 20, 15, 235), (0, 0, bw, bh), border_radius=15)
+        pygame.draw.rect(bubble, (212, 175, 55), (0, 0, bw, bh), width=3, border_radius=15)
+        superficie.blit(bubble, (bx, by))
+
+        modelo_actual = self.config.get_modelo_local()
+        txt_ram = self._fuente_texto.render(f"RAM Detectada: {self.ram_sistema:.1f} GB", True, (240, 230, 210))
+        txt_sep = self._fuente_texto.render("  |  ", True, (160, 140, 100))
+        txt_act = self._fuente_texto.render(f"Modelo Activo: {modelo_actual}", True, (100, 220, 100))
+
+        superficie.blit(txt_ram, (bx + 30, by + 10))
+        superficie.blit(txt_sep, (bx + 30 + txt_ram.get_width(), by + 10))
+        superficie.blit(txt_act, (bx + 30 + txt_ram.get_width() + txt_sep.get_width(), by + 10))
+
+        if not hasattr(self.ollama, 'servidor_ollama_activo') or not self.ollama.servidor_ollama_activo:
+            txt_warn = self._fuente_chica.render("¡AVISO: Servidor Ollama no detectado! Ábrelo para conectar o descargar modelos.", True, (255, 120, 120))
+        else:
+            txt_warn = self._fuente_chica.render("Servidor Ollama: Conectado y listo.", True, (120, 220, 120))
+        superficie.blit(txt_warn, (bx + 30, by + 42))
+
+        # -----------------------------------------------------------------
+        # Lista de modelos (Dentro del marco del popup, perfectamente centrada)
+        # -----------------------------------------------------------------
+        card_w = 840
+        card_h = 92
+        card_gap = 105
+        y_start = self.y + 260
+        bx_base = self.x + (self.ancho - card_w) // 2
         modelo_actual = self.config.get_modelo_local()
 
         for idx, mod in enumerate(OllamaManager.MODELOS_DISPONIBLES):
-            bx = self.x + 350
-            by = y_offset + (idx * 110)
+            bx = bx_base
+            by = y_start + (idx * card_gap)
             
-            # Dibujar caja de fondo tenue
-            pygame.draw.rect(superficie, (240, 230, 210), (bx - 10, by - 10, 880, 100), border_radius=10)
-            pygame.draw.rect(superficie, (200, 180, 140), (bx - 10, by - 10, 880, 100), 2, border_radius=10)
+            # Dibujar tarjeta blanca redondeada
+            pygame.draw.rect(superficie, (245, 238, 220), (bx, by, card_w, card_h), border_radius=12)
+            pygame.draw.rect(superficie, (180, 150, 110), (bx, by, card_w, card_h), 2, border_radius=12)
             
             # Nombre y Requisito
             txt_nom = self._fuente_texto.render(mod["nombre"], True, color_texto)
-            superficie.blit(txt_nom, (bx, by))
+            superficie.blit(txt_nom, (bx + 20, by + 12))
             
             req_color = color_ok if self.ram_sistema >= mod["ram_req"] else color_alerta
             txt_req = self._fuente_chica.render(f"Requiere: {mod['ram_req']} GB RAM", True, req_color)
-            superficie.blit(txt_req, (bx + 250, by + 5))
+            superficie.blit(txt_req, (bx + 240, by + 16))
             
             # Descripción
             txt_desc = self._fuente_chica.render(mod["desc"], True, (100, 80, 60))
-            superficie.blit(txt_desc, (bx, by + 35))
+            superficie.blit(txt_desc, (bx + 20, by + 48))
             
             # Estado (Instalado o No)
             is_installed = False

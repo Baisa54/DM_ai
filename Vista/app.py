@@ -469,6 +469,9 @@ elif st.session_state.estado_ui == "FINAL":
         st.rerun()
 
     def safe_step(nombre, fn):
+        """
+        Ejecuta de forma segura un paso del ciclo de juego capturando y mostrando excepciones en la UI de Streamlit.
+        """
         try:
             print(f"\n🔥 INICIO: {nombre}")
             result = fn()

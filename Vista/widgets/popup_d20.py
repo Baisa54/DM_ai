@@ -35,6 +35,9 @@ from Vista.widgets.boton import Boton
 
 class PopupD20(Popup):
     def __init__(self, gestor_recursos):
+        """
+        Inicializa el modal interactivo de la tirada de dado D20.
+        """
         ancho_popup = 1000
         alto_popup = 700
         x_popup = (1920 - ancho_popup) // 2
@@ -58,9 +61,9 @@ class PopupD20(Popup):
         self._ultimo_cambio_num = 0
         self._temp_num = 1
         
-        self._fuente_titulo = pygame.font.Font(None, 48)
-        self._fuente_subtitulo = pygame.font.Font(None, 36)
-        self._fuente_gigante = pygame.font.Font(None, 120)
+        self._fuente_titulo = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/Cinzel-Bold.ttf", 48)
+        self._fuente_subtitulo = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/Cinzel-Bold.ttf", 36)
+        self._fuente_gigante = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/Cinzel-Bold.ttf", 120)
         
         # Botón del Dado (Centro, manteniendo aspecto 275x150)
         self._btn_tirar = Boton(
@@ -91,6 +94,9 @@ class PopupD20(Popup):
         self.agregar_widget(self._btn_continuar)
 
     def abrir(self, dificultad=10, on_resultado=None):
+        """
+        Abre el modal de tirada D20 configurando la dificultad a superar y el callback de resultado.
+        """
         self.dificultad = dificultad
         self.on_resultado = on_resultado
         self.resultado = None
@@ -104,6 +110,9 @@ class PopupD20(Popup):
         super().abrir()
 
     def _iniciar_tirada(self):
+        """
+        Inicia la animación de rodar dado y reproduce el efecto de sonido.
+        """
         snd_click = self._gestor_recursos.obtener_sonido("Vista/resources/sounds/click.wav")
         if snd_click:
             snd_click.play()
@@ -118,6 +127,9 @@ class PopupD20(Popup):
         self._btn_tirar.habilitado = False
 
     def _finalizar_tirada(self):
+        """
+        Cierra el modal e informa el resultado obtenido al callback on_resultado.
+        """
         snd_click = self._gestor_recursos.obtener_sonido("Vista/resources/sounds/click.wav")
         if snd_click:
             snd_click.play()
@@ -134,6 +146,9 @@ class PopupD20(Popup):
             self.on_resultado(self.resultado, tipo)
 
     def actualizar(self):
+        """
+        Actualiza los cuadros de animación aleatoria del dado durante la tirada.
+        """
         super().actualizar()
         
         if self._rolling:
@@ -155,6 +170,9 @@ class PopupD20(Popup):
                 self._btn_continuar.habilitado = True
 
     def manejar_evento(self, evento):
+        """
+        Bloquea eventos del fondo mientras el modal de tirada está visible.
+        """
         if not self.habilitado or not self.visible:
             return False
 
@@ -169,6 +187,9 @@ class PopupD20(Popup):
         return False
 
     def dibujar(self, superficie):
+        """
+        Dibuja el modal, animación del número de dado en giro y botón de continuar.
+        """
         if not self.visible:
             return
 

@@ -44,24 +44,24 @@ from modelo.game.characters import PERSONAJES
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class EstadoJuego:
+    """
+    Almacena y gestiona el estado dinámico global de la partida (ubicación, inventario, personajes presentes y estado de salud).
+    """
 
     def __init__(self):
-
+        """
+        Inicializa un nuevo EstadoJuego con valores predeterminados.
+        """
         self.ubicacion = None
         self.eventos = []
         self.decisiones = []
         self.personajes_presentes = []
         self.final = None
         self.estados_personajes = {
-
             "heroe": "",
-
             "companero": "",
-
             "goblin": "",
-
             "princesa": "",
-
             "osgo": ""
         }
         self.objetos_heroe = [
@@ -69,7 +69,9 @@ class EstadoJuego:
         ]
 
     def set_ubicacion(self, ubicacion):
-
+        """
+        Establece la ubicación actual del héroe y actualiza automáticamente los personajes presentes en dicha sala.
+        """
         self.ubicacion = ubicacion
         
         from modelo.game.campaign import SALAS
@@ -77,60 +79,69 @@ class EstadoJuego:
             self.personajes_presentes = list(SALAS[ubicacion].get("personajes", []))
 
     def get_ubicacion(self):
+        """
+        Obtiene la clave de la ubicación actual del juego.
+        """
         return self.ubicacion
 
-
     def agregar_evento(self, evento):
-
+        """
+        Agrega un evento reciente al historial de la partida (máximo 5).
+        """
         self.eventos.append(evento)
         if len(self.eventos) > 5:
             self.eventos.pop(0)
 
-
     def agregar_decision(self, decision):
-
+        """
+        Agrega una decisión del jugador al historial reciente (máximo 5).
+        """
         self.decisiones.append(decision)
         if len(self.decisiones) > 5:
             self.decisiones.pop(0)
 
-
     def agregar_personaje(self, personaje):
-
+        """
+        Añade un personaje a la lista de personajes presentes en la sala actual.
+        """
         if personaje not in self.personajes_presentes:
-
             self.personajes_presentes.append(personaje)
 
-
     def quitar_personaje(self, personaje):
-
+        """
+        Remueve un personaje de la sala actual si está presente.
+        """
         if personaje in self.personajes_presentes:
-
             self.personajes_presentes.remove(personaje)
 
-
     def set_final(self, final):
-
+        """
+        Establece la clave del final alcanzado en la partida (o None si continúa).
+        """
         self.final = final
 
     def get_final(self):
-        
+        """
+        Obtiene el estado de final de juego si ha sido alcanzado.
+        """
         return self.final
 
-    def set_estado_personaje(
-        self,
-        personaje,
-        estado
-    ):
+    def set_estado_personaje(self, personaje, estado):
+        """
+        Actualiza el estado de salud/condición de un personaje específico ('normal', 'herido', 'muerto', etc.).
+        """
         self.estados_personajes[personaje] = estado
 
-    def get_estado_personaje(
-        self,
-        personaje
-    ):
+    def get_estado_personaje(self, personaje):
+        """
+        Obtiene el estado de condición actual de un personaje específico.
+        """
         return self.estados_personajes.get(personaje)
 
     def to_dict(self):
-
+        """
+        Serializa el estado del juego a un diccionario estructurado.
+        """
         return {
             "ubicacion": self.ubicacion,
             "eventos": self.eventos,
@@ -141,26 +152,25 @@ class EstadoJuego:
             "final": self.final
         }
     
-    def agregar_objeto_heroe(
-        self,
-        objeto
-    ):
+    def agregar_objeto_heroe(self, objeto):
+        """
+        Añade un nuevo ítem al inventario del héroe si no lo posee previamente.
+        """
         if objeto not in self.objetos_heroe:
-
             self.objetos_heroe.append(objeto)
 
-
-    def quitar_objeto_heroe(
-        self,
-        objeto
-    ):
-
+    def quitar_objeto_heroe(self, objeto):
+        """
+        Remueve un ítem del inventario del héroe.
+        """
         if objeto in self.objetos_heroe:
-
             self.objetos_heroe.remove(objeto)
 
     def obtener_imagenes_escena(self):
-
+        """
+        Genera la lista de descripciones de personajes y sus estados visuales para la IA de generación de imágenes.
+        """
+        from modelo.game.characters import PERSONAJES
         imagenes = []
 
         # Agregar heroe
@@ -178,6 +188,10 @@ class EstadoJuego:
         return imagenes
 
     def obtener_rutas_imagenes_personajes(self):
+        """
+        Obtiene la lista de rutas a las imágenes de referencia del héroe y personajes presentes en la sala.
+        """
+        from modelo.game.characters import PERSONAJES
         rutas = []
         if "imagen" in PERSONAJES["heroe"]:
             rutas.append(PERSONAJES["heroe"]["imagen"])

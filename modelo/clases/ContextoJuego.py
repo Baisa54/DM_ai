@@ -47,69 +47,103 @@
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 class ContextoJuego:
+    """
+    Representa el contexto de la acción ejecutada por el jugador durante un turno de juego.
+    """
 
     def __init__(self):
-
+        """
+        Inicializa una nueva instancia de ContextoJuego con valores por defecto.
+        """
         self.prompt_jugador = ""
-
         self.accion_valida = True
-
         self.requiere_tirada = False
-
         self.dificultad = 0
-
         self.estado = None
-
         self.resultado_d20 = None
 
     def set_prompt_jugador(self, prompt):
-
+        """
+        Establece el texto de la acción o prompt ingresado por el jugador.
+        """
         self.prompt_jugador = prompt
 
     def set_accion_valida(self, accion_valida):
-
+        """
+        Establece si la acción del jugador fue validada correctamente por el árbitro.
+        """
         self.accion_valida = accion_valida
 
     def set_requiere_tirada(self, requiere_tirada):
-
+        """
+        Establece si la acción del jugador requiere una tirada de dado D20.
+        """
         self.requiere_tirada = requiere_tirada
 
     def set_dificultad(self, dificultad):
-
+        """
+        Establece el nivel de dificultad asignado a la acción del jugador.
+        """
         self.dificultad = dificultad
 
     def set_estado(self, estado):
-
+        """
+        Establece la referencia al estado actual del juego.
+        """
         self.estado = estado
 
     def set_resultado_d20(self, resultado):
-
+        """
+        Establece el resultado de la tirada de dado D20.
+        """
         self.resultado_d20 = resultado
 
     def get_prompt_jugador(self):
+        """
+        Obtiene el prompt de la acción del jugador.
+        """
         return self.prompt_jugador
 
     def get_accion_valida(self):
+        """
+        Obtiene si la acción fue clasificada como válida.
+        """
         return self.accion_valida
 
     def get_requiere_tirada(self):
+        """
+        Obtiene si la acción requiere tirada de dado.
+        """
         return self.requiere_tirada
 
     def get_dificultad(self):
+        """
+        Obtiene la dificultad objetivo para la tirada.
+        """
         return self.dificultad
 
     def get_estado(self):
+        """
+        Obtiene la referencia al objeto de estado del juego.
+        """
         return self.estado
 
     def get_resultado_d20(self):
+        """
+        Obtiene el resultado obtenido en la tirada de dado D20.
+        """
         return self.resultado_d20
     
     def set_exito(self):
-
+        """
+        Marca el resultado de la tirada como éxito por defecto.
+        """
         self.resultado_d20 = "exito"
 
     def mostrar(self):
-
+        """
+        Devuelve una representación en diccionario de todos los atributos del contexto.
+        """
         return {
             "prompt_jugador": self.prompt_jugador,
             "accion_valida": self.accion_valida,
@@ -120,6 +154,9 @@ class ContextoJuego:
         }
 
     def to_dict(self):
+        """
+        Serializa el contexto a un diccionario (excluyendo la referencia circular a estado).
+        """
         return {
             "prompt_jugador": self.prompt_jugador,
             "accion_valida": self.accion_valida,

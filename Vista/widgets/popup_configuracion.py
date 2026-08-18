@@ -7,9 +7,12 @@ from modelo.configuracion import ConfigManager
 
 class PopupConfiguracion(Popup):
     """
-    Popup para configurar las API keys y el volumen.
+    Popup para configurar API Key, proveedor de IA y volumen.
     """
     def __init__(self, gestor_recursos, on_cerrar=None):
+        """
+        Inicializa el modal de configuración general (API Keys, proveedores e interfaz de sonido).
+        """
         ancho_popup = 1600
         alto_popup = 900
         x_popup = (1920 - ancho_popup) // 2
@@ -25,8 +28,8 @@ class PopupConfiguracion(Popup):
         
         self.on_cerrar = on_cerrar
         self.config = ConfigManager()
-        self._fuente_titulo = pygame.font.Font(None, 42)
-        self._fuente_texto = pygame.font.Font(None, 32)
+        self._fuente_titulo = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/Cinzel-Bold.ttf", 42)
+        self._fuente_texto = self._gestor_recursos.obtener_fuente("Vista/resources/fuentes/MedievalSharp-Regular.ttf", 32)
         
         # 1. Botón Cerrar
         btn_cerrar = Boton(
@@ -39,78 +42,72 @@ class PopupConfiguracion(Popup):
             on_click=self._cerrar_interno
         )
         self.agregar_widget(btn_cerrar)
-        # 2. Caja Gemini
-        self.caja_gemini = CajaTexto(
-            x=self.x + 550, y=self.y + 340,
+
+        # 2. Caja de entrada de API Key (Arriba de los botones, perfectamente encuadrada)
+        self.caja_api_key = CajaTexto(
+            x=self.x + 550, y=self.y + 250,
             ancho=500, alto=60,
             gestor_recursos=gestor_recursos,
             ruta_fondo="Vista/resources/images/BarratextoConfig.png",
-            placeholder="Gemini API Key...",
-            max_longitud=100
+            placeholder="API Key...",
+            max_longitud=150
         )
-        self.caja_gemini.color_texto = (255, 255, 255)
-        self.caja_gemini.color_cursor = (255, 255, 255)
-        self.caja_gemini.color_placeholder = (255, 255, 255)
-        self.caja_gemini.color_borde = (0, 0, 0)
-        self.caja_gemini.padding_x = 100
-        self.caja_gemini.padding_right = 100
-        # 2.1 Setear si ya existe
-        self.caja_gemini.texto = self.config.get_gemini_key()
-        self.agregar_widget(self.caja_gemini)
+        self.caja_api_key.color_texto = (255, 255, 255)
+        self.caja_api_key.color_cursor = (255, 255, 255)
+        self.caja_api_key.color_placeholder = (220, 220, 220)
+        self.caja_api_key.color_borde = (0, 0, 0)
+        self.caja_api_key.padding_x = 80
+        self.caja_api_key.padding_right = 80
+        self.caja_api_key.padding_y = 21
+        self.agregar_widget(self.caja_api_key)
 
-        # 3. Caja HuggingFace
-        self.caja_hf = CajaTexto(
-            x=self.x + 550, y=self.y + 440,
-            ancho=500, alto=60,
+        # 3. Botón Gemini (Lado a lado)
+        self.btn_gemini = Boton(
+            x=self.x + 440, y=self.y + 340,
+            ruta_normal="Vista/resources/images/Gemini.png",
+            ruta_hover="Vista/resources/images/Gemini.png",
+            ruta_presionado="Vista/resources/images/Gemini.png",
             gestor_recursos=gestor_recursos,
-            ruta_fondo="Vista/resources/images/BarratextoConfig.png",
-            placeholder="HuggingFace API Key...",
-            max_longitud=100
+            ancho=340, alto=185,
+            on_click=lambda: self._seleccionar_proveedor("gemini")
         )
-        self.caja_hf.color_texto = (255, 255, 255)
-        self.caja_hf.color_cursor = (255, 255, 255)
-        self.caja_hf.color_placeholder = (255, 255, 255)
-        self.caja_hf.color_borde = (0, 0, 0)
-        self.caja_hf.padding_x = 100
-        self.caja_hf.padding_right = 100
-        self.caja_hf.texto = self.config.get_huggingface_key()
-        self.agregar_widget(self.caja_hf)
+        self.agregar_widget(self.btn_gemini)
 
-        # 4. Botón de volumen
+        # 4. Botón Hugging Face (Lado a lado)
+        self.btn_hf = Boton(
+            x=self.x + 820, y=self.y + 340,
+            ruta_normal="Vista/resources/images/HuggingFace.png",
+            ruta_hover="Vista/resources/images/HuggingFace.png",
+            ruta_presionado="Vista/resources/images/HuggingFace.png",
+            gestor_recursos=gestor_recursos,
+            ancho=340, alto=185,
+            on_click=lambda: self._seleccionar_proveedor("huggingface")
+        )
+        self.agregar_widget(self.btn_hf)
+
+        # 5. Botón de volumen
         self.btn_volumen = BotonVolumen(
-            x=self.x + 600, y=self.y + 540,
-            ancho=80, alto=80,
+            x=self.x + 480, y=self.y + 560,
+            ancho=70, alto=70,
             gestor_recursos=gestor_recursos
         )
         self.agregar_widget(self.btn_volumen)
 
-        # 4.5. Botón Toggle de Proveedor de Imagen
-        self.btn_proveedor = Boton(
-            x=self.x + 750, y=self.y + 540,
-            ruta_normal="Vista/resources/images/Input_Box.png",
-            ruta_hover="Vista/resources/images/Input_Box.png",
-            ruta_presionado="Vista/resources/images/Input_Box.png",
-            gestor_recursos=gestor_recursos,
-            ancho=250, alto=80,
-            on_click=self._toggle_proveedor
-        )
-        self.agregar_widget(self.btn_proveedor)
-        
-        # 4.6 Botón de Gestionar Modelos Locales
+        # 6. Botón de Gestionar Modelos Locales (usando el asset gráfico Gestionar_modelos.png)
         self.btn_gestionar_modelos = Boton(
-            x=self.x + 600, y=self.y + 640,
-            ruta_normal="Vista/resources/images/Input_Box.png",
-            ruta_hover="Vista/resources/images/Input_Box.png",
-            ruta_presionado="Vista/resources/images/Input_Box.png",
+            x=self.x + 630, y=self.y + 510,
+            ruta_normal="Vista/resources/images/Gestionar_modelos.png",
+            ruta_hover="Vista/resources/images/Gestionar_modelos.png",
+            ruta_presionado="Vista/resources/images/Gestionar_modelos.png",
             gestor_recursos=gestor_recursos,
-            ancho=400, alto=60,
+            ancho=340, alto=174,
             on_click=self._abrir_popup_modelos
         )
         self.agregar_widget(self.btn_gestionar_modelos)
 
-        # 5. Botón Guardar
+        # 7. Botón Guardar
         btn_guardar = Boton(
-            x=self.x + 725, y=self.y + 740,
+            x=self.x + 725, y=self.y + 715,
             ruta_normal="Vista/resources/images/Confirm_Button_normal.png",
             ruta_hover="Vista/resources/images/Confirm_Button_hover.png",
             ruta_presionado="Vista/resources/images/Confirm_Button_pressed.png",
@@ -122,7 +119,37 @@ class PopupConfiguracion(Popup):
         
         self.popup_modelos = None
 
+        # Cargar la API Key inicial según el proveedor activo
+        self._cargar_key_proveedor_activo()
+
+    def _cargar_key_proveedor_activo(self):
+        """Carga en la caja de texto la clave de API correspondiente al proveedor seleccionado."""
+        prov = self.config.get_proveedor_imagen()
+        if prov == "gemini":
+            key = self.config.get_gemini_key()
+            self.caja_api_key.placeholder = "Gemini API Key..."
+        else:
+            key = self.config.get_huggingface_key()
+            self.caja_api_key.placeholder = "HuggingFace API Key..."
+        self.caja_api_key.texto = key
+
+    def _guardar_key_actual(self):
+        """Persiste en la configuración la API Key ingresada en la caja de texto para el proveedor activo."""
+        prov = self.config.get_proveedor_imagen()
+        key = self.caja_api_key.texto.strip()
+        if prov == "gemini":
+            self.config.set_gemini_key(key)
+        else:
+            self.config.set_huggingface_key(key)
+
+    def _seleccionar_proveedor(self, proveedor):
+        """Cambia el proveedor de imagen activo ('gemini' o 'huggingface') y actualiza la clave en la caja."""
+        self._guardar_key_actual()
+        self.config.set_proveedor_imagen(proveedor)
+        self._cargar_key_proveedor_activo()
+
     def _abrir_popup_modelos(self):
+        """Abre el sub-modal de selección y descarga de modelos locales de Ollama."""
         from Vista.widgets.popup_modelos import PopupModelos
         if not self.popup_modelos:
             self.popup_modelos = PopupModelos(self._gestor_recursos, on_cerrar=self._on_modelos_cerrado)
@@ -136,28 +163,25 @@ class PopupConfiguracion(Popup):
         self.popup_modelos.abrir()
 
     def _on_modelos_cerrado(self):
-        # Restaurar visibilidad de los widgets
+        """Restaura la visibilidad de los widgets de configuración tras cerrar el sub-modal de modelos."""
         for hijo in self._hijos:
             if hijo != self.popup_modelos:
                 hijo.visible = True
 
-    def _toggle_proveedor(self):
-        actual = self.config.get_proveedor_imagen()
-        nuevo = "gemini" if actual == "huggingface" else "huggingface"
-        self.config.set_proveedor_imagen(nuevo)
-
     def _guardar(self):
-        self.config.set_gemini_key(self.caja_gemini.texto.strip())
-        self.config.set_huggingface_key(self.caja_hf.texto.strip())
+        """Guarda permanentemente las modificaciones en config.json y cierra el modal."""
+        self._guardar_key_actual()
         self.config.guardar_config()
         self._cerrar_interno()
 
     def _cerrar_interno(self):
+        """Cierra el popup de configuración e invoca el callback de cierre."""
         self.cerrar()
         if self.on_cerrar:
             self.on_cerrar()
 
     def manejar_evento(self, evento):
+        """Captura eventos del ratón y teclado bloqueando la interacción con la pantalla trasera."""
         if not self.habilitado or not self.visible:
             return False
 
@@ -172,6 +196,7 @@ class PopupConfiguracion(Popup):
         return False
 
     def dibujar(self, superficie):
+        """Dibuja el marco de configuración, opciones, entradas y resaltado del proveedor activo."""
         if not self.visible:
             return
 
@@ -185,16 +210,10 @@ class PopupConfiguracion(Popup):
         if self.popup_modelos and self.popup_modelos.visible:
             return
 
-        # Dibujar el texto del proveedor actual sobre el botón
-        color_texto = (40, 20, 10)
+        # Dibujar marco de selección sobre el botón activo
         proveedor_actual = self.config.get_proveedor_imagen()
-        txt_prov = self._fuente_texto.render(proveedor_actual.upper(), True, color_texto)
-        cx = self.btn_proveedor.x + (self.btn_proveedor.ancho - txt_prov.get_width()) // 2
-        cy = self.btn_proveedor.y + (self.btn_proveedor.alto - txt_prov.get_height()) // 2
-        superficie.blit(txt_prov, (cx, cy))
+        btn_activo = self.btn_gemini if proveedor_actual == "gemini" else self.btn_hf
+        rect_seleccion = btn_activo.rect.inflate(8, 8)
+        pygame.draw.rect(superficie, (255, 215, 0), rect_seleccion, width=4, border_radius=12)
 
-        # Dibujar el texto del botón Gestionar Modelos
-        txt_gest = self._fuente_texto.render("Gestionar Modelos Locales", True, color_texto)
-        cx_g = self.btn_gestionar_modelos.x + (self.btn_gestionar_modelos.ancho - txt_gest.get_width()) // 2
-        cy_g = self.btn_gestionar_modelos.y + (self.btn_gestionar_modelos.alto - txt_gest.get_height()) // 2
-        superficie.blit(txt_gest, (cx_g, cy_g))
+

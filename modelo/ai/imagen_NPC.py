@@ -62,7 +62,16 @@ Descripción del personaje:
 # --------------------------------------------------
 
 def generar_imagen_dialogo(personaje, emocion):
-
+    """
+    Genera una ilustración en primer plano del retrato del NPC expresando una emoción dada.
+    
+    Args:
+        personaje (dict): Datos del personaje incluyendo su descripción visual.
+        emocion (str): Expresión o emoción a reflejar en el rostro del personaje.
+        
+    Returns:
+        str: Ruta al archivo de imagen generado o None si ocurre un error.
+    """
     config = ConfigManager()
     if config.get_proveedor_imagen() == "gemini":
         cliente = GeminiClient()

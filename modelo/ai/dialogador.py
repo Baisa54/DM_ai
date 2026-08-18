@@ -59,6 +59,16 @@ HERRAMIENTA_EXTRAER_DIALOGO = {
 }
 
 def dialogador(narracion, personajes_presentes=None):
+    """
+    Analiza la narración del turno actual e identifica si un NPC habla, extrayendo la cita y separándola del texto.
+    
+    Args:
+        narracion (str): Texto narrativo generado por el Narrador.
+        personajes_presentes (list): Lista de claves de personajes presentes en la sala.
+        
+    Returns:
+        dict: Diccionario con la narración limpia, el nombre del personaje hablante y el diálogo extraído.
+    """
     from modelo.configuracion import ConfigManager
     config = ConfigManager()
     

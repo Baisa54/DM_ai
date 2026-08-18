@@ -23,6 +23,12 @@ from modelo.clases.MensajeJuego import MensajeJuego
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 def genMessage():
+    """
+    Genera el mensaje inicial de la partida con la narración de introducción e imagen de resumen inicial.
+    
+    Returns:
+        MensajeJuego: Objeto inicializado con el texto introductorio de la campaña y la ruta de la imagen inicial.
+    """
 
     mensaje = MensajeJuego()
 

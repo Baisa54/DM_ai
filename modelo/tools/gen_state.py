@@ -23,6 +23,12 @@ from modelo.clases.Estadojuego import EstadoJuego
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 def gen_state():
+    """
+    Crea e inicializa una nueva instancia de EstadoJuego con los valores iniciales de la campaña.
+    
+    Returns:
+        EstadoJuego: Objeto inicializado con la ubicación, inventario y estados de los personajes.
+    """
 
     estado = EstadoJuego()
 
