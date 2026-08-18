@@ -223,6 +223,40 @@ El Verificador de finales analiza en segundo plano nuestras acciones. Si detecta
 La aventura concluye y se cierra la sesión tras resolver el desenlace de la historia.
 ![Pantalla Final](modelo/game/assets/Readmee/final.jpg)
 
+## Historial de Versiones
+
+A continuación se detalla la evolución del proyecto **DM-ai**, agrupando las actualizaciones principales según sus fases de desarrollo y commits del proyecto:
+
+### Versión 1 (Fase Beta y v1.0)
+* **Creación de la Estructura Base**: Definición inicial de directorios del proyecto y modelos de datos.
+* **Sistema de Reglas y Objetos**: Implementación de las estructuras principales para personajes, objetos y simplificación de reglas mecánicas de rol.
+* **Integración del Módulo de Campaña**: Creación de la clase `Campania` para estructurar los eventos y administrar el estado persistente.
+* **Primer Cliente de IA (GeminiClient)**: Integración inicial con la API de Google Gemini utilizando la librería `google.genai`.
+* **Primera Versión Funcional (DM_ai V1.0)**: Lanzamiento de la primera versión totalmente jugable desde consola y prototipos visuales.
+
+### Versión 2 (Versiones 1.x a v2.0)
+* **Pruebas de Compatibilidad**: Adaptación y pruebas de ejecución multiplataforma para sistemas Linux y Windows.
+* **Evolución de la Interfaz Gráfica (Pygame)**: 
+  * Rediseño completo de la interfaz visual pasando de interfaces básicas a una GUI interactiva rica en Pygame.
+  * Adición de recursos gráficos medievales, fuentes personalizadas y separación de estados de botones (Normal, Hover y Pressed).
+  * Creación de paneles flotantes y modales para configuración, tiradas de dados y hojas de estado del personaje.
+* **Transición a Tool Calling (Nativo)**: Sustitución de parseo manual de texto a llamadas a funciones nativas (*Tool Calling*) para prevenir alucinaciones de la IA.
+* **Inferencia Local con Ollama**: Integración de `OllamaManager` y cliente local para soporte offline con modelos de código abierto (Llama 3.1, Qwen 30B, Mistral, Gemma).
+* **Democratización de Generación de Imágenes**: Incorporación del cliente de Hugging Face (`stabilityai/stable-diffusion-xl-base-1.0`) para ilustrar escenarios sin depender exclusivamente de servicios de pago.
+* **Estabilización e Inmersión (DM_ai V2.0)**: Lanzamiento de la versión 2.0 con música de fondo mística/medieval, soporte de efectos de sonido (SFX) y refinamiento del ciclo de juego (*Game Loop*).
+
+### Construyendo la Versión 3 (Versiones 2.x en adelante)
+* **Rediseño Gráfico Medieval & Tipografía D&D**:
+  * Implementación de fuentes de fantasía inspiradas en Dungeons & Dragons (`Cinzel-Bold.ttf` para títulos y `MedievalSharp-Regular.ttf` para pergaminos y cuerpos de texto).
+  * Sustitución de botones de texto por assets visuales estilizados (`Gestionar_modelos.png`, `Gemini.png`, `HuggingFace.png`).
+* **Mejoras de Usabilidad y UX en Configuración**:
+  * Reestructuración del panel de configuración con cajas de entrada de API Key encuadradas y portapapeles cross-platform (Windows/Linux).
+  * Incorporación de una burbuja de notificación flotante superior en la selección de modelos locales para visualizar la memoria RAM del sistema, modelo activo y estado de conexión con Ollama.
+  * Reorganización y centrado dinámico de las tarjetas visuales de selección de modelos locales.
+* **Documentación y Mantenimiento del Código**:
+  * Adición de comentarios explicativos y docstrings formalizados en español para el 100% de las funciones y métodos del código fuente.
+  * Actualización integral del `README.md` con esquemas Mermaid, guías de instalación y registro detallado de versiones.
+
 ## Trabajo Futuro
 El proyecto se encuentra en constante evolución. Algunas de mis metas para futuras versiones incluyen:
 - **Soporte para más proveedores de IA**: Integración con OpenAI, Anthropic y otras alternativas locales como Ollama.
