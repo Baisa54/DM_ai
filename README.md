@@ -1,48 +1,60 @@
-# DM-ai
+# DM-AI: Un Director de Juego Multiagente Basado en Modelos de Lenguaje para Juegos de Rol Narrativos
 
-## ¿Por qué DM-ai y qué propongo?
-DM-ai es un prototipo de Director de Juego (DM) basado en inteligencia artificial, diseñado para ofrecer una experiencia de rol narrativo inspirada en Dungeons and Dragons. 
+[![Paper PDF](https://img.shields.io/badge/Paper-CACIC%20(PDF)-red.svg?logo=adobeacrobatreader&logoColor=white)](docs/paper/DM_AI_paper_CACIC.pdf)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![UI Framework](https://img.shields.io/badge/GUI-Pygame-green.svg?logo=python&logoColor=white)](https://www.pygame.org/)
+[![Inference Engine](https://img.shields.io/badge/Inference-Ollama%20%7C%20Google%20Gemini-orange.svg)](https://ollama.com/)
+[![Diffusion Models](https://img.shields.io/badge/Vision-Stable%20Diffusion%20(HF)-yellow.svg?logo=huggingface&logoColor=white)](https://huggingface.co/)
+[![Architecture](https://img.shields.io/badge/Architecture-Multi--Agent%20System-purple.svg)](#arquitectura-del-sistema)
+[![Academic Affiliation](https://img.shields.io/badge/Institution-UNLu%20%7C%20CACIC-red.svg)](https://www.unlu.edu.ar/)
 
-Los juegos de rol clásicos ofrecen una libertad de acción inigualable. Si bien videojuegos como *Baldur's Gate 3* logran capturar parte de esta magia, siguen limitados por un conjunto finito de acciones y caminos predefinidos. Por otro lado, aunque los modelos de lenguaje actuales permiten generar historias dinámicas (como en FableAI), carecen de mecanismos formales para resolver acciones puntuales (como una tirada de d20) y les cuesta mantener un estado coherente y persistente del mundo a lo largo de una campaña. A esto se le suma la dificultad habitual de coordinar los horarios de varios jugadores para mantener partidas presenciales.
+> **Artículo y Repositorio Oficial de Investigación**  
+> **Autores:** Salvador Baez, Juan Manuel Fernández  
+> **Institución:** Universidad Nacional de Luján (UNLu), Buenos Aires, Argentina  
+> **Contacto:** `totitobaez1011@gmail.com` | `jmfernandez@unlu.edu.ar`  
+> **Marco:** Presentado en el *Congreso Argentino de Ciencias de la Computación (CACIC)*  
+> 📄 **Leer Artículo Completo:** [`docs/paper/DM_AI_paper_CACIC.pdf`](docs/paper/DM_AI_paper_CACIC.pdf)
 
-Frente a estas limitaciones, propongo DM-ai: un sistema capaz de administrar el estado de la partida, interpretar las acciones del jugador y resolver sus consecuencias mediante un sistema basado en reglas y tiradas de dados. Mi objetivo es lograr una narración interactiva consistente, utilizando estructuras JSON para coordinar la comunicación interna, y modelos de lenguaje (tanto locales como en la nube, según se prefiera) para dar vida a una verdadera experiencia de rol sin las restricciones de las historias pre-programadas.
+---
 
-## Requisitos antes de jugar
-Para poder ejecutar el juego en tu computadora, especialmente si lo haces por primera vez, necesitas tener instalados dos programas fundamentales. Los archivos ejecutables del juego (como `Jugar_Windows.bat` o `Jugar_Linux.sh`) están preparados para facilitarte el resto del proceso.
+## Resumen
 
-### 1. Python
-El juego está programado en Python, por lo que es necesario tenerlo instalado en tu sistema.
-* **Descarga:** Puedes descargarlo de forma gratuita desde su página oficial: [python.org/downloads](https://www.python.org/downloads/).
-* **⚠️ Instalación en Windows:** Es **crítico** que, al iniciar el instalador de Python, te asegures de marcar la casilla inferior que dice **"Add Python to PATH"** (Agregar Python al PATH). Si omites este paso, los archivos ejecutables no podrán detectar Python y el juego no abrirá.
-* **Librerías (Pygame):** Aunque los ejecutables del juego intentan instalar todas las dependencias por ti, si tienes algún problema al abrirlo, te recomendamos abrir una terminal (o Símbolo del Sistema) y ejecutar manualmente: `pip install pygame` (o `pip install -r requirements.txt`).
+**DM-AI** es un director de juego automatizado para juegos de rol narrativos inspirados en *Dungeons & Dragons*. Los sistemas de narración interactiva basados puramente en modelos de lenguaje ofrecen libertad de acción, pero presentan dos problemas fundamentales: **no distinguen las acciones que requieren resolución mediante reglas formales ni preservan un estado consistente del mundo** (*state drift* y alucinaciones mecánicas).
 
-### 2. Ollama
-Ollama es el motor que permite ejecutar modelos de Inteligencia Artificial de forma local en tu computadora, lo cual es necesario para la generación de la historia del juego.
-* **Descarga e Instalación:** Descárgalo desde su web oficial: [ollama.com/download](https://ollama.com/download).
-* **Uso:** Instálalo y asegúrate de abrir el programa para que quede activo en tu computadora. Debe estar ejecutándose en segundo plano para que el juego pueda generar el texto y comunicarse con la IA.
-* **Recomendación de Modelo:** Te recomendamos descargar el modelo **Llama 3.1**, ya que es el que estamos utilizando por defecto para este proyecto. Una vez instalado Ollama, abre una terminal o símbolo del sistema y ejecuta el comando `ollama run llama3.1` para descargarlo automáticamente.
+Para resolver esta problemática, **DM-AI** descompone la dirección de la partida en una arquitectura de **cinco agentes especializados** (*arbitraje de acciones, actualización de estado, diálogo de personajes, narración y verificación de finales*) que se comunican mediante salidas estructuradas con esquemas de valores acotados. Las acciones del jugador se resuelven con tiradas de **d20**, cuya dificultad es propuesta por el modelo dentro de un conjunto discreto $\{0, 5, 10, 15, 20\}$ y revalidada estrictamente por el sistema fuera del LLM.
 
-### ¿Cómo iniciar el juego?
-Una vez que tengas **Python** y **Ollama** instalados, ve a la carpeta del juego y ejecuta el archivo correspondiente a tu sistema operativo (por ejemplo, `Jugar_Windows.bat` si usas Windows).
-La primera vez que lo ejecutes, el script detectará que te faltan las librerías del juego (como Pygame) y te preguntará: `¿Deseas crear el entorno virtual e instalar las dependencias de Python? (s/n):`.
-Escribe **`s`** y presiona Enter. El script creará un entorno seguro (entorno virtual) e instalará todo lo necesario de forma completamente automática, para luego iniciar el juego.
+```
+┌─────────────────┐       ┌────────────────────────┐       ┌─────────────────────┐
+│  Acción Jugador │ ────> │ Árbitro & Tool Calling │ ────> │  Mutación de Estado │
+│ (Lenguaje Libre)│       │ (Validación Mecánica)  │       │  (JSON Persistente) │
+└─────────────────┘       └────────────────────────┘       └─────────────────────┘
+                                                                      │
+┌─────────────────┐       ┌────────────────────────┐                  │
+│ Interfaz Pygame │ <──── │ Síntesis Narrativa &   │ <────────────────┘
+│ (Texto + Img)   │       │ Generación Visual (HF) │
+└─────────────────┘       └────────────────────────┘
+```
 
-## Herramientas Elegidas
-Para el desarrollo de DM-ai he seleccionado un conjunto de tecnologías robustas y eficientes que permiten construir todo el sistema, desde la lógica hasta la interfaz gráfica interactiva:
-- **Python**: Como lenguaje de programación principal, gracias a su inmenso ecosistema de librerías para IA y su facilidad para un desarrollo rápido.
-- **Pygame**: Utilizado para construir toda la Vista (interfaz gráfica de usuario). Al ser un proyecto inspirado en videojuegos y juegos de rol, Pygame me permite manejar los eventos de ventana, renderizado de texto interactivo y controles visuales con mayor libertad que las librerías GUI tradicionales.
-- **google-genai**: La librería oficial para integrar el modelo de Google Gemini directamente al proyecto. A través del cliente `GeminiClient`, esta librería maneja las solicitudes complejas hacia la IA en la nube.
-- **huggingface-hub**: Para facilitar la interacción y posible descarga de modelos abiertos alojados en Hugging Face, sirviendo como un pilar importante para la inferencia local.
-- **requests**: Una herramienta indispensable para realizar peticiones HTTP. La utilizo para la comunicación en red con las APIs y para el cliente `LocalAIClient`, permitiendo el paso de JSON de un lado a otro.
-- **Pillow (PIL)**: Librería para el procesamiento de imágenes. Se utiliza en conjunto con la vista para manejar recursos gráficos, escalar imágenes o adaptar texturas necesarias dentro del renderizado de Pygame.
-- **pyperclip**: Implementado para aportar usabilidad al sistema, permitiendo que el jugador o el DM puedan interactuar con el portapapeles (copiar/pegar) de manera fluida directamente desde la interfaz gráfica.
-- **JSON**: La librería estándar de Python para el manejo y persistencia de la configuración del sistema (`config.json`), logrando que parámetros clave (como qué IA usar, u otros datos de entorno) sean fácilmente editables sin tocar el código fuente.
+---
 
-## Construcción del Modelo
-La arquitectura del núcleo lógico (todo lo que reside en la carpeta `modelo`) está diseñada siguiendo principios de modularidad y bajo acoplamiento. He dividido el sistema en varios submódulos especializados para facilitar el mantenimiento y delegar responsabilidades específicas a distintos agentes:
+## Contribuciones Principales
 
-### 1. Clases y Estructuras Base (`modelo/clases/` y `modelo/game/`)
-Aquí residen las entidades que mantienen la persistencia, memoria y las reglas de negocio del juego.
+1. **Arquitectura Multi-Agente Desacoplada:** Separación explícita de responsabilidades cognitivas entre arbitraje de reglas, mutación de estado, diálogo de NPCs, síntesis literaria y monitoreo de terminación.
+2. **Arbitraje Probabilístico Revalidado:** El modelo propone la dificultad de la acción dentro de un conjunto discreto $\{0, 5, 10, 15, 20\}$ (donde $0$ corresponde a acciones sin riesgo), y el motor en código ejecuta el lanzamiento d20 y aplica la comparación numérica fuera del modelo generativo.
+3. **Muestreo Diferenciado por Temperatura:**
+   - **Baja temperatura:** Para agentes que generan llamadas a herramientas (*tool calling*) y mutaciones estructuradas en JSON.
+   - **Alta temperatura:** Para el agente narrador y generación creativa descriptiva.
+4. **Ventana de Contexto y Memoria Deslizante:** Contexto de 8192 tokens con una memoria episódica acotada a los últimos cinco eventos y cinco decisiones para evitar saturación contextual.
+5. **Documentación de la Tensión de Diseño:** Análisis empírico sobre el compromiso (*trade-off*) entre restringir alucinaciones del modelo mediante validación estricta y preservar la agencia y creatividad del jugador.
+
+---
+
+## Arquitectura del Sistema
+
+### 1. Modelo de Datos y Estado Canónico (`modelo/clases/`)
+
+El estado del mundo se preserva en estructuras serializables en JSON:
+
 ```mermaid
 classDiagram
     class Campania {
@@ -138,130 +150,161 @@ classDiagram
     Campania *-- EstadoJuego
     Campania *-- MensajeJuego
 ```
-- **Campania.py**: Es el cerebro organizador; mantiene el contexto de la partida activa, orquesta las llamadas a la IA y administra el flujo general del juego.
-- **Estadojuego.py** y **ContextoJuego.py**: Almacenan y serializan (a JSON) los datos del mundo, los inventarios, estadísticas y salud de los personajes.
-- **MensajeJuego.py**: Define de forma estándar la estructura de los diálogos y notificaciones que se enviarán a la Vista.
-- **Submódulo `game/`**: Incluye archivos de soporte (`characters.py`, `items.py`, `campaign.py`) para definir y estructurar los atributos crudos de los actores, campañas y objetos.
 
-### 2. Motores de Inteligencia Artificial (`modelo/ai/`)
-El flujo de juego funciona como un ciclo continuo (Game Loop) donde la acción del jugador pasa por una "cadena de montaje" de **Agentes de IA Especializados**. Estos agentes se comunican entre sí y modifican el **Estado de la partida** central en cada turno:
+* **`Campania`**: Controlador central de flujo y orquestador del ciclo de evaluación por turnos (*Game Loop*).
+* **`EstadoJuego`**: Registro canónico del entorno: inventario, ubicaciones, eventos registrados y salud.
+* **`ContextoJuego`**: Buffer transaccional del turno actual (prompt del jugador, validez de acción, umbral de dificultad y resultado d20).
+* **`MensajeJuego`**: Estructura de transferencia desacoplada hacia la capa de presentación (GUI).
+
+---
+
+### 2. Pipeline Cognitivo de los 5 Agentes (`modelo/ai/`)
+
+El flujo por turnos canaliza la entrada del usuario a través de una secuencia de agentes especializados:
 
 ```mermaid
 flowchart LR
     Jugador([Jugador])
-    Arbitro[Árbitro de acción]
-    Tirada[Tirada de d20]
-    Orq[Orquestador de estado]
-    Dialogador[Dialogador]
-    Narrador[Narrador]
-    Verif[Verificador de finales]
-    GenVis[Generador de imágenes]
-    Estado[(Estado de la partida)]
+    Arbitro[1. Árbitro de Acción]
+    Tirada[Resolución d20 / Reglas]
+    Orq[2. Orquestador de Estado]
+    Dialogador[3. Agente Dialogador]
+    Narrador[4. Agente Narrador]
+    Verif[5. Verificador de Finales]
+    GenVis[Generador Multimodal]
+    Estado[(Estado Canónico)]
 
-    Jugador -- acción --> Arbitro
-    Arbitro -- requiere tirada --> Tirada
-    Tirada -- resultado --> Orq
-    Arbitro -- sin tirada --> Orq
+    Jugador -- Prompt natural --> Arbitro
+    Arbitro -- Requiere tirada --> Tirada
+    Tirada -- Consecuencia numérica --> Orq
+    Arbitro -- Acción trivial (dificultad 0) --> Orq
     
-    Orq -- actualiza --> Estado
+    Orq -- Mutación atómica --> Estado
     Orq --> Dialogador
     Dialogador --> Narrador
     Narrador --> Verif
     Verif --> GenVis
-    GenVis -- respuesta --> Jugador
+    GenVis -- Render final --> Jugador
 
-    Arbitro -. lee .-> Estado
-    Narrador -. lee .-> Estado
-    Verif -. lee .-> Estado
+    Arbitro -. Consulta reglas .-> Estado
+    Narrador -. Contexto ambiental .-> Estado
+    Verif -. Valida condiciones de corte .-> Estado
 ```
 
-**Explicación detallada de cada Agente y Componente:**
+#### Roles y Responsabilidades:
 
-- **Árbitro de Acción (`arbitro_accion.py`)**: Es el primer filtro cognitivo. Analiza lo que el jugador intenta hacer y decide de forma objetiva si es una acción trivial (ej: "Miro el cielo") o si existe un riesgo que requiere aplicar las reglas del juego (ej: "Salto el abismo"). Si hay riesgo, exige lanzar una *Tirada de d20*.
-- **Orquestador de Estado (`Orquestador_estado.py`)**: Es el administrador de los datos duros. Recibe el desenlace matemático (éxito, fracaso, daño, etc.) y decide *qué cambia físicamente* en el mundo: actualiza la salud, mueve los objetos del inventario y define transiciones de sala. Luego, guarda estos datos en el JSON del estado de la partida.
-- **Dialogador (`dialogador.py`)**: Cuando la escena involucra personajes (NPCs), este agente "actúa" asumiendo su personalidad. Reacciona a las acciones del jugador generando diálogos que encajan con las emociones y secretos del NPC.
-- **Narrador (`narrador.py`)**: Cumple el rol del clásico Dungeon Master literario. Junta todo lo que acaba de suceder (consecuencias físicas, resultados de dados, diálogos) y redacta la respuesta inmersiva definitiva que describe la escena para el jugador.
-- **Verificador de Finales (`Verificador_finales.py`)**: Trabaja de manera invisible en segundo plano. Tras cada turno, escanea silenciosamente el estado del mundo para comprobar si el jugador ha ganado, ha muerto o ha disparado algún final secreto de la campaña.
-- **Generadores Visuales (`generador_imagen_escena.py`, `imagen_NPC.py`)**: Son la parte "artística". Al terminar de construir la narrativa, extraen un resumen visual y elaboran *prompts* detallados que se envían a generadores de imágenes (como Stable Diffusion) para ilustrar la pantalla final.
-- **Capa de Clientes API (`GeminiClient.py`, `LocalAIClient.py`)**: Es la vía de comunicación. Todos los agentes mencionados anteriormente son posibles gracias a esta capa que envía y recibe información de los "cerebros" reales: ya sea el modelo de Google en la nube (Gemini) o los modelos locales en tu PC vía Ollama (administrados automáticamente por `ollama_manager.py`).
+1. **Árbitro de Acción (`arbitro_accion.py`):** Analiza la intención semántica del jugador. Dictamina si la acción es ejecutable en el contexto actual y propone una dificultad discreta $\{0, 5, 10, 15, 20\}$.
+2. **Resolución de Reglas (`modelo/tools/dice.py`):** Ejecuta en código determinístico el lanzamiento d20 y compara el valor contra la dificultad validada.
+3. **Orquestador de Estado (`Orquestador_estado.py`):** Recibe el desenlace matemático y aplica mutaciones atómicas sobre el estado (vida, inventario, transiciones de sala).
+4. **Dialogador de NPCs (`dialogador.py`):** Asume el rol y personalidad de personajes no jugadores presentes en la escena.
+5. **Narrador (`narrador.py`):** Produce la descripción sensorial y literaria del turno unificando las consecuencias mecánicas y los diálogos.
+6. **Verificador de Finales (`Verificador_finales.py`):** Comprueba silenciosamente si el estado cumple condiciones de victoria, derrota o desenlaces especiales.
+7. **Generador Multimodal (`generador_imagen_escena.py`, `imagen_NPC.py`):** Sintetiza visualmente la escena mediante *Stable Diffusion XL* vía Hugging Face Hub o Gemini.
 
-### 3. Herramientas ("Tool Calling") (`modelo/tools/`)
-Para evitar que los modelos de lenguaje "alucinen" resoluciones mecánicas, he implementado funciones de código estricto que las IAs pueden invocar:
-- **`dice.py`**: Ejecuta lógicamente las tiradas de dados (d20) y verifica si una acción es un éxito o un fracaso matemático basado en el estado.
-- **`gen_state.py` y `gen_messege.py`**: Rutinas controladas para que la IA actualice atributos (vida, inventario) o emita alertas sin corromper el motor de juego.
+---
 
-### 4. Configuración (`modelo/configuracion.py`)
-Módulo encargado de aislar la persistencia de los ajustes del usuario, leyendo y escribiendo en el `config.json` parámetros clave como el motor de IA seleccionado.
+## Stack Tecnológico
 
-## Construcción de la Vista Gráfica
-La interfaz gráfica de usuario (GUI) ha sido diseñada pensando en la usabilidad y la experiencia del usuario. Busca proporcionar un entorno limpio y directo donde el usuario pueda escribir sus prompts, configurar los parámetros del modelo en tiempo real y visualizar las respuestas de forma estructurada. La vista se comunica de forma asíncrona con los clientes de IA para mantener la aplicación receptiva incluso durante tiempos de inferencia prolongados.
+| Capa / Componente | Tecnología | Justificación Técnica |
+| :--- | :--- | :--- |
+| **Lenguaje Core** | Python 3.10+ | Ecosistema estándar en IA, procesamiento simbólico y concurrencia. |
+| **Interfaz Gráfica (GUI)** | Pygame 2.x | Control fino sobre el loop de eventos, renderizado asíncrono y texturas personalizadas. |
+| **Inferencia Local** | Ollama Engine | Inferencia offline sobre arquitecturas cuantizadas (Llama 3.1 8B). |
+| **Inferencia Cloud** | Google Gemini API (`google-genai`) | Solicitudes complejas de razonamiento y soporte multimodal alternativo. |
+| **Generación Visual** | Hugging Face Hub (`stabilityai/sdxl`) | Renderizado de imágenes de escena sin costo de APIs propietarias. |
+| **Manipulación Gráfica** | Pillow (PIL) | Procesamiento y adaptación dinámica de texturas en tiempo de ejecución. |
+| **Persistencia** | JSON Schema | Serialización atómica y auditable del estado del mundo. |
 
-## Demostración de Partida
-A continuación, se muestra el flujo típico de una sesión de juego interactuando con el Director de Juego (DM):
+---
 
-### 1. Escena Inicial y Generación Visual
-El DM nos sitúa en el contexto mediante una descripción narrativa detallada, acompañada de una imagen generada por IA que ilustra nuestra ubicación actual.
-![Juego con imagen generada](modelo/game/assets/Readmee/Juego_con_imagen_generada.jpg)
+## Demostración y Validación Experimental
 
-### 2. Resolución de Acciones (Tirada de d20)
-Cuando intentamos una acción arriesgada (como atacar o escapar), el "Árbitro" interviene automáticamente y exige una tirada de dados virtual para determinar nuestro éxito.
-![Tirada d20](modelo/game/assets/Readmee/tirada_d20.jpg)
+El sistema fue validado sobre una campaña experimental de **tres escenarios encadenados, cinco personajes y cinco finales alcanzables**:
 
-### 3. Consecuencia Matemática (Resultado)
-El motor calcula el resultado evaluando la dificultad y la tirada. A partir de este número, la IA describe narrativamente cómo nos fue (un fallo desastroso o un éxito épico).
-![Resultado d20](modelo/game/assets/Readmee/resultado_d20.jpg)
+| 1. Inicio de Aventura y Renderizado de Escena | 2. Detección de Riesgo y Arbitraje d20 |
+| :---: | :---: |
+| ![Escena Inicial](modelo/game/assets/Readmee/Juego_con_imagen_generada.jpg) | ![Tirada d20](modelo/game/assets/Readmee/tirada_d20.jpg) |
+| *Síntesis contextual inicial ilustrada con modelo de difusión.* | *El Árbitro detecta una acción arriesgada y dispara la mecánica de dados.* |
 
-### 4. Interacción con NPCs
-El sistema puede asumir la identidad de cualquier personaje, permitiendo diálogos inmersivos y mostrando el retrato del NPC con el que estamos conversando.
-![Diálogo NPC](modelo/game/assets/Readmee/Dialogo_npc.jpg)
+| 3. Resolución Numérica y Consecuencia | 4. Personificación e Interacción NPC |
+| :---: | :---: |
+| ![Resultado d20](modelo/game/assets/Readmee/resultado_d20.jpg) | ![Diálogo NPC](modelo/game/assets/Readmee/Dialogo_npc.jpg) |
+| *El motor computa la dificultad y el Narrador asume el desenlace.* | *El Dialogador adopta la personalidad del NPC y sincroniza su retrato.* |
 
-### 5. Evaluación de Objetivos
-El Verificador de finales analiza en segundo plano nuestras acciones. Si detecta que hemos completado la misión (o muerto en el intento), nos alerta sobre el desenlace inminente.
-![Confirmación de Final](modelo/game/assets/Readmee/Final_confirm.jpg)
+| 5. Verificación de Condiciones de Corte | 6. Epílogo y Cierre de Sesión |
+| :---: | :---: |
+| ![Confirmación Final](modelo/game/assets/Readmee/Final_confirm.jpg) | ![Pantalla Final](modelo/game/assets/Readmee/final.jpg) |
+| *El Verificador escanea el estado y confirma la activación de un final.* | *Resolución narrativa conclusiva de la campaña.* |
 
-### 6. Pantalla Final
-La aventura concluye y se cierra la sesión tras resolver el desenlace de la historia.
-![Pantalla Final](modelo/game/assets/Readmee/final.jpg)
+---
 
-## Historial de Versiones
+## Guía de Instalación y Reproducibilidad
 
-A continuación se detalla la evolución del proyecto **DM-ai**, agrupando las actualizaciones principales según sus fases de desarrollo y commits del proyecto:
+El repositorio provee entornos de ejecución listos para reproducir los experimentos en plataformas **Windows, Linux y macOS**.
 
-### Versión 1 (Fase Beta y v1.0)
-* **Creación de la Estructura Base**: Definición inicial de directorios del proyecto y modelos de datos.
-* **Sistema de Reglas y Objetos**: Implementación de las estructuras principales para personajes, objetos y simplificación de reglas mecánicas de rol.
-* **Integración del Módulo de Campaña**: Creación de la clase `Campania` para estructurar los eventos y administrar el estado persistente.
-* **Primer Cliente de IA (GeminiClient)**: Integración inicial con la API de Google Gemini utilizando la librería `google.genai`.
-* **Primera Versión Funcional (DM_ai V1.0)**: Lanzamiento de la primera versión totalmente jugable desde consola y prototipos visuales.
+### Prerrequisitos del Sistema
 
-### Versión 2 (Versiones 1.x a v2.0)
-* **Pruebas de Compatibilidad**: Adaptación y pruebas de ejecución multiplataforma para sistemas Linux y Windows.
-* **Evolución de la Interfaz Gráfica (Pygame)**: 
-  * Rediseño completo de la interfaz visual pasando de interfaces básicas a una GUI interactiva rica en Pygame.
-  * Adición de recursos gráficos medievales, fuentes personalizadas y separación de estados de botones (Normal, Hover y Pressed).
-  * Creación de paneles flotantes y modales para configuración, tiradas de dados y hojas de estado del personaje.
-* **Transición a Tool Calling (Nativo)**: Sustitución de parseo manual de texto a llamadas a funciones nativas (*Tool Calling*) para prevenir alucinaciones de la IA.
-* **Inferencia Local con Ollama**: Integración de `OllamaManager` y cliente local para soporte offline con modelos de código abierto (Llama 3.1, Qwen 30B, Mistral, Gemma).
-* **Democratización de Generación de Imágenes**: Incorporación del cliente de Hugging Face (`stabilityai/stable-diffusion-xl-base-1.0`) para ilustrar escenarios sin depender exclusivamente de servicios de pago.
-* **Estabilización e Inmersión (DM_ai V2.0)**: Lanzamiento de la versión 2.0 con música de fondo mística/medieval, soporte de efectos de sonido (SFX) y refinamiento del ciclo de juego (*Game Loop*).
+1. **Python 3.10 o superior:** [python.org](https://www.python.org/downloads/)
+2. **Motor de Inferencia Local (Opcional para modo Offline):**
+   * Instalar [Ollama](https://ollama.com/)
+   * Descargar el modelo utilizado en el estudio:
+     ```bash
+     ollama run llama3.1
+     ```
 
-### Construyendo la Versión 3 (Versiones 2.x en adelante)
-* **Rediseño Gráfico Medieval & Tipografía D&D**:
-  * Implementación de fuentes de fantasía inspiradas en Dungeons & Dragons (`Cinzel-Bold.ttf` para títulos y `MedievalSharp-Regular.ttf` para pergaminos y cuerpos de texto).
-  * Sustitución de botones de texto por assets visuales estilizados (`Gestionar_modelos.png`, `Gemini.png`, `HuggingFace.png`).
-* **Mejoras de Usabilidad y UX en Configuración**:
-  * Reestructuración del panel de configuración con cajas de entrada de API Key encuadradas y portapapeles cross-platform (Windows/Linux).
-  * Incorporación de una burbuja de notificación flotante superior en la selección de modelos locales para visualizar la memoria RAM del sistema, modelo activo y estado de conexión con Ollama.
-  * Reorganización y centrado dinámico de las tarjetas visuales de selección de modelos locales.
-* **Documentación y Mantenimiento del Código**:
-  * Adición de comentarios explicativos y docstrings formalizados en español para el 100% de las funciones y métodos del código fuente.
-  * Actualización integral del `README.md` con esquemas Mermaid, guías de instalación y registro detallado de versiones.
+### Instalación Rápida
 
-## Trabajo Futuro
-El proyecto se encuentra en constante evolución. Algunas de mis metas para futuras versiones incluyen:
-- **Soporte para más proveedores de IA**: Integración con OpenAI, Anthropic y otras alternativas locales como Ollama.
-- **Gestión avanzada de contexto y memoria**: Mejorar la capacidad del modelo para recordar conversaciones largas y mantener el contexto.
-- **Mejoras en la Interfaz Gráfica**: Añadir soporte para temas (modo oscuro/claro), atajos de teclado y exportación de conversaciones a PDF/Markdown.
-- **Procesamiento Multimodal**: Ampliar las capacidades para que el sistema pueda analizar y responder a imágenes y documentos, no solo a texto.
-- **Optimización de Código**: Refactorizar y limpiar la base de código para reducir la latencia, especialmente en el manejo de peticiones locales y renderizado gráfico.
-- **Mejoras en la Arquitectura**: Consolidar el patrón de diseño (como MVC) para lograr un mayor desacoplamiento entre la lógica del juego (modelo) y Pygame (vista), lo que facilitaría escalar el proyecto o incluso llevarlo a la web en el futuro.
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/Baisa54/DM_ai.git
+   cd DM_ai
+   ```
+
+2. **Ejecución mediante lanzadores automáticos:**
+   * **Windows:** Doble clic en `Jugar_Windows.bat` (crea el entorno virtual e instala dependencias automáticamente).
+   * **Linux:** `chmod +x Jugar_Linux.sh && ./Jugar_Linux.sh`
+   * **macOS:** `./Jugar_macOS.command`
+
+3. **Ejecución manual (terminal):**
+   ```bash
+   # Creación del entorno virtual
+   python -m venv venv
+
+   # Activación del entorno
+   # En Windows:
+   .\venv\Scripts\activate
+   # En Linux / macOS:
+   source venv/bin/activate
+
+   # Instalación de dependencias
+   pip install -r requirements.txt
+
+   # Inicio del sistema
+   python main.py
+   ```
+
+---
+
+## Líneas de Investigación y Trabajo Futuro
+
+1. **Memoria de Largo Plazo mediante Recuperación Aumentada (KG-RAG):** Incorporar memoria episódica estructurada sobre grafos para sostener campañas extensas.
+2. **Extensión del Sistema de Combate:** Modelado de combate táctico por turnos y posicionamiento geométrico conforme a las reglas avanzadas de DnD.
+3. **Evaluación de Modelos de Mayor Escala:** Determinar cómo se desplaza el punto de equilibrio entre rigidez y libertad creativa al evaluar modelos de lenguaje de mayor capacidad.
+
+---
+
+## Publicación Científica y Citación
+
+Si utilizas este trabajo o arquitectura en tu investigación, por favor cita el artículo correspondiente presentado en CACIC:
+
+```bibtex
+@inproceedings{baez2026dmai,
+  title     = {DM-AI: un director de juego multiagente basado en modelos de lenguaje para juegos de rol narrativos},
+  author    = {Baez, Salvador and Fern{\'a}ndez, Juan Manuel},
+  booktitle = {Actas del Congreso Argentino de Ciencias de la Computaci{\'o}n (CACIC)},
+  year      = {2026},
+  institution = {Universidad Nacional de Luj{\'a}n}
+}
+```
+
+* **Descarga directa del artículo:** [`docs/paper/DM_AI_paper_CACIC.pdf`](docs/paper/DM_AI_paper_CACIC.pdf)
