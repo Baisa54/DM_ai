@@ -49,15 +49,8 @@ def verificar_final(estado, narracion):
     Returns:
         dict: Diccionario con la clave 'final' indicando la clave del final alcanzado o None si continúa.
     """
-    from modelo.configuracion import ConfigManager
-    config = ConfigManager()
-    
-    if config.get_proveedor_texto() == "gemini":
-        from modelo.ai.GeminiClient import GeminiClient
-        cliente = GeminiClient()
-    else:
-        from modelo.ai.LocalAICLient import LocalAIClient
-        cliente = LocalAIClient()
+    from modelo.ai.cliente_factory import obtener_cliente_texto
+    cliente = obtener_cliente_texto()
 
     entrada = {
         "estado_partida": estado.to_dict(),

@@ -69,15 +69,8 @@ def dialogador(narracion, personajes_presentes=None):
     Returns:
         dict: Diccionario con la narración limpia, el nombre del personaje hablante y el diálogo extraído.
     """
-    from modelo.configuracion import ConfigManager
-    config = ConfigManager()
-    
-    if config.get_proveedor_texto() == "gemini":
-        from modelo.ai.GeminiClient import GeminiClient
-        cliente = GeminiClient()
-    else:
-        from modelo.ai.LocalAICLient import LocalAIClient
-        cliente = LocalAIClient()
+    from modelo.ai.cliente_factory import obtener_cliente_texto
+    cliente = obtener_cliente_texto()
 
     personajes_str = ", ".join(personajes_presentes) if personajes_presentes else "ninguno"
 

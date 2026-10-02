@@ -22,11 +22,8 @@
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
-from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
+from modelo.ai.cliente_factory import obtener_cliente_texto
+# cliente_factory permite usar Ollama, OpenAI o Gemini según la configuración activa
 import json
 # json para el manejo de datos
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
@@ -107,9 +104,9 @@ def narrar_accion(accion, estado, resultado_d20, ubicacion_anterior=None):
     """
     Genera el texto narrativo correspondiente a la acción del jugador y resultado de la tirada.
     """
-    gemini = GeminiClient()
+    cliente = obtener_cliente_texto()
     prompt = f"{PROMPT_NARRADOR}\n\n{construir_contexto_narrador(estado, accion, resultado_d20, ubicacion_anterior)}"
-    return gemini.generar_texto(prompt)
+    return cliente.generar_texto(prompt)
 
 PROMPT_NARRADOR_FINAL = """<system>
 Eres el Dungeon Master de una campaña RPG. Tu única tarea es narrar el FINAL DEFINITIVO de la historia del jugador basándote en el tipo de final detectado en el "ESTADO ACTUAL".
@@ -144,7 +141,7 @@ def narrar_final(estado, accion, resultado_accion):
     """
     Genera la narración final del epílogo de la campaña según la condición de término alcanzada.
     """
-    gemini = GeminiClient()
+    cliente = obtener_cliente_texto()
     prompt = f"""{PROMPT_NARRADOR_FINAL}
 
 <input_data>

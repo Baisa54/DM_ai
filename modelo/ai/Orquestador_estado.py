@@ -19,11 +19,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Imports
 import json
-from modelo.ai.LocalAICLient import LocalAIClient as GeminiClient
-# LocalAICLient es el cliente que se utiliza para comunicarse con la IA local
-#-@ from modelo.ai.GeminiClient import GeminiClient
-# GeminiClient es el cliente que se utiliza para comunicarse con la IA de google
-# Actualmente comentada porque no se esta usando gemini, sino una IA local
+#-@ from modelo.ai.cliente_factory import obtener_cliente_texto
 from modelo.game.campaign import SALAS
 # SALAS es el diccionario que se utiliza para manejar las salas
 from modelo.game.characters import PERSONAJES
@@ -112,15 +108,8 @@ def orquestar_accion(accion, resultado_d20, estado):
     """
     Invoca la herramienta de actualización de estado de la IA y devuelve los cambios producidos en el turno.
     """
-    from modelo.configuracion import ConfigManager
-    config = ConfigManager()
-    
-    if config.get_proveedor_texto() == "gemini":
-        from modelo.ai.GeminiClient import GeminiClient
-        cliente = GeminiClient()
-    else:
-        from modelo.ai.LocalAICLient import LocalAIClient
-        cliente = LocalAIClient()
+    from modelo.ai.cliente_factory import obtener_cliente_texto
+    cliente = obtener_cliente_texto()
         
     prompt = construir_contexto_orquestador(accion, resultado_d20, estado)
     resultado = cliente.generar_con_herramienta(prompt, HERRAMIENTA_ACTUALIZAR_ESTADO)

@@ -79,6 +79,7 @@ class CajaTexto(Widget):
         self.color_placeholder = (180, 180, 180)
         self.color_cursor = (255, 255, 255)
         self.color_borde = None
+        self.es_password = False # Si es True, oculta el texto con bullets (ideal para proyectores/audiencias)
 
         
         # Padding (espaciado interno)
@@ -149,6 +150,8 @@ class CajaTexto(Widget):
     def _ajustar_scroll(self):
         """Ajusta el scroll para que el cursor siempre esté visible."""
         texto_hasta_cursor = self._texto[:self._cursor_pos]
+        if getattr(self, 'es_password', False) and len(texto_hasta_cursor) > 0:
+            texto_hasta_cursor = "•" * len(texto_hasta_cursor)
         cursor_px = 0
         if texto_hasta_cursor:
             cursor_px = self._fuente.render(texto_hasta_cursor, True, (0,0,0)).get_width()
@@ -278,6 +281,8 @@ class CajaTexto(Widget):
         ancho_visible = self.ancho - pad_x - self.padding_right
 
         texto_render = self._texto
+        if getattr(self, 'es_password', False) and len(self._texto) > 0:
+            texto_render = "•" * len(self._texto)
         color_render = self.color_texto
 
         # Mostrar placeholder si está vacío y no está escribiendo actualmente
@@ -308,6 +313,8 @@ class CajaTexto(Widget):
         if self._foco and self._mostrar_cursor:
             # Calcular ancho del texto hasta la posición actual del cursor
             texto_hasta_cursor = self._texto[:self._cursor_pos]
+            if getattr(self, 'es_password', False) and len(texto_hasta_cursor) > 0:
+                texto_hasta_cursor = "•" * len(texto_hasta_cursor)
             ancho_hasta_cursor = 0
             if texto_hasta_cursor:
                 ancho_hasta_cursor = self._fuente.render(texto_hasta_cursor, True, (0,0,0)).get_width()

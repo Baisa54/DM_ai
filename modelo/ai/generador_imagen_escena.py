@@ -84,6 +84,10 @@ def generar_imagen_escena(
     
     DEVUELVE ÚNICA Y EXCLUSIVAMENTE EL PROMPT EN INGLÉS, SIN INTRODUCCIONES NI COMILLAS NI NOTAS ADICIONALES.
     """
+    config = ConfigManager()
+    if not config.get_generar_imagenes():
+        print("[INFO] Generación visual desactivada: omitiendo prompt y renderizado.")
+        return None
 
     print("\n" + "=" * 80)
     print("PIDIENDO A LA IA LOCAL QUE MEJORE EL PROMPT...")

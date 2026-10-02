@@ -73,6 +73,9 @@ def generar_imagen_dialogo(personaje, emocion):
         str: Ruta al archivo de imagen generado o None si ocurre un error.
     """
     config = ConfigManager()
+    if not config.get_generar_imagenes():
+        return {"imagen": None}
+
     if config.get_proveedor_imagen() == "gemini":
         cliente = GeminiClient()
     else:

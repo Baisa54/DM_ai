@@ -18,35 +18,23 @@ if %errorlevel% neq 0 (
 )
 echo [OK] Python detectado.
 
-:: 2. Entorno virtual y dependencias
-if not exist ".venv" (
-    echo.
-    echo [!] No se encontro el entorno virtual.
-    set /p crear_venv="¿Deseas crear el entorno virtual e instalar las dependencias de Python? (s/n): "
-    if /i "!crear_venv!"=="s" (
-        echo Creando entorno virtual...
-        python -m venv .venv
-        echo Instalando dependencias...
-        .venv\Scripts\python -m pip install --upgrade pip
-        .venv\Scripts\pip install -r requirements.txt
-    ) else (
-        echo Debes instalar las dependencias manualmente para jugar.
-        pause
-        exit /b
-    )
+:: 2. Entorno de ejecucion
+set "PYTHON_CMD=python"
+if exist ".venv\Scripts\python.exe" (
+    set "PYTHON_CMD=.venv\Scripts\python.exe"
+    echo [OK] Entorno virtual (.venv) detectado.
 ) else (
-    echo [OK] Entorno virtual detectado.
+    echo [OK] Utilizando Python del sistema.
 )
 
 :: 3. Ollama
 ollama --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo [X] Ollama no esta instalado o no esta iniciado.
-    echo Ollama es necesario para correr los modelos locales de IA.
-    echo Descarga Ollama desde: https://ollama.com/download
-    echo Instala Ollama y abre el programa antes de continuar.
-    pause
+    echo [!] Aviso: Ollama no esta activo o no esta en el PATH.
+    echo Si vas a usar modelos locales, inicia Ollama.
+    echo Si vas a usar el Modo Exposicion (ChatGPT), puedes continuar directamente.
+    echo.
 ) else (
     echo [OK] Ollama detectado.
 )
@@ -55,6 +43,6 @@ echo.
 echo ==============================================
 echo        INICIANDO EL JUEGO...
 echo ==============================================
-.venv\Scripts\python main.py
+%PYTHON_CMD% main.py
 
 pause

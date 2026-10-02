@@ -36,8 +36,20 @@ class Ventana:
     def __init__(self):
         """
         Configura la ventana principal usando una superficie virtual de 1920x1080.
-        Si la pantalla es más pequeña, redimensiona y adapta automáticamente.
         """
+        # Configurar DPI Awareness en Windows para evitar que el sistema operativo
+        # aplique reescalado bilineal borroso (blur) en monitores con escalado > 100%
+        import sys
+        if sys.platform == "win32":
+            try:
+                import ctypes
+                ctypes.windll.shcore.SetProcessDpiAwareness(2)  # Per-monitor DPI aware
+            except Exception:
+                try:
+                    ctypes.windll.user32.SetProcessDPIAware()
+                except Exception:
+                    pass
+
         pygame.init()
         
         # Resolución nativa/virtual en la que programamos la UI

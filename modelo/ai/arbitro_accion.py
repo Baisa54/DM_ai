@@ -65,15 +65,8 @@ def arbitrar_accion(accion, estado):
     Returns:
         dict: Diccionario con la clasificación de validez, si requiere tirada y dificultad asignada.
     """
-    from modelo.configuracion import ConfigManager
-    config = ConfigManager()
-    
-    if config.get_proveedor_texto() == "gemini":
-        from modelo.ai.GeminiClient import GeminiClient
-        cliente = GeminiClient()
-    else:
-        from modelo.ai.LocalAICLient import LocalAIClient
-        cliente = LocalAIClient()
+    from modelo.ai.cliente_factory import obtener_cliente_texto
+    cliente = obtener_cliente_texto()
 
     from modelo.game.campaign import SALAS
     ubicacion_actual = estado.get_ubicacion()

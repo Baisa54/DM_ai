@@ -369,6 +369,12 @@ class Campania:
         """
         Genera la imagen descriptiva ilustrada del estado actual de la escena.
         """
+        from modelo.configuracion import ConfigManager
+        if not ConfigManager().get_generar_imagenes():
+            print("[INFO] Generación de imágenes desactivada en configuración: omitiendo síntesis.")
+            self.mensaje.set_imagen_resumen(None)
+            return
+
         from modelo.game.campaign import SALAS
         ubicacion_actual = self.estado.get_ubicacion()
         descripcion_sala = SALAS.get(ubicacion_actual, {}).get("descripcion", "")
