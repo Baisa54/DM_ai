@@ -135,7 +135,13 @@ class OpenAIClient:
 
         args_raw = tool_calls[0]["function"].get("arguments", "{}")
         if isinstance(args_raw, str):
-            args = json.loads(args_raw)
+            try:
+                args = json.loads(args_raw)
+            except Exception:
+                limpio = args_raw.strip()
+                if limpio.startswith("```"):
+                    limpio = limpio.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+                args = json.loads(limpio)
         else:
             args = dict(args_raw)
 

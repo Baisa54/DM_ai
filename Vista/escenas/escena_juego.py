@@ -422,7 +422,11 @@ class EscenaJuego(EscenaBase):
         if imagen_path:
             self.imagen_escena.cambiar_imagen(imagen_path)
         else:
-            self.imagen_escena.texto_fallback = "No se pudo generar la imagen."
+            from modelo.configuracion import ConfigManager
+            if not ConfigManager().get_generar_imagenes():
+                self.imagen_escena.texto_fallback = "Generación visual desactivada."
+            else:
+                self.imagen_escena.texto_fallback = "No se pudo generar la imagen."
             self.imagen_escena.cambiar_imagen(None)
             
         # Revisar si se alcanzó el final (y que no sea 'sin_final')

@@ -3,8 +3,8 @@
     "huggingface_api_key": "",
     "volumen": 0.2,
     "proveedor_imagen": "huggingface",
-    "generar_imagenes": true,
-    "proveedor_texto": "ollama",
+    "generar_imagenes": false,
+    "proveedor_texto": "openai",
     "modelo_local": "llama3.1",
     "modelo_openai": "gpt-4o-mini"
 }

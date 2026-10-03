@@ -157,4 +157,4 @@ def narrar_final(estado, accion, resultado_accion):
 {resultado_accion}
 </resultado_accion>
 </input_data>"""
-    return gemini.generar_texto(prompt)
+    return cliente.generar_texto(prompt)
